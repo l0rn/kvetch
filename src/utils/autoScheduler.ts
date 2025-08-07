@@ -1,4 +1,4 @@
-import { startOfWeek, endOfWeek, isWithinInterval, parseISO, format, startOfDay, getMonth, getYear } from 'date-fns';
+import { startOfWeek, endOfWeek, isWithinInterval, format, startOfDay, getMonth, getYear } from 'date-fns';
 import type { ShiftOccurrence, StaffMember, Trait } from '../storage/database-pouchdb';
 import type { TFunction } from 'i18next';
 

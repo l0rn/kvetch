@@ -21,8 +21,6 @@ export function ConfirmDialog({
   onConfirm,
   onCancel
 }: ConfirmDialogProps) {
-  const { t } = useTranslation();
-
   if (!isOpen) return null;
 
   return (

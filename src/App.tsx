@@ -212,7 +212,7 @@ function App() {
 
       <main className="app-main">
         <Routes>
-          <Route path="/" element={<Navigate to="/calendar" replace />} />
+          <Route path="/" element={<Navigate to="/planning" replace />} />
           <Route 
             path="/shifts" 
             element={

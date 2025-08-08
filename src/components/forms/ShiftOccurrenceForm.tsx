@@ -121,9 +121,10 @@ export function ShiftOccurrenceForm({ occurrence, onSave, onCancel }: ShiftOccur
     },
     assignedStaffMembers,
     allTraits,
-    allShiftOccurrences,
     t,
-    i18n.language
+    i18n.language,
+    allShiftOccurrences,
+    allStaff
   );
 
   return (

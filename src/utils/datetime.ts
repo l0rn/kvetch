@@ -28,3 +28,24 @@ export function toLocalDateTimeInputValue(input: Date | string) {
 export function toLocalDateInputValue(input: Date | string) {
     return toLocalISO8601(input).slice(0, 10);
 }
+
+// Helper function to format date in localized format
+export function formatLocalizedDateTime(date: Date, language?: string): string {
+  const locale = language || 'en';
+  return date.toLocaleString(locale, {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
+
+export function formatLocalizedDate(date: Date, language?: string): string {
+  const locale = language || 'en';
+  return date.toLocaleString(locale, {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  });
+}

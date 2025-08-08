@@ -5,6 +5,15 @@
     "staff": "Staff",
     "planning": "Planning"
   },
+  "calendar": {
+    "sunday": "Sun",
+    "monday": "Mon",
+    "tuesday": "Tue", 
+    "wednesday": "Wed",
+    "thursday": "Thu",
+    "friday": "Fri",
+    "saturday": "Sat"
+  },
   "shifts": {
     "title": "Shifts",
     "createShift": "Create Shift",
@@ -21,6 +30,8 @@
     "weeks": "Weeks", 
     "months": "Months",
     "endDate": "End Date",
+    "selectWeekdays": "Select Days of Week",
+    "selectWeekdaysHint": "Select which days of the week this shift should occur on",
     "save": "Save",
     "cancel": "Cancel",
     "edit": "Edit",
@@ -65,11 +76,20 @@
     "maxShiftsPerYear": "per Year",
     "incompatibleWith": "Incompatible With",
     "selectIncompatibleStaff": "Select staff members who cannot work with this person...",
+    "restDaysWithStaff": "Rest Days with Staff",
+    "addRestDaysConstraint": "Add Rest Days Constraint",
+    "consecutiveRestDays": "Consecutive Rest Days",
+    "addConsecutiveRestConstraint": "Add Consecutive Rest Constraint",
+    "staffMember": "Staff Member",
+    "selectStaff": "Select Staff",
+    "minRestDays": "Min Rest Days",
+    "minConsecutiveDays": "Min Consecutive Days",
+    "period": "Period",
+    "perWeek": "Per Week",
+    "perMonth": "Per Month",
     "blockedTimes": "Blocked Times",
     "addBlockedTime": "Add Blocked Time",
     "fullDay": "Full Day",
-    "save": "Save",
-    "remove": "Remove",
     "noStaff": "No staff members created yet. Click \"Create Staff Member\" to create your first staff member.",
     "editStaff": "Edit Staff Member",
     "none": "None",
@@ -86,6 +106,10 @@
     "interval": "Interval",
     "updateStaff": "Update Staff Member",
     "cancel": "Cancel",
+    "save": "Save",
+    "remove": "Remove",
+    "consecutiveDaysLabel": "consecutive rest days",
+    "pleaseSelectStaff": "Please select a staff member before saving.",
     "startDate": "Start Date",
     "endDate": "End Date",
     "confirmDelete": "Delete Staff Member",
@@ -105,8 +129,16 @@
     "noStaffAssigned": "No staff assigned",
     "autoSchedule": "Auto Schedule",
     "autoScheduleTooltip": "Automatically assign available staff to shifts for this week",
+    "autoScheduleConfirm": "Clear and Auto Schedule",
+    "autoScheduleMessage": "This will clear all existing assignments for this week and automatically schedule staff. Are you sure you want to continue?",
+    "clearAllAssignments": "Clear All",
+    "clearAllAssignmentsTooltip": "Remove all staff assignments for this week",
+    "clearAllAssignmentsConfirm": "Clear All Assignments",
+    "clearAllAssignmentsMessage": "Are you sure you want to clear all staff assignments for this week?",
     "print": "Print",
-    "printTooltip": "Print the weekly shift schedule"
+    "printTooltip": "Print the weekly shift schedule",
+    "constraintViolation": "Constraint violation",
+    "constraintWarning": "Constraint warning"
   },
   "shiftOccurrence": {
     "editingOccurrence": "Editing Single Occurrence",
@@ -133,6 +165,15 @@
     "missingTraitCount": "{{count}} more with {{trait}}",
     "assigned": "assigned"
   },
+  "constraints": {
+    "blockedTimeConflict": "{{staffName}} cannot work shift \"{{shiftName}}\" ({{shiftTime}} on {{shiftDate}}) due to blocked time conflict ({{blockedTime}} on {{blockedDate}})",
+    "incompatibleStaffConflict": "{{staffName}} cannot work shift \"{{shiftName}}\" ({{shiftTime}} on {{shiftDate}}) because they cannot work with {{conflictStaffName}}",
+    "shiftLimitWouldExceed": "{{staffName}} would exceed {{limitType}} shift limit if assigned to \"{{shiftName}}\" ({{shiftTime}} on {{shiftDate}}): {{current}}/{{limit}} shifts in {{period}}",
+    "shiftLimitExceeded": "{{staffName}} exceeds {{limitType}} shift limit on \"{{shiftName}}\" ({{shiftTime}} on {{shiftDate}}): {{current}}/{{limit}} shifts in {{period}}",
+    "restDaysWithStaffViolation": "{{staffName}} needs more rest days from {{relatedStaffName}} for shift \"{{shiftName}}\" ({{shiftTime}} on {{shiftDate}}): only {{current}}/{{required}} rest days in {{period}}",
+    "consecutiveRestDaysViolation": "{{staffName}} needs more consecutive rest days for shift \"{{shiftName}}\" ({{shiftTime}} on {{shiftDate}}): only {{current}}/{{required}} consecutive rest days in {{period}}",
+    "weekOf": "week of {{date}}"
+  },
   "violations": {
     "incompatibleStaff": "cannot work with {{other}}",
     "blockedTime": "has blocked time from {{start}} to {{end}}",
@@ -142,6 +183,9 @@
     "exceedsYearlyLimit": "would exceed yearly limit ({{current}}/{{max}} shifts in {{year}})"
   },
   "common": {
+    "daily": "daily",
+    "weekly": "weekly",
+    "monthly": "monthly",
     "required": "required",
     "optional": "optional",
     "loading": "Loading...",
@@ -153,7 +197,8 @@
     "no": "No",
     "close": "Close",
     "delete": "Delete",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "add": "Add"
   },
   "validation": {
     "endAfterStart": "End date and time must be after start date and time.",

@@ -1,5 +1,6 @@
 import type { ShiftOccurrence, StaffMember, Trait } from '../storage/database-pouchdb';
-import { addDays, addWeeks, addMonths, isBefore, startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear } from 'date-fns';
+import { ConstraintEngine, type ConstraintContext } from './constraints';
+import type { TFunction } from 'i18next';
 
 export interface StaffingStatus {
   status: 'properly-staffed' | 'understaffed' | 'overstaffed' | 'not-staffed' | 'constraint-violation';
@@ -17,227 +18,16 @@ export interface StaffingStatus {
   }>;
 }
 
-// Helper function to generate blocked time occurrences from recurrence
-function generateBlockedTimeOccurrences(blockedTime: StaffMember['blockedTimes'][0], maxDate: Date): Array<{startDateTime: Date, endDateTime: Date}> {
-  const occurrences = [];
-  const startDate = blockedTime.startDateTime;
-  const endDate = blockedTime.endDateTime;
-  
-  // Always include the original blocked time
-  occurrences.push({
-    startDateTime: blockedTime.startDateTime,
-    endDateTime: blockedTime.endDateTime
-  });
-  
-  // Generate recurring occurrences if recurrence is defined
-  if (blockedTime.recurrence) {
-    const { type, interval, endDate: recurrenceEndDate } = blockedTime.recurrence;
-    const recurrenceEnd = recurrenceEndDate ? recurrenceEndDate : maxDate;
-    
-    let currentStart = startDate;
-    let currentEnd = endDate;
-    
-    while (isBefore(currentStart, recurrenceEnd) && isBefore(currentStart, maxDate)) {
-      // Calculate next occurrence
-      switch (type) {
-        case 'daily':
-          currentStart = addDays(currentStart, interval);
-          currentEnd = addDays(currentEnd, interval);
-          break;
-        case 'weekly':
-          currentStart = addWeeks(currentStart, interval);
-          currentEnd = addWeeks(currentEnd, interval);
-          break;
-        case 'monthly':
-          currentStart = addMonths(currentStart, interval);
-          currentEnd = addMonths(currentEnd, interval);
-          break;
-      }
-      
-      if (isBefore(currentStart, recurrenceEnd) && isBefore(currentStart, maxDate)) {
-        occurrences.push({
-          startDateTime: currentStart,
-          endDateTime: currentEnd
-        });
-      }
-    }
-  }
-  
-  return occurrences;
-}
 
-// Helper function to check if two time periods overlap
-function timePeriodsOverlap(
-  start1: Date, end1: Date, 
-  start2: Date, end2: Date
-): boolean {
-  return start1 < end2 && start2 < end1;
-}
-
-// Helper function to check blocked time constraint violations
-function checkBlockedTimeViolations(
-  occurrence: ShiftOccurrence,
-  assignedStaff: StaffMember[],
-  language?: string
-): Array<{staffMemberName: string, violationType: 'blocked-time', violationMessage: string}> {
-  const violations = [];
-  const shiftStart = occurrence.startDateTime;
-  const shiftEnd = occurrence.endDateTime;
-  
-  // Look ahead 1 year for blocked time occurrences
-  const maxDate = addDays(shiftStart, 365);
-  
-  for (const staffMember of assignedStaff) {
-    for (const blockedTime of staffMember.blockedTimes) {
-      const blockedOccurrences = generateBlockedTimeOccurrences(blockedTime, maxDate);
-      
-      for (const blockedOccurrence of blockedOccurrences) {
-        const blockedStart = blockedOccurrence.startDateTime;
-        const blockedEnd = blockedOccurrence.endDateTime;
-        
-        if (timePeriodsOverlap(shiftStart, shiftEnd, blockedStart, blockedEnd)) {
-          violations.push({
-            staffMemberName: staffMember.name,
-            violationType: 'blocked-time' as const,
-            violationMessage: `has blocked time from ${blockedStart.toLocaleDateString(language)} ${blockedStart.toLocaleTimeString(language, {hour: '2-digit', minute: '2-digit'})} to ${blockedEnd.toLocaleDateString(language)} ${blockedEnd.toLocaleTimeString(language, {hour: '2-digit', minute: '2-digit'})}`
-          });
-          break; // Only report the first violation per staff member
-        }
-      }
-    }
-  }
-  
-  return violations;
-}
-
-// Helper function to check incompatible staff constraint violations  
-function checkIncompatibleStaffViolations(
-  assignedStaff: StaffMember[]
-): Array<{staffMemberName: string, violationType: 'incompatible-staff', violationMessage: string}> {
-  const violations = [];
-  
-  for (let i = 0; i < assignedStaff.length; i++) {
-    const staffMember = assignedStaff[i];
-    
-    for (let j = i + 1; j < assignedStaff.length; j++) {
-      const otherStaffMember = assignedStaff[j];
-      
-      // Check if current staff member is incompatible with the other
-      if (staffMember.constraints.incompatibleWith.includes(otherStaffMember.id)) {
-        violations.push({
-          staffMemberName: staffMember.name,
-          violationType: 'incompatible-staff' as const,
-          violationMessage: `cannot work with ${otherStaffMember.name}`
-        });
-      }
-      
-      // Check if the other staff member is incompatible with current (bidirectional check)
-      if (otherStaffMember.constraints.incompatibleWith.includes(staffMember.id)) {
-        violations.push({
-          staffMemberName: otherStaffMember.name,
-          violationType: 'incompatible-staff' as const,
-          violationMessage: `cannot work with ${staffMember.name}`
-        });
-      }
-    }
-  }
-  
-  return violations;
-}
-
-// Helper function to check shift count constraint violations
-function checkShiftCountViolations(
-  occurrence: ShiftOccurrence,
-  assignedStaff: StaffMember[],
-  allShiftOccurrences: ShiftOccurrence[],
-  language?: string
-): Array<{staffMemberName: string, violationType: 'shift-count', violationMessage: string}> {
-  const violations = [];
-  const occurrenceDate = occurrence.startDateTime;
-  
-  for (const staffMember of assignedStaff) {
-    const constraints = staffMember.constraints;
-    
-    // Get default values (1 shift per day by default, unlimited for others)
-    const maxPerDay = constraints.maxShiftsPerDay ?? 1;
-    const maxPerWeek = constraints.maxShiftsPerWeek ?? Infinity;
-    const maxPerMonth = constraints.maxShiftsPerMonth ?? Infinity;
-    const maxPerYear = constraints.maxShiftsPerYear ?? Infinity;
-    
-    // Count existing shifts for this staff member in different time periods
-    // (including the current occurrence being checked)
-    const shiftsOnSameDay = allShiftOccurrences.filter(occ => {
-      const occDate = occ.startDateTime;
-      return occ.assignedStaff.includes(staffMember.id) &&
-             occDate >= startOfDay(occurrenceDate) &&
-             occDate <= endOfDay(occurrenceDate);
-    }).length;
-    
-    const shiftsInSameWeek = allShiftOccurrences.filter(occ => {
-      const occDate = occ.startDateTime;
-      return occ.assignedStaff.includes(staffMember.id) &&
-             occDate >= startOfWeek(occurrenceDate) &&
-             occDate <= endOfWeek(occurrenceDate);
-    }).length;
-    
-    const shiftsInSameMonth = allShiftOccurrences.filter(occ => {
-      const occDate = occ.startDateTime;
-      return occ.assignedStaff.includes(staffMember.id) &&
-             occDate >= startOfMonth(occurrenceDate) &&
-             occDate <= endOfMonth(occurrenceDate);
-    }).length;
-    
-    const shiftsInSameYear = allShiftOccurrences.filter(occ => {
-      const occDate = occ.startDateTime;
-      return occ.assignedStaff.includes(staffMember.id) &&
-             occDate >= startOfYear(occurrenceDate) &&
-             occDate <= endOfYear(occurrenceDate);
-    }).length;
-    
-    // Check violations
-    if (shiftsOnSameDay > maxPerDay) {
-      violations.push({
-        staffMemberName: staffMember.name,
-        violationType: 'shift-count' as const,
-        violationMessage: `exceeds daily limit (${shiftsOnSameDay}/${maxPerDay} shifts on ${occurrenceDate.toLocaleDateString(language)})`
-      });
-    }
-    
-    if (shiftsInSameWeek > maxPerWeek) {
-      violations.push({
-        staffMemberName: staffMember.name,
-        violationType: 'shift-count' as const,
-        violationMessage: `exceeds weekly limit (${shiftsInSameWeek}/${maxPerWeek} shifts in week of ${startOfWeek(occurrenceDate).toLocaleDateString(language)})`
-      });
-    }
-    
-    if (shiftsInSameMonth > maxPerMonth) {
-      violations.push({
-        staffMemberName: staffMember.name,
-        violationType: 'shift-count' as const,
-        violationMessage: `exceeds monthly limit (${shiftsInSameMonth}/${maxPerMonth} shifts in ${occurrenceDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })})`
-      });
-    }
-    
-    if (shiftsInSameYear > maxPerYear) {
-      violations.push({
-        staffMemberName: staffMember.name,
-        violationType: 'shift-count' as const,
-        violationMessage: `would exceed yearly limit (${shiftsInSameYear}/${maxPerYear} shifts in ${occurrenceDate.getFullYear()})`
-      });
-    }
-  }
-  
-  return violations;
-}
 
 export function calculateStaffingStatus(
   occurrence: ShiftOccurrence,
   assignedStaff: StaffMember[],
   allTraits: Trait[],
+  t: TFunction,
+  language: string,
   allShiftOccurrences?: ShiftOccurrence[],
-  t?: (key: string, options?: Record<string, unknown>) => string,
-  language?: string
+  allStaff?: StaffMember[]
 ): StaffingStatus {
   const { requirements } = occurrence;
   const totalAssigned = assignedStaff.length;
@@ -301,26 +91,55 @@ export function calculateStaffingStatus(
     };
   }
 
-  // Check constraint violations
-  const blockedTimeViolations = checkBlockedTimeViolations(occurrence, assignedStaff, language);
-  const incompatibleStaffViolations = checkIncompatibleStaffViolations(assignedStaff);
-  const shiftCountViolations = allShiftOccurrences 
-    ? checkShiftCountViolations(occurrence, assignedStaff, allShiftOccurrences, language)
-    : [];
-  const allViolations = [...blockedTimeViolations, ...incompatibleStaffViolations, ...shiftCountViolations];
+  // Check constraint violations using centralized constraint engine
+  if (allShiftOccurrences && allStaff) {
+    const constraintEngine = new ConstraintEngine();
+    const allConstraintViolations: Array<{
+      staffMemberName: string;
+      violationType: 'incompatible-staff' | 'blocked-time' | 'shift-count';
+      violationMessage: string;
+    }> = [];
+    
+    // Check constraints for each assigned staff member
+    for (const staffMember of assignedStaff) {
+     
+      const context: ConstraintContext = {
+        targetStaff: staffMember,
+        targetOccurrence: occurrence,
+        allStaff: allStaff,
+        allOccurrences: allShiftOccurrences,
+        evaluationDate: new Date(occurrence.startDateTime),
+        t: t,
+        language,
+        mode: 'validate_existing'  // Check if current assignments violate constraints
+      };
+      
+      const violations = constraintEngine.validateStaffAssignment(context);
+      const errorViolations = violations.filter(v => v.severity === 'error' || v.severity === 'warning');
+      
+      // Map constraint violations to the expected format
+      for (const violation of errorViolations) {
+        allConstraintViolations.push({
+          staffMemberName: staffMember.name,
+          violationType: 'blocked-time' as const,  // Simplified for compatibility
+          violationMessage: violation.message
+        });
+      }
+    }
 
-  // If there are constraint violations, prioritize them
-  if (allViolations.length > 0) {
-    const message = t 
-      ? t('staffing.constraintViolation')
-      : 'This shift violates staff constraints';
-   
-    return {
-      status: 'constraint-violation',
-      color: 'red',
-      message,
-      constraintViolations: allViolations
-    };
+    // If there are constraint violations, prioritize them
+    if (allConstraintViolations.length > 0) {
+      const message = t 
+        ? t('staffing.constraintViolation')
+        : 'This shift violates staff constraints';
+     
+      return {
+        status: 'constraint-violation',
+        color: 'red',
+        message,
+        constraintViolations: allConstraintViolations
+      };
+    }
   }
 
   // Check overall staffing levels

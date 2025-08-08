@@ -1,4 +1,4 @@
-import { addDays, addWeeks, addMonths, isAfter, parseISO, getDaysInMonth, getDate, setDate } from 'date-fns';
+import { addDays, addWeeks, addMonths, isAfter, parseISO, getDaysInMonth, getDate, setDate, getDay } from 'date-fns';
 import type { Shift, ShiftOccurrence } from '../storage/database-pouchdb';
 
 // Helper function to add months while preserving the day of month (with fallback to last day)
@@ -44,7 +44,7 @@ export const generateShiftOccurrences = (shift: Shift): ShiftOccurrence[] => {
     const adjustedDates: string[] = []; // Track dates that were adjusted for info dialog
     
     while (true) {
-      let nextDate: Date;
+      let nextDate: Date = currentDate;
       let dayAdjusted = false;
       
       // Calculate next occurrence date
@@ -52,9 +52,35 @@ export const generateShiftOccurrences = (shift: Shift): ShiftOccurrence[] => {
         case 'daily':
           nextDate = addDays(currentDate, shift.recurrence.interval);
           break;
-        case 'weekly':
-          nextDate = addWeeks(currentDate, shift.recurrence.interval);
+        case 'weekly': {
+          if (shift.recurrence.weekdays && shift.recurrence.weekdays.length > 0) {
+            // Find next occurrence on specified weekdays
+            const currentWeekday = getDay(currentDate);
+            const sortedWeekdays = [...shift.recurrence.weekdays].sort((a, b) => a - b);
+            
+            // Find next weekday in current week or next weeks
+            let foundNextDate = false;
+            for (const weekday of sortedWeekdays) {
+              if (weekday > currentWeekday) {
+                // Found next weekday in current week
+                nextDate = addDays(currentDate, weekday - currentWeekday);
+                foundNextDate = true;
+                break;
+              }
+            }
+            
+            if (!foundNextDate) {
+              // No more weekdays this week, go to first weekday of next occurrence week
+              const daysToNextWeek = 7 - currentWeekday + sortedWeekdays[0];
+              const weeksToAdd = shift.recurrence.interval - 1; // -1 because we're already adding days to next week
+              nextDate = addDays(currentDate, daysToNextWeek + (weeksToAdd * 7));
+            }
+          } else {
+            // Fallback to original weekly behavior if no weekdays specified
+            nextDate = addWeeks(currentDate, shift.recurrence.interval);
+          }
           break;
+        }
         case 'monthly': {
           const monthResult = addMonthsWithDayPreservation(currentDate, shift.recurrence.interval);
           nextDate = monthResult.date;
@@ -66,6 +92,7 @@ export const generateShiftOccurrences = (shift: Shift): ShiftOccurrence[] => {
         }
         default:
           nextDate = currentDate;
+          break;
       }
       
       currentDate = new Date(nextDate);

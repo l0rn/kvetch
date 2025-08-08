@@ -5,6 +5,15 @@
     "staff": "Personal",
     "planning": "Planung"
   },
+  "calendar": {
+    "sunday": "So",
+    "monday": "Mo",
+    "tuesday": "Di", 
+    "wednesday": "Mi",
+    "thursday": "Do",
+    "friday": "Fr",
+    "saturday": "Sa"
+  },
   "shifts": {
     "title": "Schichten",
     "createShift": "Schicht erstellen",
@@ -21,6 +30,8 @@
     "weeks": "Wochen",
     "months": "Monate",
     "endDate": "Enddatum",
+    "selectWeekdays": "Wochentage auswählen",
+    "selectWeekdaysHint": "Wählen Sie aus, an welchen Wochentagen diese Schicht stattfinden soll",
     "save": "Speichern",
     "cancel": "Abbrechen",
     "edit": "Bearbeiten",
@@ -65,6 +76,17 @@
     "maxShiftsPerYear": "pro Jahr",
     "incompatibleWith": "Unverträglich mit",
     "selectIncompatibleStaff": "Mitarbeiter auswählen, die nicht mit dieser Person arbeiten können...",
+    "restDaysWithStaff": "Ruhetage mit Personal",
+    "addRestDaysConstraint": "Ruhetage-Beschränkung hinzufügen",
+    "consecutiveRestDays": "Aufeinanderfolgende Ruhetage",
+    "addConsecutiveRestConstraint": "Aufeinanderfolgende Ruhetage-Beschränkung hinzufügen",
+    "staffMember": "Mitarbeiter",
+    "selectStaff": "Mitarbeiter auswählen",
+    "minRestDays": "Min. Ruhetage",
+    "minConsecutiveDays": "Min. aufeinanderfolgende Tage",
+    "period": "Zeitraum",
+    "perWeek": "Pro Woche",
+    "perMonth": "Pro Monat",
     "blockedTimes": "Gesperrte Zeiten",
     "addBlockedTime": "Gesperrte Zeit hinzufügen",
     "fullDay": "Ganzer Tag",
@@ -86,6 +108,8 @@
     "interval": "Intervall",
     "updateStaff": "Mitarbeiter aktualisieren",
     "cancel": "Abbrechen",
+    "consecutiveDaysLabel": "aufeinanderfolgende Ruhetage",
+    "pleaseSelectStaff": "Bitte wählen Sie einen Mitarbeiter aus, bevor Sie speichern.",
     "startDate": "Startdatum",
     "endDate": "Enddatum",
     "confirmDelete": "Mitarbeiter löschen",
@@ -105,8 +129,16 @@
     "noStaffAssigned": "Kein Personal zugewiesen",
     "autoSchedule": "Auto-Planung",
     "autoScheduleTooltip": "Personal automatisch den Schichten dieser Woche zuweisen",
+    "autoScheduleConfirm": "Löschen und Auto-Planung",
+    "autoScheduleMessage": "Dies löscht alle bestehenden Zuweisungen für diese Woche und plant das Personal automatisch ein. Sind Sie sicher, dass Sie fortfahren möchten?",
+    "clearAllAssignments": "Alle löschen",
+    "clearAllAssignmentsTooltip": "Alle Personalzuweisungen für diese Woche entfernen",
+    "clearAllAssignmentsConfirm": "Alle Zuweisungen löschen",
+    "clearAllAssignmentsMessage": "Sind Sie sicher, dass Sie alle Personalzuweisungen für diese Woche löschen möchten?",
     "print": "Drucken",
-    "printTooltip": "Wöchentlichen Schichtplan drucken"
+    "printTooltip": "Wöchentlichen Schichtplan drucken",
+    "constraintViolation": "Einschränkungsverletzung",
+    "constraintWarning": "Einschränkungswarnung"
   },
   "shiftOccurrence": {
     "editingOccurrence": "Einzelnes Vorkommen bearbeiten",
@@ -133,6 +165,15 @@
     "missingTraitCount": "{{count}} mehr mit {{trait}}",
     "assigned": "zugewiesen"
   },
+  "constraints": {
+    "blockedTimeConflict": "{{staffName}} kann Schicht \"{{shiftName}}\" ({{shiftTime}} am {{shiftDate}}) nicht arbeiten aufgrund gesperrter Zeit ({{blockedTime}} am {{blockedDate}})",
+    "incompatibleStaffConflict": "{{staffName}} kann Schicht \"{{shiftName}}\" ({{shiftTime}} am {{shiftDate}}) nicht arbeiten, da sie nicht mit {{conflictStaffName}} zusammenarbeiten können",
+    "shiftLimitWouldExceed": "{{staffName}} würde das {{limitType}} Schichtlimit überschreiten bei Zuweisung zu \"{{shiftName}}\" ({{shiftTime}} am {{shiftDate}}): {{current}}/{{limit}} Schichten in {{period}}",
+    "shiftLimitExceeded": "{{staffName}} überschreitet {{limitType}} Schichtlimit bei \"{{shiftName}}\" ({{shiftTime}} am {{shiftDate}}): {{current}}/{{limit}} Schichten in {{period}}",
+    "restDaysWithStaffViolation": "{{staffName}} benötigt mehr Ruhetage mit {{relatedStaffName}} für Schicht \"{{shiftName}}\" ({{shiftTime}} am {{shiftDate}}): nur {{current}}/{{required}} Ruhetage in {{period}}",
+    "consecutiveRestDaysViolation": "{{staffName}} benötigt mehr aufeinanderfolgende Ruhetage für Schicht \"{{shiftName}}\" ({{shiftTime}} am {{shiftDate}}): nur {{current}}/{{required}} aufeinanderfolgende Ruhetage in {{period}}",
+    "weekOf": "Woche vom {{date}}"
+  },
   "violations": {
     "incompatibleStaff": "kann nicht mit {{other}} arbeiten",
     "blockedTime": "hat gesperrte Zeit von {{start}} bis {{end}}",
@@ -142,6 +183,9 @@
     "exceedsYearlyLimit": "würde Jahreslimit überschreiten ({{current}}/{{max}} Schichten in {{year}})"
   },
   "common": {
+    "daily": "tägliche",
+    "weekly": "wöchentliche",
+    "monthly": "monatliche",
     "required": "erforderlich",
     "optional": "optional",
     "loading": "Laden...",
@@ -153,7 +197,8 @@
     "no": "Nein",
     "close": "Schließen",
     "delete": "Löschen",
-    "cancel": "Abbrechen"
+    "cancel": "Abbrechen",
+    "add": "Hinzufügen"
   },
   "validation": {
     "endAfterStart": "End- und -zeit müssen nach Start- und -zeit liegen.",

@@ -32,6 +32,7 @@ export interface ShiftDoc extends BaseDoc {
     type: 'daily' | 'weekly' | 'monthly';
     interval: number;
     endDate?: string;
+    weekdays?: number[]; // For weekly recurrence: 0=Sunday, 1=Monday, etc.
   };
   requirements: {
     staffCount: number;
@@ -72,6 +73,16 @@ export interface StaffDoc extends BaseDoc {
     maxShiftsPerMonth?: number;
     maxShiftsPerYear?: number;
     incompatibleWith: string[];
+    // New constraint types
+    restDaysWithStaff?: Array<{
+      staffId: string;
+      minRestDays: number;
+      period: 'week' | 'month';
+    }>;
+    consecutiveRestDays?: Array<{
+      minConsecutiveDays: number;
+      period: 'week' | 'month';
+    }>;
   };
   blockedTimes: Array<{
     id: string;
@@ -82,6 +93,7 @@ export interface StaffDoc extends BaseDoc {
       type: 'daily' | 'weekly' | 'monthly';
       interval: number;
       endDate?: string;
+      weekdays?: number[]; // For weekly recurrence: 0=Sunday, 1=Monday, etc.
     };
   }>;
 }
@@ -103,6 +115,7 @@ export interface Shift {
     type: 'daily' | 'weekly' | 'monthly';
     interval: number;
     endDate?: string;
+    weekdays?: number[]; // For weekly recurrence: 0=Sunday, 1=Monday, etc.
   };
   requirements: {
     staffCount: number;
@@ -141,6 +154,16 @@ export interface StaffMember {
     maxShiftsPerMonth?: number;
     maxShiftsPerYear?: number;
     incompatibleWith: string[];
+    // New constraint types
+    restDaysWithStaff?: Array<{
+      staffId: string;
+      minRestDays: number;
+      period: 'week' | 'month';
+    }>;
+    consecutiveRestDays?: Array<{
+      minConsecutiveDays: number;
+      period: 'week' | 'month';
+    }>;
   };
   blockedTimes: Array<{
     id: string;
@@ -151,6 +174,7 @@ export interface StaffMember {
       type: 'daily' | 'weekly' | 'monthly';
       interval: number;
       endDate?: Date;
+      weekdays?: number[]; // For weekly recurrence: 0=Sunday, 1=Monday, etc.
     };
   }>;
 }

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Database } from './storage/database-pouchdb';
 import type { Shift, StaffMember, ShiftOccurrence, Trait } from './storage/database-pouchdb';
 import { generateShiftOccurrences } from './utils/recurrence';
+import { ConstraintEngine, type ConstraintContext } from './utils/constraints';
 import { ShiftsView } from './components/views/ShiftsView';
 import { StaffView } from './components/views/StaffView';
 import { WeeklyPlanningView } from './components/views/WeeklyPlanningView';
@@ -33,6 +34,8 @@ function App() {
   const [editingStaff, setEditingStaff] = useState<StaffMember | null>(null);
   const [editingOccurrence, setEditingOccurrence] = useState<ShiftOccurrence | null>(null);
 
+  const language= i18n.language || 'en';
+  
   setDefaultOptions({ weekStartsOn: 1 }); // Set Monday as the first day of the week
   useEffect(() => {
     loadData();
@@ -119,7 +122,42 @@ function App() {
 
   const handleAssignStaffToShift = async (occurrenceId: string, staffId: string) => {
     const occurrence = shiftOccurrences.find(occ => occ.id === occurrenceId);
-    if (occurrence && !occurrence.assignedStaff.includes(staffId)) {
+    const staffMember = staff.find(s => s.id === staffId);
+    
+    if (occurrence && staffMember && !occurrence.assignedStaff.includes(staffId)) {
+      // Create temporary assignment for validation
+      const tempAssignments: { [occurrenceId: string]: string[] } = {};
+      shiftOccurrences.forEach(occ => {
+        tempAssignments[occ.id] = occ.id === occurrenceId 
+          ? [...occ.assignedStaff, staffId]
+          : occ.assignedStaff;
+      });
+
+      // Validate constraints
+      const constraintEngine = new ConstraintEngine();
+      const context: ConstraintContext = {
+        targetStaff: staffMember,
+        targetOccurrence: occurrence,
+        allStaff: staff,
+        allOccurrences: shiftOccurrences,
+        evaluationDate: new Date(occurrence.startDateTime),
+        t,
+        language,
+        mode: 'check_assignment'  // Check if adding this assignment would violate constraints
+      };
+      const violations = constraintEngine.validateStaffAssignment(context);
+
+      // Always proceed with assignment, but show warnings for violations
+      const allViolations = violations.filter(v => v.severity === 'error' || v.severity === 'warning');
+      if (allViolations.length > 0) {
+        const violationMessages = allViolations.map(v => v.message);
+        addToast(
+          'warning',
+          `${t('planning.constraintWarning', 'Constraint warning')}`,
+          `• ${violationMessages.slice(0, 5).join('\n• ')}${violationMessages.length > 5 ? `\n• +${violationMessages.length - 5} more...` : ''}`);
+      }
+
+      // Proceed with assignment regardless of constraints
       const updatedOccurrence = {
         ...occurrence,
         assignedStaff: [...occurrence.assignedStaff, staffId],

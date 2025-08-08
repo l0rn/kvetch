@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { format, startOfWeek, addWeeks, subWeeks, isWeekend, addDays } from 'date-fns';
 import { enUS, de } from 'date-fns/locale';
 import type { ShiftOccurrence, StaffMember, Trait } from '../../storage/database-pouchdb';
-import { calculateStaffingStatus } from '../../utils/staffingStatus';
-import { autoScheduleWeek } from '../../utils/autoScheduler';
+import { calculateStaffingStatus, type StaffingStatus } from '../../utils/staffingStatus';
+import { autoScheduleWeek, type SchedulingResult } from '../../utils/autoScheduler';
+import { advancedAutoScheduleWeek, type AdvancedSchedulingResult } from '../../utils/advancedScheduler';
 
 
 interface WeeklyPlanningViewProps {
@@ -74,13 +75,13 @@ export function WeeklyPlanningView({
     navigateToWeek(currentWeek);
   };
 
-  // Filter occurrences for the selected week
-  const weekOccurrences = shiftOccurrences.filter(occ => {
-    const occDate = new Date(occ.startDateTime);
-    const weekStart = startOfWeek(selectedWeek);
-    const weekEnd = addWeeks(weekStart, 1);
-    return occDate >= weekStart && occDate < weekEnd;
-  });
+  const weekOccurrences = useMemo(() => shiftOccurrences.filter(occ => {
+      const occDate = new Date(occ.startDateTime);
+      const weekStart = startOfWeek(selectedWeek);
+      const weekEnd = addWeeks(weekStart, 1);
+      return occDate >= weekStart && occDate < weekEnd;
+    }), [shiftOccurrences, selectedWeek]
+  );
 
   // Get unique shifts that have occurrences this week
   const uniqueShifts = Array.from(
@@ -116,21 +117,36 @@ export function WeeklyPlanningView({
              format(occDate, 'yyyy-MM-dd') === format(day, 'yyyy-MM-dd');
     });
   };
-
-  // Get background color for staffing status
-  const getStaffingBackgroundColor = (occurrence: ShiftOccurrence | undefined) => {
-    if (!occurrence) return '#f8f9fa'; // light gray for no occurrence
+  // Refresh key for forcing re-evaluation
+  const [refreshKey, setRefreshKey] = useState(new Date());
+  // Memoized staffing status cache - only recalculates when relevant data changes
+  const staffingStatusCache = useMemo(() => {
+    const cache: { [occurrenceId: string]: { backgroundColor: string; status: StaffingStatus } } = {};
     
-    const assignedStaffMembers = staff.filter(s => occurrence.assignedStaff.includes(s.id));
-    const status = calculateStaffingStatus(occurrence, assignedStaffMembers, allTraits, shiftOccurrences, t, i18n.language);
-
-    if (status.status === 'properly-staffed') {
-      return '#d4edda'; // green
-    } else if (status.status === 'not-staffed' || status.status === 'constraint-violation') {
-      return '#f8d7da'; // red
-    } else {
-      return '#fff3cd'; // orange/yellow
+    for (const occurrence of weekOccurrences) {
+      const assignedStaffMembers = staff.filter(s => occurrence.assignedStaff.includes(s.id));
+      const status = calculateStaffingStatus(occurrence, assignedStaffMembers, allTraits, t, i18n.language, shiftOccurrences, staff);
+      
+      let backgroundColor: string;
+      if (status.status === 'properly-staffed') {
+        backgroundColor = '#d4edda'; // green
+      } else if (status.status === 'not-staffed' || status.status === 'constraint-violation') {
+        backgroundColor = '#f8d7da'; // red
+      } else {
+        backgroundColor = '#fff3cd'; // orange/yellow
+      }
+      
+      cache[occurrence.id] = { backgroundColor, status };
     }
+    
+    return cache;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [staff, allTraits, shiftOccurrences, t, weekOccurrences, i18n.language, refreshKey, refreshKey]);
+
+  // Optimized background color lookup - no computation on each call
+  const getStaffingBackgroundColor = (occurrence: ShiftOccurrence | undefined): string => {
+    if (!occurrence) return '#f8f9fa'; // light gray for no occurrence
+    return staffingStatusCache[occurrence.id]?.backgroundColor || '#fff3cd';
   };
 
   // Calculate staff scheduling status and counts
@@ -234,8 +250,30 @@ export function WeeklyPlanningView({
     window.print();
   };
 
+  // Handle clear all assignments for the current week
+  const handleClearAllAssignments = () => {
+    if (!onUpdateShiftOccurrences) {
+      onShowToast?.('error', 'Error', 'Clear assignments callback not provided');
+      return;
+    }
+
+    // Show confirmation dialog
+    if (window.confirm(t('planning.clearAllAssignmentsMessage'))) {
+      // Create assignments object with empty arrays for all week occurrences
+      const clearAssignments: { [occurrenceId: string]: string[] } = {};
+      weekOccurrences.forEach(occurrence => {
+        clearAssignments[occurrence.id] = [];
+      });
+      
+      // Apply the cleared assignments
+      onUpdateShiftOccurrences(clearAssignments);
+      
+      onShowToast?.('success', t('common.success'), t('planning.clearAllAssignmentsConfirm'));
+    }
+  };
+
   // Handle auto-schedule for the current week
-  const handleAutoSchedule = () => {
+  const handleAutoSchedule = async () => {
     if (!onUpdateShiftOccurrences) {
       onShowToast?.('error', t('autoScheduler.failure'), 'Auto-scheduling callback not provided');
       return;
@@ -246,8 +284,32 @@ export function WeeklyPlanningView({
       return;
     }
 
+    // Check if there are existing assignments for this week
+    const hasExistingAssignments = weekOccurrences.some(occ => occ.assignedStaff.length > 0);
+    
+    // Show confirmation dialog if there are existing assignments
+    if (hasExistingAssignments) {
+      if (!window.confirm(t('planning.autoScheduleMessage'))) {
+        return; // User cancelled
+      }
+    }
+
     const weekStart = startOfWeek(selectedWeek);
-    const result = autoScheduleWeek(shiftOccurrences, staff, weekStart, allTraits, t);
+    
+    for (const occurrence of weekOccurrences) {
+      occurrence.assignedStaff = []; // Clear existing assignments
+    }
+    // Try advanced scheduler first, with debugging enabled
+    let result: SchedulingResult | AdvancedSchedulingResult = advancedAutoScheduleWeek(shiftOccurrences, staff, weekStart, allTraits, t, i18n.language);
+    console.log(`[WeeklyPlanningView] Advanced scheduler result: success=${result.success}, warnings=${result.warnings.length}, errors=${result.errors.length}`);
+
+    // If the advanced scheduler fails, fall back to the basic greedy auto-scheduler
+    if (!result.success) {
+      console.warn('[WeeklyPlanningView] Advanced scheduler failed, falling back to basic auto-scheduler');
+      result = await autoScheduleWeek(shiftOccurrences, staff, weekStart, t, i18n.language);
+      console.log(`[WeeklyPlanningView] Basic scheduler result: success=${result.success}, warnings=${result.warnings.length}, errors=${result.errors.length}`);
+    }
+    setRefreshKey(new Date());
 
     if (result.success && result.warnings.length === 0) {
       onShowToast('success', t('autoScheduler.success'));
@@ -277,7 +339,7 @@ export function WeeklyPlanningView({
         return warning;
       });
 
-      const condensedMessage = `${t('autoScheduler.reasons')}\n• ${violationMessages.slice(0, 5).join('\n• ')}${violationMessages.length > 5 ? `\n• +${violationMessages.length - 5} more...` : ''}`;
+      const condensedMessage = `• ${violationMessages.slice(0, 5).join('\n• ')}${violationMessages.length > 5 ? `\n• +${violationMessages.length - 5} more...` : ''}`;
       
       onShowToast(
         'warning',
@@ -443,6 +505,20 @@ export function WeeklyPlanningView({
               }}
             >
               {t('planning.autoSchedule')}
+            </button>
+
+            <button
+              onClick={handleClearAllAssignments}
+              className="btn btn-secondary no-print"
+              title={t('planning.clearAllAssignmentsTooltip')}
+              disabled={weekOccurrences.length === 0 || !weekOccurrences.some(occ => occ.assignedStaff.length > 0)}
+              style={{ 
+                fontSize: '14px',
+                padding: '6px 12px',
+                opacity: (weekOccurrences.length === 0 || !weekOccurrences.some(occ => occ.assignedStaff.length > 0)) ? 0.5 : 1
+              }}
+            >
+              🗑 {t('planning.clearAllAssignments')}
             </button>
             
             <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }} className="no-print">

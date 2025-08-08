@@ -39,6 +39,7 @@ export function ShiftForm({ initialShift, onSave, onCancel }: ShiftFormProps) {
     recurrenceType: initialShift?.recurrence?.type || 'weekly',
     recurrenceInterval: initialShift?.recurrence?.interval || 1,
     recurrenceEndDate: initialShift?.recurrence?.endDate || '',
+    recurrenceWeekdays: initialShift?.recurrence?.weekdays || [],
     requiredTraits: initialShift?.requirements.requiredTraits || [],
   });
 
@@ -71,7 +72,8 @@ export function ShiftForm({ initialShift, onSave, onCancel }: ShiftFormProps) {
     if (oldRecurrence && newRecurrence) {
       if (oldRecurrence.type !== newRecurrence.type ||
           oldRecurrence.interval !== newRecurrence.interval ||
-          oldRecurrence.endDate !== newRecurrence.endDate) {
+          oldRecurrence.endDate !== newRecurrence.endDate ||
+          JSON.stringify(oldRecurrence.weekdays || []) !== JSON.stringify(newRecurrence.weekdays || [])) {
         return true;
       }
     }
@@ -116,6 +118,7 @@ export function ShiftForm({ initialShift, onSave, onCancel }: ShiftFormProps) {
         type: formData.recurrenceType as 'daily' | 'weekly' | 'monthly',
         interval: formData.recurrenceInterval,
         endDate: formData.recurrenceEndDate || undefined,
+        weekdays: formData.recurrenceType === 'weekly' && formData.recurrenceWeekdays.length > 0 ? formData.recurrenceWeekdays : undefined,
       } : undefined,
     };
     
@@ -170,6 +173,25 @@ export function ShiftForm({ initialShift, onSave, onCancel }: ShiftFormProps) {
     const trait = traits.find(trait => trait.id === traitId);
     return trait ? trait.name : t('staff.unknownTrait');
   };
+
+  const toggleWeekday = (weekday: number) => {
+    setFormData(prev => ({
+      ...prev,
+      recurrenceWeekdays: prev.recurrenceWeekdays.includes(weekday)
+        ? prev.recurrenceWeekdays.filter(d => d !== weekday)
+        : [...prev.recurrenceWeekdays, weekday].sort((a, b) => a - b)
+    }));
+  };
+
+  const weekdayNames = [
+    t('calendar.sunday'),
+    t('calendar.monday'), 
+    t('calendar.tuesday'),
+    t('calendar.wednesday'),
+    t('calendar.thursday'),
+    t('calendar.friday'),
+    t('calendar.saturday')
+  ];
 
   return (
     <>
@@ -311,6 +333,43 @@ export function ShiftForm({ initialShift, onSave, onCancel }: ShiftFormProps) {
               />
             </div>
           </div>
+          
+          {formData.recurrenceType === 'weekly' && (
+            <div style={{ marginTop: '15px' }}>
+              <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                {t('shifts.selectWeekdays')}
+              </label>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                {weekdayNames.map((dayName, index) => (
+                  <label key={index} style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: '4px',
+                    padding: '6px 10px',
+                    border: `1px solid var(--accent-gray)`,
+                    borderRadius: '4px',
+                    backgroundColor: formData.recurrenceWeekdays.includes(index) ? 'var(--primary-color)' : 'var(--white)',
+                    color: formData.recurrenceWeekdays.includes(index) ? 'white' : 'var(--text-color)',
+                    cursor: 'pointer',
+                    fontSize: '14px'
+                  }}>
+                    <input
+                      type="checkbox"
+                      checked={formData.recurrenceWeekdays.includes(index)}
+                      onChange={() => toggleWeekday(index)}
+                      style={{ display: 'none' }}
+                    />
+                    {dayName}
+                  </label>
+                ))}
+              </div>
+              {formData.recurrenceWeekdays.length === 0 && (
+                <p style={{ fontSize: '12px', color: 'var(--secondary-color)', marginTop: '5px' }}>
+                  {t('shifts.selectWeekdaysHint')}
+                </p>
+              )}
+            </div>
+          )}
         </div>
       )}
 

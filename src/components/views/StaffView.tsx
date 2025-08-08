@@ -92,7 +92,7 @@ export function StaffView({
                   {member.constraints.maxShiftsPerMonth && <p><strong>{t('staff.maxShiftsPerMonth')}:</strong> {member.constraints.maxShiftsPerMonth}</p>}
                   {member.constraints.maxShiftsPerYear && <p><strong>{t('staff.maxShiftsPerYear')}:</strong> {member.constraints.maxShiftsPerYear}</p>}
                   {member.constraints.incompatibleWith.length > 0 && (
-                    <p><strong>{t('staff.incompatibleWith')}:</strong> {member.constraints.incompatibleWith.join(', ')}</p>
+                    <p><strong>{t('staff.incompatibleWith')}:</strong> {staff.find(s => s.id === member.constraints.incompatibleWith[0])?.name}</p>
                   )}
                 </div>
                 {member.blockedTimes.length > 0 && (

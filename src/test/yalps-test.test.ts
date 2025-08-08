@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { yalpsAutoScheduleWeek } from '../utils/yalpsScheduler';
+import type { ShiftOccurrence } from '../storage/database-pouchdb';
 
 describe('YALPS Scheduler Test', () => {
   it('should solve simple scheduling problem', () => {
@@ -46,7 +47,10 @@ describe('YALPS Scheduler Test', () => {
           staffCount: 1,
           requiredTraits: []
         },
-        assignedStaff: []
+        assignedStaff: [],
+        parentShiftId: "mon-morning",
+        isModified: false,
+        isDeleted: false
       },
       {
         id: "mon-evening", 
@@ -57,19 +61,20 @@ describe('YALPS Scheduler Test', () => {
           staffCount: 1,
           requiredTraits: []
         },
-        assignedStaff: []
+        assignedStaff: [],
+        parentShiftId: "mon-evening",
+        isModified: false,
+        isDeleted: false
       }
-    ];
+    ] as ShiftOccurrence[];
 
     const weekStart = new Date(2024, 0, 15);
-    const traits = [];
     const t = (key: string) => key;
-    const language = 'en';
 
     console.log('\n=== YALPS SCHEDULER TEST ===');
     console.log('Testing 2 staff, 2 shifts with YALPS');
     
-    const result = yalpsAutoScheduleWeek(shifts, staff, weekStart, traits, t, language);
+    const result = yalpsAutoScheduleWeek(shifts as unknown as ShiftOccurrence[], staff, weekStart, t as any);
     
     console.log('Result success:', result.success);
     console.log('Assignments:', JSON.stringify(result.assignments, null, 2));
@@ -153,7 +158,7 @@ describe('YALPS Scheduler Test', () => {
     const weekStart = new Date(2024, 0, 15);
     const t = (key: string) => key;
     
-    const result = yalpsAutoScheduleWeek(shifts, staff, weekStart, [], t, 'en');
+    const result = yalpsAutoScheduleWeek(shifts as unknown as ShiftOccurrence[], staff, weekStart, t as any);
     
     console.log('\n=== TRAIT REQUIREMENTS TEST ===');
     console.log('Result success:', result.success);
@@ -235,7 +240,7 @@ describe('YALPS Scheduler Test', () => {
     const weekStart = new Date(2024, 0, 15);
     const t = (key: string) => key;
     
-    const result = yalpsAutoScheduleWeek(shifts, staff, weekStart, [], t, 'en');
+    const result = yalpsAutoScheduleWeek(shifts as unknown as ShiftOccurrence[], staff, weekStart, t as any);
     
     console.log('\n=== INCOMPATIBLE STAFF TEST ===');
     console.log('Result success:', result.success);

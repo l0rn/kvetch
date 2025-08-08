@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { yalpsAutoScheduleWeek } from '../utils/yalpsScheduler';
+import type { ShiftOccurrence } from '../storage/database-pouchdb';
+import type { TFunction } from 'i18next';
 
 describe('YALPS Monthly and Yearly Limits', () => {
   it('should respect monthly shift limits', () => {
@@ -79,7 +81,7 @@ describe('YALPS Monthly and Yearly Limits', () => {
     const allShifts = [...existingAssignments, ...newShifts];
     const weekStart = new Date(2024, 0, 15); // Week of Jan 15
 
-    const result = yalpsAutoScheduleWeek(allShifts, staff, weekStart, [], (key) => key, 'en');
+    const result = yalpsAutoScheduleWeek(allShifts as unknown as ShiftOccurrence[], staff, weekStart, ((key: string) => key) as unknown as TFunction);
     
     console.log('Monthly limit test result:', result);
     
@@ -163,8 +165,8 @@ describe('YALPS Monthly and Yearly Limits', () => {
     const allShifts = [...existingAssignments, ...newShifts];
     const weekStart = new Date(2024, 0, 15); // Week of Jan 15
 
-    const result = yalpsAutoScheduleWeek(allShifts, staff, weekStart, [], (key) => key, 'en');
-    
+    const result = yalpsAutoScheduleWeek(allShifts as unknown as ShiftOccurrence[], staff, weekStart, ((key: string) => key) as unknown as TFunction);
+
     console.log('Yearly limit test result:', result);
     
     expect(result.success).toBe(true);

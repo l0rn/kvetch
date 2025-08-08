@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { yalpsAutoScheduleWeek } from '../utils/yalpsScheduler';
+import type { ShiftOccurrence } from '../storage/database-pouchdb';
 
 describe('Final YALPS Test', () => {
   it('should solve simple scheduling case', () => {
@@ -62,7 +63,7 @@ describe('Final YALPS Test', () => {
     ];
 
     const weekStart = new Date(2024, 0, 15);
-    const result = yalpsAutoScheduleWeek(shifts, staff, weekStart, [], (key) => key, 'en');
+    const result = yalpsAutoScheduleWeek(shifts as unknown as ShiftOccurrence[], staff, weekStart, ((key: string) => key) as any);
     
     console.log('\n=== FINAL YALPS TEST ===');
     console.log('Success:', result.success);
@@ -136,7 +137,7 @@ describe('Final YALPS Test', () => {
     ];
 
     const weekStart = new Date(2024, 0, 15);
-    const result = yalpsAutoScheduleWeek(shifts, staff, weekStart, [], (key) => key, 'en');
+    const result = yalpsAutoScheduleWeek(shifts as unknown as ShiftOccurrence[], staff, weekStart, ((key: string) => key) as any);
     
     console.log('\n=== TRAIT REQUIREMENTS TEST ===');
     console.log('Success:', result.success);
@@ -212,7 +213,7 @@ describe('Final YALPS Test', () => {
     ];
 
     const weekStart = new Date(2024, 0, 15);
-    const result = yalpsAutoScheduleWeek(shifts, staff, weekStart, [], (key) => key, 'en');
+    const result = yalpsAutoScheduleWeek(shifts as unknown as ShiftOccurrence[], staff, weekStart, ((key: string) => key) as any);
     
     console.log('\n=== INCOMPATIBLE STAFF TEST ===');
     console.log('Success:', result.success);

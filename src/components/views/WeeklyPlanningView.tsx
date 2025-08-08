@@ -300,7 +300,7 @@ export function WeeklyPlanningView({
     }
     
     // Try CSP scheduler first (most advanced)
-    const result: YALPSSchedulingResult = yalpsAutoScheduleWeek(shiftOccurrences, staff, weekStart, allTraits, t, i18n.language);
+    const result: YALPSSchedulingResult = yalpsAutoScheduleWeek(shiftOccurrences, staff, weekStart, t);
     console.log(`[WeeklyPlanningView] CSP scheduler result: success=${result.success}, algorithm=${result.algorithm || 'unknown'}`);
 
     setRefreshKey(new Date());

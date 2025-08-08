@@ -1,5 +1,7 @@
 import { describe, it } from 'vitest';
 import { yalpsAutoScheduleWeek } from '../utils/yalpsScheduler';
+import type { ShiftOccurrence } from '../storage/database-pouchdb';
+import type { TFunction } from 'i18next';
 
 describe('Debug YALPS', () => {
   it('should debug yalps scheduling', () => {
@@ -36,7 +38,7 @@ describe('Debug YALPS', () => {
     ];
 
     const weekStart = new Date(2024, 0, 15);
-    const result = yalpsAutoScheduleWeek(shifts, staff, weekStart, [], (key) => key, 'en');
+    const result = yalpsAutoScheduleWeek(shifts as unknown as ShiftOccurrence[], staff, weekStart, ((key: string) => key) as unknown as TFunction);
     
     console.log('\n=== YALPS DEBUG ===');
     console.log('Success:', result.success);

@@ -1,10 +1,27 @@
 import { solve } from 'yalps';
 import { 
-  endOfWeek, isWithinInterval, startOfDay, startOfMonth, startOfYear, endOfMonth, endOfYear,
-  addDays, differenceInDays, startOfWeek, eachDayOfInterval
+  endOfWeek, isWithinInterval, startOfDay, startOfMonth, startOfYear, endOfMonth, endOfYear, eachDayOfInterval
 } from 'date-fns';
-import type { ShiftOccurrence, StaffMember, Trait } from '../storage/database-pouchdb';
+import type { ShiftOccurrence, StaffMember } from '../storage/database-pouchdb';
 import type { TFunction } from 'i18next';
+
+// YALPS model type definitions
+interface YALPSConstraint {
+  equal?: number;
+  max?: number;
+  min?: number;
+}
+
+interface YALPSVariable {
+  [constraintName: string]: number;
+}
+
+
+interface YALPSSolution {
+  result?: number;
+  status?: string;
+  variables?: [string, number][];
+}
 
 /**
  * YALPS-based scheduling result
@@ -15,7 +32,7 @@ export interface YALPSSchedulingResult {
   warnings: string[];
   errors: string[];
   objective: number;
-  algorithm: 'yalps-linear-programming';
+  algorithm: 'yalps-linear-programming' | 'yalps-fallback';
 }
 
 /**
@@ -25,9 +42,7 @@ export function yalpsAutoScheduleWeek(
   shiftOccurrences: ShiftOccurrence[],
   staff: StaffMember[],
   weekStart: Date,
-  traits: Trait[],
-  t: TFunction,
-  language: string
+  t: TFunction
 ): YALPSSchedulingResult {
   console.log('[YALPSScheduler] Starting YALPS-based scheduling');
   
@@ -178,8 +193,8 @@ function buildSchedulingModel(
 ) {
   console.log('[YALPSScheduler] Building LP model');
   
-  const variables: { [key: string]: any } = {};
-  const constraints: { [key: string]: any } = {};
+  const variables: { [key: string]: YALPSVariable } = {};
+  const constraints: { [key: string]: YALPSConstraint } = {};
   const binaries: string[] = [];
 
   // CONSTRAINTS DEFINITION
@@ -378,7 +393,7 @@ function buildSchedulingModel(
  * Convert YALPS solution to shift assignments
  */
 function convertSolutionToAssignments(
-  solution: any,
+  solution: YALPSSolution,
   shifts: ShiftOccurrence[],
   staff: StaffMember[]
 ): { [occurrenceId: string]: string[] } {
@@ -417,7 +432,7 @@ function convertSolutionToAssignments(
  * Create day-level work variables for all staff members
  */
 function createDayWorkVariables(
-  variables: { [key: string]: any },
+  variables: { [key: string]: YALPSVariable },
   binaries: string[],
   staff: StaffMember[],
   allDays: Date[]
@@ -446,8 +461,8 @@ function createDayWorkVariables(
  * Add consecutive rest days constraints to the YALPS model
  */
 function addConsecutiveRestConstraints(
-  constraints: { [key: string]: any },
-  variables: { [key: string]: any },
+  constraints: { [key: string]: YALPSConstraint },
+  variables: { [key: string]: YALPSVariable },
   binaries: string[],
   staff: StaffMember[],
   allDays: Date[]
@@ -512,8 +527,8 @@ function addConsecutiveRestConstraints(
  * Add rest days with staff constraints to the YALPS model
  */
 function addRestDaysWithStaffConstraints(
-  constraints: { [key: string]: any },
-  variables: { [key: string]: any },
+  constraints: { [key: string]: YALPSConstraint },
+  variables: { [key: string]: YALPSVariable },
   binaries: string[],
   staff: StaffMember[],
   allDays: Date[]
@@ -575,8 +590,8 @@ function addRestDaysWithStaffConstraints(
  * Link day-level work variables to shift assignment variables
  */
 function linkDayVariablesToShifts(
-  constraints: { [key: string]: any },
-  variables: { [key: string]: any },
+  constraints: { [key: string]: YALPSConstraint },
+  variables: { [key: string]: YALPSVariable },
   dayWorkVariables: { [staffId: string]: { [dayKey: string]: string } },
   staff: StaffMember[],
   allDays: Date[],

@@ -191,7 +191,7 @@ export const restDayTestCases: TestCase[] = [
     description: "Charlie needs 2 consecutive rest days per week",
     staff: [
       staffFixtures.staffWithRestDays.charlieNeedsConsecutiveRest,
-      staffFixtures.staffWithRestDays.alice,
+      staffFixtures.staffWithRestDays.aliceNeedsRestWithBob,
       staffFixtures.staffWithRestDays.bob,
       staffFixtures.staffWithRestDays.diana
     ],

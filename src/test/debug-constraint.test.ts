@@ -1,6 +1,8 @@
 import { describe, it } from 'vitest';
 import { constraintEngine } from '../utils/constraints';
 import type { ConstraintContext } from '../utils/constraints';
+import type { ShiftOccurrence } from '../storage/database-pouchdb';
+import type { TFunction } from 'i18next';
 
 describe('Debug Constraint Engine', () => {
   it('should debug daily shift limit', () => {
@@ -30,7 +32,7 @@ describe('Debug Constraint Engine', () => {
         staffCount: 1,
         requiredTraits: []
       },
-      assignedStaff: [] // No assignments yet (testing assignment)
+      assignedStaff: [] as string[] // No assignments yet (testing assignment)
     };
 
     const mondayEvening = {
@@ -47,11 +49,11 @@ describe('Debug Constraint Engine', () => {
 
     const context: ConstraintContext = {
       targetStaff: alice,
-      targetOccurrence: mondayMorning,
+      targetOccurrence: mondayMorning as unknown as ShiftOccurrence,
       allStaff: [alice],
-      allOccurrences: [mondayMorning, mondayEvening],
+      allOccurrences: [mondayMorning as unknown as ShiftOccurrence, mondayEvening as unknown as ShiftOccurrence],
       evaluationDate: new Date(2024, 0, 15), // Monday
-      t: (key: string) => key,
+      t: ((key: string) => key) as unknown as TFunction,
       language: 'en',
       mode: 'check_assignment'
     };

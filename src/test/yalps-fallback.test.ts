@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { yalpsAutoScheduleWeek } from '../utils/yalpsScheduler';
+import type { ShiftOccurrence } from '../storage/database-pouchdb';
 
 describe('YALPS Fallback Scheduling', () => {
   it('should use fallback scheduling when constraints are impossible', () => {
@@ -50,7 +51,7 @@ describe('YALPS Fallback Scheduling', () => {
     ];
 
     const weekStart = new Date(2024, 0, 15);
-    const result = yalpsAutoScheduleWeek(shifts, staff, weekStart, [], (key) => key, 'en');
+    const result = yalpsAutoScheduleWeek(shifts as unknown as ShiftOccurrence[], staff, weekStart, ((key: string) => key) as any);
     
     console.log('\n=== FALLBACK SCHEDULING TEST ===');
     console.log('Success:', result.success);
@@ -150,7 +151,7 @@ describe('YALPS Fallback Scheduling', () => {
     ];
 
     const weekStart = new Date(2024, 0, 15);
-    const result = yalpsAutoScheduleWeek(shifts, staff, weekStart, [], (key) => key, 'en');
+    const result = yalpsAutoScheduleWeek(shifts as unknown as ShiftOccurrence[], staff, weekStart, ((key: string) => key) as any);
     
     console.log('\n=== PARTIAL FILLABLE TEST ===');
     console.log('Success:', result.success);
@@ -195,8 +196,10 @@ describe('YALPS Fallback Scheduling', () => {
         blockedTimes: [
           // Block the entire week so no shifts are possible
           {
+            id: "block-1",
             startDateTime: new Date(2024, 0, 14, 0, 0),
-            endDateTime: new Date(2024, 0, 21, 23, 59)
+            endDateTime: new Date(2024, 0, 21, 23, 59),
+            isFullDay: false
           }
         ]
       }
@@ -217,7 +220,7 @@ describe('YALPS Fallback Scheduling', () => {
     ];
 
     const weekStart = new Date(2024, 0, 15);
-    const result = yalpsAutoScheduleWeek(shifts, staff, weekStart, [], (key) => key, 'en');
+    const result = yalpsAutoScheduleWeek(shifts as unknown as ShiftOccurrence[], staff, weekStart, ((key: string) => key) as any);
     
     console.log('\n=== IMPOSSIBLE SCENARIO TEST ===');
     console.log('Success:', result.success);

@@ -18,7 +18,6 @@ import './i18n';
 import './App.css';
 import { setDefaultOptions } from 'date-fns';
 
-
 function App() {
   const location = useLocation();
   const { t, i18n } = useTranslation();

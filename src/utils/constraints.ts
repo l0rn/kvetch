@@ -1,6 +1,6 @@
 import { startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, differenceInDays, isSameDay, format, addDays } from 'date-fns';
 import type { ShiftOccurrence, StaffMember } from '../storage/database-pouchdb';
-import { t, type TFunction } from 'i18next';
+import type { TFunction } from 'i18next';
 import { formatLocalizedDate } from './datetime';
 
 // =============================================================================
@@ -419,7 +419,8 @@ export class ShiftLimitConstraint implements ConstraintValidator {
 
     if (mode === 'check_assignment') {
       // For preliminary assignment checks: Would adding this assignment exceed the limit?
-      isViolation = shiftsInPeriod >= maxShifts;
+      // Fixed: shiftsInPeriod + 1 should not exceed maxShifts
+      isViolation = (shiftsInPeriod + 1) > maxShifts;
       currentValue = shiftsInPeriod + 1;
     } else {
       // For existing assignment validation: Does the current state exceed the limit?

@@ -5,8 +5,7 @@ import { format, startOfWeek, addWeeks, subWeeks, isWeekend, addDays } from 'dat
 import { enUS, de } from 'date-fns/locale';
 import type { ShiftOccurrence, StaffMember, Trait } from '../../storage/database-pouchdb';
 import { calculateStaffingStatus, type StaffingStatus } from '../../utils/staffingStatus';
-import { autoScheduleWeek, type SchedulingResult } from '../../utils/autoScheduler';
-import { advancedAutoScheduleWeek, type AdvancedSchedulingResult } from '../../utils/advancedScheduler';
+import { yalpsAutoScheduleWeek, type YALPSSchedulingResult } from '../../utils/yalpsScheduler';
 
 
 interface WeeklyPlanningViewProps {
@@ -299,20 +298,19 @@ export function WeeklyPlanningView({
     for (const occurrence of weekOccurrences) {
       occurrence.assignedStaff = []; // Clear existing assignments
     }
-    // Try advanced scheduler first, with debugging enabled
-    let result: SchedulingResult | AdvancedSchedulingResult = advancedAutoScheduleWeek(shiftOccurrences, staff, weekStart, allTraits, t, i18n.language);
-    console.log(`[WeeklyPlanningView] Advanced scheduler result: success=${result.success}, warnings=${result.warnings.length}, errors=${result.errors.length}`);
+    
+    // Try CSP scheduler first (most advanced)
+    const result: YALPSSchedulingResult = yalpsAutoScheduleWeek(shiftOccurrences, staff, weekStart, allTraits, t, i18n.language);
+    console.log(`[WeeklyPlanningView] CSP scheduler result: success=${result.success}, algorithm=${result.algorithm || 'unknown'}`);
 
-    // If the advanced scheduler fails, fall back to the basic greedy auto-scheduler
-    if (!result.success) {
-      console.warn('[WeeklyPlanningView] Advanced scheduler failed, falling back to basic auto-scheduler');
-      result = await autoScheduleWeek(shiftOccurrences, staff, weekStart, t, i18n.language);
-      console.log(`[WeeklyPlanningView] Basic scheduler result: success=${result.success}, warnings=${result.warnings.length}, errors=${result.errors.length}`);
-    }
     setRefreshKey(new Date());
 
     if (result.success && result.warnings.length === 0) {
-      onShowToast('success', t('autoScheduler.success'));
+      if (result.algorithm) {
+        onShowToast('success', t('autoScheduler.success'), `Algorithm: ${result.algorithm}`, 5000);
+      } else {
+        onShowToast('success', t('autoScheduler.success'));
+      }
     } else if (result.success && result.warnings.length > 0) {
       // Format constraint violations in a condensed list
       const violationMessages = result.warnings.map(warning => {

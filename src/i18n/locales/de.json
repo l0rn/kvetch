@@ -177,15 +177,16 @@
   "violations": {
     "incompatibleStaff": "kann nicht mit {{other}} arbeiten",
     "blockedTime": "hat gesperrte Zeit von {{start}} bis {{end}}",
-    "exceedsDailyLimit": "überschreitet Tageslimit ({{current}}/{{max}} Schichten am {{date}})",
-    "exceedsWeeklyLimit": "überschreitet Wochenlimit ({{current}}/{{max}} Schichten in Woche vom {{date}})",
-    "exceedsMonthlyLimit": "überschreitet Monatslimit ({{current}}/{{max}} Schichten im {{month}})",
-    "exceedsYearlyLimit": "würde Jahreslimit überschreiten ({{current}}/{{max}} Schichten in {{year}})"
+    "exceedsDailyLimit": "überschreitet das Tageslimit ({{current}}/{{max}} Schichten am {{date}})",
+    "exceedsWeeklyLimit": "überschreitet das Wochenlimit ({{current}}/{{max}} Schichten in Woche vom {{date}})",
+    "exceedsMonthlyLimit": "überschreitet das Monatslimit ({{current}}/{{max}} Schichten im {{month}})",
+    "exceedsYearlyLimit": "überschreitet das Jahreslimit ({{current}}/{{max}} Schichten in {{year}})"
   },
   "common": {
     "daily": "tägliche",
     "weekly": "wöchentliche",
     "monthly": "monatliche",
+    "yearly": "jährliche",
     "required": "erforderlich",
     "optional": "optional",
     "loading": "Laden...",
@@ -212,8 +213,8 @@
   },
   "autoScheduler": {
     "success": "Auto-Planung erfolgreich abgeschlossen",
-    "partialSuccess": "Auto-Planung mit Warnungen abgeschlossen",
-    "failure": "Auto-Planung konnte nicht alle Schichten besetzen",
+    "partialSuccess": "Auto-Planung konnte nicht alle Schichten besetzen",
+    "failure": "Auto-Planung fehlgeschlagen",
     "noShifts": "Keine Schichten für diese Woche gefunden",
     "constraintViolations": "Einige Zuweisungen haben Einschränkungsverletzungen",
     "schedulingErrors": "Planungsfehler aufgetreten",
@@ -225,6 +226,13 @@
     "constraintViolation": "{{staffName}}: {{violation}}",
     "removedStaff": "{{staffName}} aus Schicht \"{{shiftName}}\" am {{date}} entfernt wegen: {{reasons}}",
     "traitRequirementError": "Schicht \"{{shiftName}}\" am {{date}} benötigt {{required}} Personal mit \"{{traitName}}\"-Fähigkeit, aber nur {{assigned}} konnten zugewiesen werden",
-    "understaffedError": "Konnte Schicht \"{{shiftName}}\" am {{date}} nicht vollständig besetzen - {{assigned}}/{{required}} Personal zugewiesen"
+    "understaffedError": "Konnte Schicht \"{{shiftName}}\" am {{date}} nicht vollständig besetzen - {{assigned}}/{{required}} Personal zugewiesen",
+    "partialTitle": "Nicht alle Schichten konnten besetzt werden",
+    "unfilledShifts": "{{count}} Schicht konnte nicht besetzt werden",
+    "unfilledShifts_plural": "{{count}} Schichten konnten nicht besetzt werden",
+    "understaffedShifts": "{{count}} Schicht ist unterbesetzt",
+    "understaffedShifts_plural": "{{count}} Schichten sind unterbesetzt",
+    "moreReasons": "und {{count}} weiteren Grund...",
+    "moreReasons_plural": "und {{count}} weitere Gründe..."
   }
 }

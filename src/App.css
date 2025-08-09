@@ -485,8 +485,15 @@
 
 .staff-members {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  flex-wrap: wrap;
+  flex: 0 1 auto;
   gap: 8px;
+}
+
+.staff-member {
+  flex: 1 1 100px;
+  max-width: 100px;
 }
 
 .shift-table-container {
@@ -609,7 +616,7 @@
   
   .staff-member {
     flex-shrink: 0;
-    min-width: 150px;
+    min-width: 100px;
   }
   
   .calendar-panel {

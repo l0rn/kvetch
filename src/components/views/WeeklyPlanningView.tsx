@@ -6,6 +6,7 @@ import { enUS, de } from 'date-fns/locale';
 import type { ShiftOccurrence, StaffMember, Trait } from '../../storage/database-pouchdb';
 import { calculateStaffingStatus, type StaffingStatus } from '../../utils/staffingStatus';
 import { yalpsAutoScheduleWeek, type YALPSSchedulingResult } from '../../utils/yalpsScheduler';
+import { ConfirmDialog } from '../ConfirmDialog';
 
 
 interface WeeklyPlanningViewProps {
@@ -48,6 +49,10 @@ export function WeeklyPlanningView({
   
   // Dragging state
   const [draggedStaff, setDraggedStaff] = useState<StaffMember | null>(null);
+  
+  // Confirm dialog states
+  const [clearAssignmentsDialog, setClearAssignmentsDialog] = useState(false);
+  const [autoScheduleDialog, setAutoScheduleDialog] = useState(false);
 
   useEffect(() => {
     localStorage.setItem('weeklyPlanning_showWeekends', JSON.stringify(showWeekends));
@@ -215,8 +220,7 @@ export function WeeklyPlanningView({
   const getStaffStatusColor = (status: string) => {
     switch (status) {
       case 'overscheduled': return '#ffc107'; // orange
-      case 'scheduled': return '#28a745'; // green
-      default: return '#6c757d'; // gray
+      default: return '#28a745'; // green
     }
   };
 
@@ -257,18 +261,26 @@ export function WeeklyPlanningView({
     }
 
     // Show confirmation dialog
-    if (window.confirm(t('planning.clearAllAssignmentsMessage'))) {
-      // Create assignments object with empty arrays for all week occurrences
-      const clearAssignments: { [occurrenceId: string]: string[] } = {};
-      weekOccurrences.forEach(occurrence => {
-        clearAssignments[occurrence.id] = [];
-      });
-      
-      // Apply the cleared assignments
-      onUpdateShiftOccurrences(clearAssignments);
-      
-      onShowToast?.('success', t('common.success'), t('planning.clearAllAssignmentsConfirm'));
-    }
+    setClearAssignmentsDialog(true);
+  };
+
+  const confirmClearAssignments = () => {
+    // Create assignments object with empty arrays for all week occurrences
+    const clearAssignments: { [occurrenceId: string]: string[] } = {};
+    weekOccurrences.forEach(occurrence => {
+      clearAssignments[occurrence.id] = [];
+    });
+    
+    // Apply the cleared assignments
+    onUpdateShiftOccurrences!(clearAssignments);
+    
+    onShowToast?.('success', t('common.success'), t('planning.clearAllAssignmentsConfirm'));
+    setClearAssignmentsDialog(false);
+  };
+
+  const confirmAutoSchedule = () => {
+    setAutoScheduleDialog(false);
+    performAutoSchedule();
   };
 
   // Handle auto-schedule for the current week
@@ -288,11 +300,15 @@ export function WeeklyPlanningView({
     
     // Show confirmation dialog if there are existing assignments
     if (hasExistingAssignments) {
-      if (!window.confirm(t('planning.autoScheduleMessage'))) {
-        return; // User cancelled
-      }
+      setAutoScheduleDialog(true);
+      return;
     }
 
+    // Proceed with auto-scheduling
+    performAutoSchedule();
+  };
+
+  const performAutoSchedule = async () => {
     const weekStart = startOfWeek(selectedWeek);
     
     for (const occurrence of weekOccurrences) {
@@ -301,16 +317,12 @@ export function WeeklyPlanningView({
     
     // Try CSP scheduler first (most advanced)
     const result: YALPSSchedulingResult = yalpsAutoScheduleWeek(shiftOccurrences, staff, weekStart, t);
-    console.log(`[WeeklyPlanningView] CSP scheduler result: success=${result.success}, algorithm=${result.algorithm || 'unknown'}`);
+    console.log(`[WeeklyPlanningView] YALPS scheduler result: success=${result.success}, algorithm=${result.algorithm || 'unknown'}`);
 
     setRefreshKey(new Date());
 
     if (result.success && result.warnings.length === 0) {
-      if (result.algorithm) {
-        onShowToast('success', t('autoScheduler.success'), `Algorithm: ${result.algorithm}`, 5000);
-      } else {
-        onShowToast('success', t('autoScheduler.success'));
-      }
+      onShowToast?.('success', t('autoScheduler.success'));
     } else if (result.success && result.warnings.length > 0) {
       // Format constraint violations in a condensed list
       const violationMessages = result.warnings.map(warning => {
@@ -339,7 +351,7 @@ export function WeeklyPlanningView({
 
       const condensedMessage = `• ${violationMessages.slice(0, 5).join('\n• ')}${violationMessages.length > 5 ? `\n• +${violationMessages.length - 5} more...` : ''}`;
       
-      onShowToast(
+      onShowToast?.(
         'warning',
         t('autoScheduler.partialSuccess'),
         condensedMessage,
@@ -374,7 +386,7 @@ export function WeeklyPlanningView({
 
       const condensedMessage = `• ${errorMessages.slice(0, 5).join('\n• ')}${errorMessages.length > 5 ? `\n• +${errorMessages.length - 5} more...` : ''}`;
       
-      onShowToast(
+      onShowToast?.(
         'error',
         t('autoScheduler.failure'),
         condensedMessage,
@@ -383,7 +395,7 @@ export function WeeklyPlanningView({
     }
 
     // Apply the assignments
-    onUpdateShiftOccurrences(result.assignments);
+    onUpdateShiftOccurrences?.(result.assignments);
   };
 
   return (
@@ -659,6 +671,27 @@ export function WeeklyPlanningView({
           </table>
         </div>
       </div>
+
+      {/* Confirm Dialogs */}
+      <ConfirmDialog
+        isOpen={clearAssignmentsDialog}
+        title={t('planning.clearAllAssignmentsConfirm')}
+        message={t('planning.clearAllAssignmentsMessage')}
+        confirmText={t('common.yes')}
+        cancelText={t('common.cancel')}
+        onConfirm={confirmClearAssignments}
+        onCancel={() => setClearAssignmentsDialog(false)}
+      />
+
+      <ConfirmDialog
+        isOpen={autoScheduleDialog}
+        title={t('planning.autoScheduleConfirm')}
+        message={t('planning.autoScheduleMessage')}
+        confirmText={t('common.yes')}
+        cancelText={t('common.cancel')}
+        onConfirm={confirmAutoSchedule}
+        onCancel={() => setAutoScheduleDialog(false)}
+      />
     </div>
   );
 }

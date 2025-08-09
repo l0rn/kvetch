@@ -52,13 +52,17 @@ export function ShiftOccurrenceForm({ occurrence, onSave, onCancel }: ShiftOccur
   }, [formData.assignedStaff, allStaff]);
 
   const [traitInput, setTraitInput] = useState({ traitId: '', minCount: 1 });
+  const [validationError, setValidationError] = useState<string>('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Clear previous validation errors
+    setValidationError('');
+    
     // Validate that end time is after start time
     if (new Date(formData.endDateTime) <= new Date(formData.startDateTime)) {
-      alert(t('validation.endAfterStart'));
+      setValidationError(t('validation.endAfterStart'));
       return;
     }
     
@@ -324,6 +328,21 @@ export function ShiftOccurrenceForm({ occurrence, onSave, onCancel }: ShiftOccur
           </div>
         )}
       </div>
+
+      {/* Validation error */}
+      {validationError && (
+        <div style={{ 
+          color: 'var(--danger-color, #dc3545)', 
+          fontSize: '14px', 
+          marginBottom: '15px',
+          padding: '8px',
+          backgroundColor: '#f8d7da',
+          border: '1px solid #f5c6cb',
+          borderRadius: '4px'
+        }}>
+          {validationError}
+        </div>
+      )}
 
       <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
         <button type="button" onClick={onCancel} className="btn btn-secondary">

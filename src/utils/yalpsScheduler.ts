@@ -108,31 +108,90 @@ export function yalpsAutoScheduleWeek(
         console.log('[YALPSScheduler] Fallback solution found');
         const assignments = convertSolutionToAssignments(fallbackSolution, weekShifts, staff);
         
-        // Generate warnings for partial solution
-        const warnings: string[] = [
-          t('scheduling.partialSolutionWarning', 'Some shifts could not be fully staffed due to constraints. Filled what was possible.')
-        ];
+        // Generate improved warnings for partial solution
+        const maxReasons = 5;
+        const reasons: string[] = [];
         
-        // Check for unfilled/understaffed shifts
-        const totalShifts = weekShifts.length;
+        // Check for unfilled shifts
         const unfilledShifts = weekShifts.filter(shift => 
           !assignments[shift.id] || assignments[shift.id].length === 0
         ).length;
         
+        if (unfilledShifts > 1) {
+          reasons.push(t('autoScheduler.unfilledShifts_plural', { count: unfilledShifts }));
+        } else if (unfilledShifts > 0) {
+          reasons.push(t('autoScheduler.unfilledShifts', { count: unfilledShifts }));
+        }
+        
+        // Check for understaffed shifts
         const understaffedShifts = weekShifts.filter(shift => {
           const assigned = assignments[shift.id]?.length || 0;
           return assigned > 0 && assigned < shift.requirements.staffCount;
         }).length;
         
-        if (unfilledShifts > 0) {
-          warnings.push(t('scheduling.unfilledShifts',
-            `${unfilledShifts} out of ${totalShifts} shifts could not be filled`));
+        if (understaffedShifts > 1) {
+          reasons.push(t('autoScheduler.understaffedShifts_plural', { count: understaffedShifts }));
+        } else if (understaffedShifts > 0) {
+          reasons.push(t('autoScheduler.understaffedShifts', { count: understaffedShifts }));
         }
         
-        if (understaffedShifts > 0) {
-          warnings.push(t('scheduling.understaffedShifts',
-            `${understaffedShifts} shifts are understaffed but within constraint limits`));
+        // Check for potential additional constraint-related issues
+        let hasTraitRequirements = false;
+        let hasStaffBlocked = false;
+        let hasInsufficientStaff = false;
+        
+        for (const shift of weekShifts) {
+          // Check if shift has trait requirements
+          if (shift.requirements.requiredTraits && shift.requirements.requiredTraits.length > 0) {
+            hasTraitRequirements = true;
+          }
+          
+          // Check if staff are blocked during this shift
+          for (const staffMember of staff) {
+            if (staffMember.blockedTimes && Array.isArray(staffMember.blockedTimes)) {
+              for (const blockedTime of staffMember.blockedTimes) {
+                if (shift.startDateTime < blockedTime.endDateTime && 
+                    shift.endDateTime > blockedTime.startDateTime) {
+                  hasStaffBlocked = true;
+                  break;
+                }
+              }
+            }
+            if (hasStaffBlocked) break;
+          }
         }
+        
+        // Check if there's generally insufficient staff
+        if (staff.length < 2 && weekShifts.some(shift => shift.requirements.staffCount > 1)) {
+          hasInsufficientStaff = true;
+        }
+        
+        // Add constraint-specific reasons
+        if (hasInsufficientStaff && reasons.length < maxReasons) {
+          reasons.push(t('autoScheduler.insufficientStaff'));
+        }
+        if (hasTraitRequirements && reasons.length < maxReasons) {
+          reasons.push(t('autoScheduler.traitRequirements'));  
+        }
+        if (hasStaffBlocked && reasons.length < maxReasons) {
+          reasons.push(t('autoScheduler.staffUnavailable'));
+        }
+        
+        // Create the warning message with title and enumerated reasons
+        let warningMessage = '';
+        
+        if (reasons.length > 0) {
+          const displayReasons = reasons.slice(0, maxReasons);
+          const moreReasonsCount = reasons.length - maxReasons;
+          
+          warningMessage += displayReasons.join('\n• ');
+          
+          if (moreReasonsCount > 0) {
+            warningMessage += '\n• ' + t('autoScheduler.moreReasons', { count: moreReasonsCount });
+          }
+        }
+        
+        const warnings: string[] = [warningMessage];
         
         return {
           success: true,

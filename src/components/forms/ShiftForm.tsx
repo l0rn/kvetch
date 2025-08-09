@@ -17,6 +17,7 @@ export function ShiftForm({ initialShift, onSave, onCancel }: ShiftFormProps) {
   const [traits, setTraits] = useState<Trait[]>([]);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [pendingShiftData, setPendingShiftData] = useState<Partial<Shift> | null>(null);
+  const [validationError, setValidationError] = useState<string>('');
   const [formData, setFormData] = useState({
     name: initialShift?.name || '',
     startDateTime: initialShift?.startDateTime
@@ -100,9 +101,12 @@ export function ShiftForm({ initialShift, onSave, onCancel }: ShiftFormProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Clear previous validation errors
+    setValidationError('');
+    
     // Validate that end time is after start time
     if (new Date(formData.endDateTime) <= new Date(formData.startDateTime)) {
-      alert(t('validation.endAfterStart'));
+      setValidationError(t('validation.endAfterStart'));
       return;
     }
     const shiftData: Partial<Shift> = {
@@ -370,6 +374,21 @@ export function ShiftForm({ initialShift, onSave, onCancel }: ShiftFormProps) {
               )}
             </div>
           )}
+        </div>
+      )}
+
+      {/* Validation error */}
+      {validationError && (
+        <div style={{ 
+          color: 'var(--danger-color, #dc3545)', 
+          fontSize: '14px', 
+          marginBottom: '15px',
+          padding: '8px',
+          backgroundColor: '#f8d7da',
+          border: '1px solid #f5c6cb',
+          borderRadius: '4px'
+        }}>
+          {validationError}
         </div>
       )}
 

@@ -3,6 +3,9 @@ import { yalpsAutoScheduleWeek } from '../utils/yalpsScheduler';
 import type { TFunction } from 'i18next';
 import type { ShiftOccurrence } from '../storage/database-pouchdb';
 
+// Mock TFunction for tests
+const mockTFunction: TFunction = ((key: string) => key) as TFunction;
+
 describe('YALPS Temporal Constraints', () => {
   it('should enforce consecutive rest days constraint', () => {
     const staff = [
@@ -172,7 +175,7 @@ describe('YALPS Temporal Constraints', () => {
     }
 
     const weekStart = new Date(2024, 0, 15); // Monday Jan 15, 2024
-    const result = yalpsAutoScheduleWeek(shifts as unknown as ShiftOccurrence[], staff, weekStart, ((key: string) => key) as any);
+    const result = yalpsAutoScheduleWeek(shifts as unknown as ShiftOccurrence[], staff, weekStart, mockTFunction);
     
     console.log('\n=== SHARED REST DAYS TEST ===');
     console.log('Success:', result.success);
@@ -272,7 +275,7 @@ describe('YALPS Temporal Constraints', () => {
     }
 
     const weekStart = new Date(2024, 0, 15);
-    const result = yalpsAutoScheduleWeek(shifts as unknown as ShiftOccurrence[], staff, weekStart, ((key: string) => key) as any);
+    const result = yalpsAutoScheduleWeek(shifts as unknown as ShiftOccurrence[], staff, weekStart, mockTFunction);
     
     console.log('\n=== COMPLEX TEMPORAL CONSTRAINTS TEST ===');
     console.log('Success:', result.success);

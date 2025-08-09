@@ -51,6 +51,9 @@ export function StaffForm({ initialStaff, onSave, onCancel }: StaffFormProps) {
   const [editingBlockedTimes, setEditingBlockedTimes] = useState<{[key: string]: boolean}>({});
   const [editingRestDaysWithStaff, setEditingRestDaysWithStaff] = useState<{[key: string]: boolean}>({});
   const [editingConsecutiveRestDays, setEditingConsecutiveRestDays] = useState<{[key: string]: boolean}>({});
+  
+  // Validation error states
+  const [restDaysWithStaffErrors, setRestDaysWithStaffErrors] = useState<{[key: string]: string}>({});
 
   useEffect(() => {
     const loadData = async () => {
@@ -261,9 +264,17 @@ export function StaffForm({ initialStaff, onSave, onCancel }: StaffFormProps) {
   const saveRestDaysWithStaff = (id: string) => {
     const constraint = formData.restDaysWithStaff.find((c: RestDaysWithStaffConstraintUI) => c.id === id);
     if (!constraint || !constraint.staffId) {
-      alert(t('staff.pleaseSelectStaff', 'Please select a staff member before saving.'));
+      setRestDaysWithStaffErrors(prev => ({ 
+        ...prev, 
+        [id]: t('staff.pleaseSelectStaff', 'Please select a staff member before saving.') 
+      }));
       return;
     }
+    setRestDaysWithStaffErrors(prev => {
+      const newErrors = { ...prev };
+      delete newErrors[id];
+      return newErrors;
+    });
     setEditingRestDaysWithStaff(prev => ({ ...prev, [id]: false }));
   };
 
@@ -549,6 +560,23 @@ export function StaffForm({ initialStaff, onSave, onCancel }: StaffFormProps) {
                     </select>
                   </div>
                 </div>
+                
+                {/* Error message */}
+                {restDaysWithStaffErrors[constraint.id] && (
+                  <div style={{ 
+                    color: 'var(--danger-color, #dc3545)', 
+                    fontSize: '14px', 
+                    marginTop: '8px', 
+                    marginBottom: '8px',
+                    padding: '8px',
+                    backgroundColor: '#f8d7da',
+                    border: '1px solid #f5c6cb',
+                    borderRadius: '4px'
+                  }}>
+                    {restDaysWithStaffErrors[constraint.id]}
+                  </div>
+                )}
+                
                 <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
                   <button type="button" onClick={() => cancelRestDaysWithStaffEdit(constraint.id)} className="btn btn-secondary btn-small">
                     {t('staff.cancel', 'Cancel')}

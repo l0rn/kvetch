@@ -177,15 +177,16 @@
   "violations": {
     "incompatibleStaff": "cannot work with {{other}}",
     "blockedTime": "has blocked time from {{start}} to {{end}}",
-    "exceedsDailyLimit": "exceeds daily limit ({{current}}/{{max}} shifts on {{date}})",
-    "exceedsWeeklyLimit": "exceeds weekly limit ({{current}}/{{max}} shifts in week of {{date}})",
-    "exceedsMonthlyLimit": "exceeds monthly limit ({{current}}/{{max}} shifts in {{month}})",
-    "exceedsYearlyLimit": "would exceed yearly limit ({{current}}/{{max}} shifts in {{year}})"
+    "exceedsDailyLimit": "exceeds the daily limit ({{current}}/{{max}} shifts on {{date}})",
+    "exceedsWeeklyLimit": "exceeds the weekly limit ({{current}}/{{max}} shifts in week of {{date}})",
+    "exceedsMonthlyLimit": "exceeds the monthly limit ({{current}}/{{max}} shifts in {{month}})",
+    "exceedsYearlyLimit": "exceeds the yearly limit ({{current}}/{{max}} shifts in {{year}})"
   },
   "common": {
     "daily": "daily",
     "weekly": "weekly",
     "monthly": "monthly",
+    "yearly": "yearly",
     "required": "required",
     "optional": "optional",
     "loading": "Loading...",
@@ -212,8 +213,8 @@
   },
   "autoScheduler": {
     "success": "Auto-scheduling completed successfully",
-    "partialSuccess": "Auto-scheduling completed with warnings",
-    "failure": "Auto-scheduling could not fill all shifts",
+    "partialSuccess": "Auto-scheduling could not fill all shifts",
+    "failure": "Auto-scheduling failed",
     "noShifts": "No shifts found for this week",
     "constraintViolations": "Some assignments have constraint violations",
     "schedulingErrors": "Scheduling errors occurred",
@@ -225,6 +226,13 @@
     "constraintViolation": "{{staffName}}: {{violation}}",
     "removedStaff": "Removed {{staffName}} from shift \"{{shiftName}}\" on {{date}} due to: {{reasons}}",
     "traitRequirementError": "Shift \"{{shiftName}}\" on {{date}} requires {{required}} staff with \"{{traitName}}\" trait, but only {{assigned}} could be assigned",
-    "understaffedError": "Could not fully staff shift \"{{shiftName}}\" on {{date}} - assigned {{assigned}}/{{required}} staff"
+    "understaffedError": "Could not fully staff shift \"{{shiftName}}\" on {{date}} - assigned {{assigned}}/{{required}} staff",
+    "partialTitle": "Not all shifts could be filled",
+    "unfilledShifts": "{{count}} shift could not be filled",
+    "unfilledShifts_plural": "{{count}} shifts could not be filled",
+    "understaffedShifts": "{{count}} shift is understaffed",
+    "understaffedShifts_plural": "{{count}} shifts are understaffed",
+    "moreReasons": "and {{count}} more reason...",
+    "moreReasons_plural": "and {{count}} more reasons..."
   }
 }

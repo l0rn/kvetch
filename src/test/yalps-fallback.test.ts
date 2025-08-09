@@ -1,6 +1,10 @@
 import { describe, it, expect } from 'vitest';
 import { yalpsAutoScheduleWeek } from '../utils/yalpsScheduler';
 import type { ShiftOccurrence } from '../storage/database-pouchdb';
+import type { TFunction } from 'i18next';
+
+// Mock TFunction for tests
+const mockTFunction: TFunction = ((key: string) => key) as TFunction;
 
 describe('YALPS Fallback Scheduling', () => {
   it('should use fallback scheduling when constraints are impossible', () => {
@@ -51,7 +55,7 @@ describe('YALPS Fallback Scheduling', () => {
     ];
 
     const weekStart = new Date(2024, 0, 15);
-    const result = yalpsAutoScheduleWeek(shifts as unknown as ShiftOccurrence[], staff, weekStart, ((key: string) => key) as any);
+    const result = yalpsAutoScheduleWeek(shifts as unknown as ShiftOccurrence[], staff, weekStart, mockTFunction);
     
     console.log('\n=== FALLBACK SCHEDULING TEST ===');
     console.log('Success:', result.success);
@@ -72,7 +76,7 @@ describe('YALPS Fallback Scheduling', () => {
       warning.includes('could not be satisfied') || 
       warning.includes('could not be filled') ||
       warning.includes('partialSolutionWarning') ||
-      warning.includes('unfilledShifts')
+      warning.includes('understaffed')
     );
     expect(hasPartialSolutionWarning).toBe(true);
   });
@@ -151,7 +155,7 @@ describe('YALPS Fallback Scheduling', () => {
     ];
 
     const weekStart = new Date(2024, 0, 15);
-    const result = yalpsAutoScheduleWeek(shifts as unknown as ShiftOccurrence[], staff, weekStart, ((key: string) => key) as any);
+    const result = yalpsAutoScheduleWeek(shifts as unknown as ShiftOccurrence[], staff, weekStart, mockTFunction);
     
     console.log('\n=== PARTIAL FILLABLE TEST ===');
     console.log('Success:', result.success);
@@ -220,7 +224,7 @@ describe('YALPS Fallback Scheduling', () => {
     ];
 
     const weekStart = new Date(2024, 0, 15);
-    const result = yalpsAutoScheduleWeek(shifts as unknown as ShiftOccurrence[], staff, weekStart, ((key: string) => key) as any);
+    const result = yalpsAutoScheduleWeek(shifts as unknown as ShiftOccurrence[], staff, weekStart, mockTFunction);
     
     console.log('\n=== IMPOSSIBLE SCENARIO TEST ===');
     console.log('Success:', result.success);

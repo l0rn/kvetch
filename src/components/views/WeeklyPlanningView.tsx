@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { format, startOfWeek, addWeeks, subWeeks, isWeekend, addDays } from 'date-fns';
 import { enUS, de } from 'date-fns/locale';
-import type { ShiftOccurrence, StaffMember, Trait } from '../../storage/database-pouchdb';
+import type { ShiftOccurrence, StaffMember, Trait } from "../../storage/database";
 import { calculateStaffingStatus, type StaffingStatus } from '../../utils/staffingStatus';
 import { yalpsAutoScheduleWeek, type YALPSSchedulingResult } from '../../utils/yalpsScheduler';
 import { ConfirmDialog } from '../ConfirmDialog';

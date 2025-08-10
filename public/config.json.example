@@ -1,0 +1,12 @@
+{
+  "syncGatewayUrl": "https://your-sync-gateway.example.com",
+  "databaseName": "kvetch-shared",
+  "adminApiUrl": "https://your-sync-gateway-admin.example.com",
+  "features": {
+    "userManagement": true,
+    "staffAccounts": true,
+    "instanceSelection": false
+  },
+  "instanceId": "your-instance-id",
+  "instanceName": "Your Organization Name"
+}

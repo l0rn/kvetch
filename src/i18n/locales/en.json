@@ -3,7 +3,8 @@
     "calendar": "Calendar",
     "shifts": "Shifts", 
     "staff": "Staff",
-    "planning": "Planning"
+    "planning": "Planning",
+    "users": "Users"
   },
   "calendar": {
     "sunday": "Sun",
@@ -234,5 +235,48 @@
     "understaffedShifts_plural": "{{count}} shifts are understaffed",
     "moreReasons": "and {{count}} more reason...",
     "moreReasons_plural": "and {{count}} more reasons..."
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signOut": "Sign Out",
+    "signInSubtitle": "Access your shift planning workspace",
+    "username": "Username",
+    "password": "Password",
+    "usernamePlaceholder": "Enter your username",
+    "passwordPlaceholder": "Enter your password",
+    "signingIn": "Signing in...",
+    "signingOut": "Signing out...",
+    "loginError": "Login failed",
+    "needHelp": "Need help signing in? Contact your administrator.",
+    "confirmSignOut": "Confirm Sign Out",
+    "signOutMessage": "Are you sure you want to sign out?",
+    "instances": "Instances",
+    "roles": {
+      "admin": "Administrator",
+      "instanceAdmin": "Instance Admin",
+      "manager": "Manager",
+      "staff": "Staff"
+    }
+  },
+  "userManagement": {
+    "title": "User Management",
+    "addUser": "Add User",
+    "createUser": "Create User",
+    "username": "Username",
+    "role": "Role",
+    "instances": "Instances",
+    "instanceId": "Instance ID",
+    "instanceIdPlaceholder": "demo, company-a",
+    "status": "Status",
+    "actions": "Actions",
+    "active": "Active",
+    "disabled": "Disabled",
+    "noUsers": "No users found",
+    "accessDenied": "Access Denied",
+    "accessDeniedMessage": "You do not have permission to manage users.",
+    "confirmPassword": "Confirm Password",
+    "passwordMismatch": "Passwords do not match",
+    "passwordTooShort": "Password must be at least 6 characters",
+    "confirmDelete": "Are you sure you want to delete this user?"
   }
 }

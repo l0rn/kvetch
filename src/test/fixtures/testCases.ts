@@ -1,4 +1,4 @@
-import type { StaffMember, ShiftOccurrence, Trait } from '../../storage/database-pouchdb';
+import type { StaffMember, ShiftOccurrence, Trait } from "../../storage/database";
 import * as staffFixtures from './staff';
 import * as shiftFixtures from './shifts';
 

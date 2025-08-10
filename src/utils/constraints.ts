@@ -1,5 +1,5 @@
 import { startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, differenceInDays, isSameDay, format, addDays } from 'date-fns';
-import type { ShiftOccurrence, StaffMember } from '../storage/database-pouchdb';
+import type { ShiftOccurrence, StaffMember } from "../storage/database";
 import type { TFunction } from 'i18next';
 import { formatLocalizedDate } from './datetime';
 

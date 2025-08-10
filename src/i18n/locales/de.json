@@ -3,7 +3,8 @@
     "calendar": "Kalender",
     "shifts": "Schichten",
     "staff": "Personal",
-    "planning": "Planung"
+    "planning": "Planung",
+    "users": "Benutzer"
   },
   "calendar": {
     "sunday": "So",
@@ -234,5 +235,48 @@
     "understaffedShifts_plural": "{{count}} Schichten sind unterbesetzt",
     "moreReasons": "und {{count}} weiteren Grund...",
     "moreReasons_plural": "und {{count}} weitere Gründe..."
+  },
+  "auth": {
+    "signIn": "Anmelden",
+    "signOut": "Abmelden",
+    "signInSubtitle": "Zugriff auf Ihren Schichtplanungsbereich",
+    "username": "Benutzername",
+    "password": "Passwort",
+    "usernamePlaceholder": "Benutzername eingeben",
+    "passwordPlaceholder": "Passwort eingeben",
+    "signingIn": "Anmelden...",
+    "signingOut": "Abmelden...",
+    "loginError": "Anmeldung fehlgeschlagen",
+    "needHelp": "Brauchen Sie Hilfe bei der Anmeldung? Wenden Sie sich an Ihren Administrator.",
+    "confirmSignOut": "Abmeldung bestätigen",
+    "signOutMessage": "Sind Sie sicher, dass Sie sich abmelden möchten?",
+    "instances": "Instanzen",
+    "roles": {
+      "admin": "Administrator",
+      "instanceAdmin": "Instanz-Administrator",
+      "manager": "Manager",
+      "staff": "Personal"
+    }
+  },
+  "userManagement": {
+    "title": "Benutzerverwaltung",
+    "addUser": "Benutzer hinzufügen",
+    "createUser": "Benutzer erstellen",
+    "username": "Benutzername",
+    "role": "Rolle",
+    "instances": "Instanzen",
+    "instanceId": "Instanz-ID",
+    "instanceIdPlaceholder": "demo, firma-a",
+    "status": "Status",
+    "actions": "Aktionen",
+    "active": "Aktiv",
+    "disabled": "Deaktiviert",
+    "noUsers": "Keine Benutzer gefunden",
+    "accessDenied": "Zugriff verweigert",
+    "accessDeniedMessage": "Sie haben keine Berechtigung, Benutzer zu verwalten.",
+    "confirmPassword": "Passwort bestätigen",
+    "passwordMismatch": "Passwörter stimmen nicht überein",
+    "passwordTooShort": "Passwort muss mindestens 6 Zeichen lang sein",
+    "confirmDelete": "Sind Sie sicher, dass Sie diesen Benutzer löschen möchten?"
   }
 }

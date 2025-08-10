@@ -1,4 +1,4 @@
-import type { ShiftOccurrence, StaffMember, Trait } from '../storage/database-pouchdb';
+import type { ShiftOccurrence, StaffMember, Trait } from "../storage/database";
 import { ConstraintEngine, type ConstraintContext } from './constraints';
 import type { TFunction } from 'i18next';
 

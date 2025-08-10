@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { yalpsAutoScheduleWeek } from '../utils/yalpsScheduler';
 import type { TFunction } from 'i18next';
-import type { ShiftOccurrence } from '../storage/database-pouchdb';
+import type { ShiftOccurrence } from "../storage/database";
 
 // Mock TFunction for tests
 const mockTFunction: TFunction = ((key: string) => key) as TFunction;

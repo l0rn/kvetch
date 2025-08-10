@@ -1,11 +1,3 @@
-:root {
-  --primary-color: #FF6B35;
-  --secondary-color: #4A4A4A;
-  --background-color: #F4F4F4;
-  --white: #FFFFFF;
-  --accent-gray: #E0E0E0;
-}
-
 .app {
   min-height: 100vh;
   display: flex;

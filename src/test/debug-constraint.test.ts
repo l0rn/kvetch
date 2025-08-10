@@ -1,7 +1,7 @@
 import { describe, it } from 'vitest';
 import { constraintEngine } from '../utils/constraints';
 import type { ConstraintContext } from '../utils/constraints';
-import type { ShiftOccurrence } from '../storage/database-pouchdb';
+import type { ShiftOccurrence } from "../storage/database";
 import type { TFunction } from 'i18next';
 
 describe('Debug Constraint Engine', () => {

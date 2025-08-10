@@ -8,6 +8,7 @@ even with complex personal constraints for the staff.
 - Save conversation context frequently so that if the code claude cli crashes it's easy to resume a thread
 - Periodically search for duplication of functionality and refactor if it makes sense
 - Find a way to start the application and evaluate the quality and usability of the tool based on the result (via screenshot if necessary)
+- When starting development servers do explicitly run them in background to avoid stalling the converstation
 
 ## Technical stuff
 

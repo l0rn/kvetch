@@ -1,4 +1,5 @@
 import PouchDB from 'pouchdb';
+import { AppConfigManager } from '../config/AppConfig';
 
 // PouchDB document base interface
 interface BaseDoc {
@@ -7,6 +8,7 @@ interface BaseDoc {
   type: 'trait' | 'shift' | 'shift-occurrence' | 'staff' | 'schema-version';
   createdAt: string;
   updatedAt: string;
+  instanceId?: string; // Added for multi-user support
 }
 
 // Schema version document for migrations
@@ -96,6 +98,8 @@ export interface StaffDoc extends BaseDoc {
       weekdays?: number[]; // For weekly recurrence: 0=Sunday, 1=Monday, etc.
     };
   }>;
+  // Multi-user fields
+  userId?: string;
 }
 
 // Legacy interfaces for backward compatibility (remove PouchDB-specific fields)
@@ -179,21 +183,66 @@ export interface StaffMember {
   }>;
 }
 
-// Database class
+// Extended StaffMember interface for multi-user features
+export interface StaffMemberWithUser extends StaffMember {
+  userId?: string;
+  hasUserAccount?: boolean;
+  canLogin?: boolean;
+}
+
+// Unified Database class that handles both local-only and remote sync modes
 export class Database {
   private static db: PouchDB.Database;
   private static readonly SCHEMA_VERSION = 1;
+  
+  // Multi-user support fields
+  private static remoteDB: PouchDB.Database | null = null;
+  private static syncHandler: PouchDB.Replication.Sync<{}> | null = null;
+  private static isMultiUserMode = false;
+  private static currentInstanceId: string | null = null;
+  private static syncInitializing = false;
 
-  // Initialize database
+  // Initialize database - handles both single-user and multi-user modes
   static async init(): Promise<void> {
+    const config = await AppConfigManager.getConfig();
+    
+    if (config.multiUserMode) {
+      await this.initMultiUserMode(config);
+    } else {
+      // Single-user local mode
+      await this.initLocalMode();
+    }
+  }
+
+  private static async initLocalMode(): Promise<void> {
     if (!this.db) {
       this.db = new PouchDB('kvetch');
       await this.runMigrations();
     }
   }
 
+  private static async initMultiUserMode(config: any): Promise<void> {
+    this.isMultiUserMode = true;
+    this.currentInstanceId = config.instanceId || 'default';
+
+    // Initialize local database with instance-specific name
+    const localDbName = config.instanceId ? `kvetch-${config.instanceId}` : 'kvetch';
+    
+    // Create instance-specific database if needed
+    if (!this.db) {
+      if (config.instanceId && localDbName !== 'kvetch') {
+        this.db = new PouchDB(localDbName);
+      } else {
+        this.db = new PouchDB('kvetch');
+      }
+      await this.runMigrations();
+    }
+
+    // Don't initialize remote connection here - wait for explicit startRemoteSync call
+  }
+
   // Schema migration system
-  private static async runMigrations(): Promise<void> {
+  protected static async runMigrations(): Promise<void> {
     try {
       const versionDoc = await this.db.get('schema-version') as SchemaVersionDoc;
       const currentVersion = versionDoc.version;
@@ -228,6 +277,212 @@ export class Database {
     }
   }
 
+  // Method to initialize remote sync after authentication (multi-user mode only)
+  static async startRemoteSync(): Promise<void> {
+    console.log('🔄 startRemoteSync() called');
+    
+    if (!this.isMultiUserMode) {
+      console.log('❌ Not in multi-user mode, skipping sync');
+      return;
+    }
+    
+    if (this.syncInitializing) {
+      console.log('⚠️ Sync already initializing, skipping duplicate call');
+      return;
+    }
+    
+    if (this.syncHandler) {
+      console.log('✅ Sync already running');
+      return;
+    }
+    
+    this.syncInitializing = true;
+
+    const config = await AppConfigManager.getConfig();
+    console.log('📋 Config loaded:', {
+      multiUserMode: config.multiUserMode,
+      syncGatewayUrl: config.remote?.syncGatewayUrl,
+      instanceId: config.instanceId
+    });
+    
+    if (!config.remote?.syncGatewayUrl || !config.instanceId) {
+      console.log('❌ Missing sync config, cannot start sync');
+      this.syncInitializing = false;
+      return;
+    }
+
+    // Initialize remote database connection if not already done
+    if (!this.remoteDB) {
+      // Use cookie-based authentication instead of basic auth
+      const baseUrl = config.remote.syncGatewayUrl;
+      const remoteUrl = `${baseUrl}/kvetch-instance-${config.instanceId}`;
+      
+      console.log('🏗️ Initializing PouchDB connection to:', remoteUrl, '(with cookie auth)');
+      
+      // Create PouchDB with cookie authentication
+      this.remoteDB = new PouchDB(remoteUrl, {
+        fetch: (url, opts = {}) => {
+          console.log('📡 PouchDB sync fetch to:', url);
+          
+          // Ensure cookies are included in all requests
+          const fetchOpts: RequestInit = {
+            ...opts,
+            credentials: 'include' as RequestCredentials,
+            headers: {
+              ...opts.headers,
+              // CouchDB expects cookies to be sent for authenticated requests
+            }
+          };
+          
+          return fetch(url, fetchOpts).then(response => {
+            console.log('📡 PouchDB sync response:', response.status, response.statusText);
+            if (!response.ok) {
+              console.log('❌ Bad response headers:', Array.from(response.headers.entries()));
+            }
+            return response;
+          }).catch(error => {
+            console.error('📡 PouchDB sync fetch error:', error);
+            throw error;
+          });
+        }
+      });
+      
+      console.log('✅ PouchDB remote instance created');
+    } else {
+      console.log('♻️ Remote DB already exists, reusing');
+    }
+
+    // Start sync
+    console.log('🚀 Starting sync process...');
+    try {
+      await this.startSync();
+      console.log('✅ Sync initialization complete');
+    } catch (error) {
+      console.error('❌ Sync initialization failed:', error);
+      this.syncHandler = null;
+      this.remoteDB = null;
+    } finally {
+      this.syncInitializing = false;
+    }
+  }
+
+  private static async startSync(): Promise<void> {
+    console.log('🔄 startSync() called');
+    
+    if (!this.isMultiUserMode) {
+      console.log('❌ Not in multi-user mode');
+      return;
+    }
+    
+    if (!this.remoteDB) {
+      console.log('❌ No remote DB instance');
+      return;
+    }
+    
+    if (this.syncHandler) {
+      console.log('⚠️ Sync handler already exists');
+      return;
+    }
+
+    try {
+      // Test connection first
+      console.log('🧪 Testing remote DB connection...');
+      const info = await this.remoteDB.info();
+      console.log('✅ Remote DB info:', info);
+
+      // Start bi-directional sync  
+      console.log('🔄 Starting sync with instanceId:', this.currentInstanceId);
+      console.log('🔄 Local DB exists:', !!this.db);
+      
+      const syncOptions = {
+        live: true,
+        retry: false, // Disable retry to prevent loops
+        // Filter documents by instance for multi-tenant support
+        filter: this.currentInstanceId ? this.createInstanceFilter(this.currentInstanceId) : undefined
+      };
+      console.log('🔄 Sync options:', syncOptions);
+      
+      this.syncHandler = this.db.sync(this.remoteDB, syncOptions).on('change', (info) => {
+        console.log('Database sync change:', info);
+        // Emit events for UI updates if needed
+        window.dispatchEvent(new CustomEvent('kvetch-sync-change', { detail: info }));
+      }).on('paused', (err?: any) => {
+        console.log('Database sync paused. Error details:', err);
+        console.log('Sync paused - typeof err:', typeof err, 'err:', err);
+        if (err) {
+          console.error('Sync pause error details:', {
+            message: err.message,
+            status: err.status,
+            name: err.name,
+            reason: err.reason,
+            stack: err.stack
+          });
+        } else {
+          console.log('Sync paused without error - likely completed initial sync');
+        }
+        window.dispatchEvent(new CustomEvent('kvetch-sync-paused'));
+      }).on('active', () => {
+        console.log('Database sync active');
+        window.dispatchEvent(new CustomEvent('kvetch-sync-active'));
+      }).on('denied', (err: any) => {
+        console.warn('Database sync denied:', err);
+        console.error('Sync denied error details:', {
+          message: err?.message,
+          status: err?.status,
+          name: err?.name,
+          reason: err?.reason
+        });
+        window.dispatchEvent(new CustomEvent('kvetch-sync-denied', { detail: err }));
+      }).on('complete', (info: any) => {
+        console.log('Database sync complete:', info);
+        window.dispatchEvent(new CustomEvent('kvetch-sync-complete', { detail: info }));
+      }).on('error', (err: any) => {
+        console.error('Database sync error:', err);
+        console.error('Sync error details:', {
+          message: err?.message,
+          status: err?.status,
+          name: err?.name,
+          reason: err?.reason
+        });
+        window.dispatchEvent(new CustomEvent('kvetch-sync-error', { detail: err }));
+      });
+
+    } catch (err) {
+      console.error('Failed to start sync:', err);
+      throw err;
+    }
+  }
+
+  static async stopSync(): Promise<void> {
+    if (this.syncHandler) {
+      this.syncHandler.cancel();
+      this.syncHandler = null;
+    }
+  }
+
+  private static createInstanceFilter(instanceId: string) {
+    return (doc: any) => {
+      // Allow schema version and user documents
+      if (doc.type === 'schema-version' || doc.type === 'user') {
+        return true;
+      }
+      
+      // Filter by instance ID for all other documents
+      return doc.instanceId === instanceId;
+    };
+  }
+
+  // Add instance context to documents in multi-user mode
+  private static addInstanceContext(doc: any): any {
+    if (this.isMultiUserMode && this.currentInstanceId && doc.type !== 'schema-version' && doc.type !== 'user') {
+      return {
+        ...doc,
+        instanceId: this.currentInstanceId
+      };
+    }
+    return doc;
+  }
+
   // Helper functions to convert between PouchDB docs and legacy interfaces
   private static docToTrait(doc: TraitDoc): Trait {
     return {
@@ -240,14 +495,15 @@ export class Database {
 
   private static traitToDoc(trait: Partial<Trait>): Omit<TraitDoc, '_rev'> {
     const now = new Date().toISOString();
-    return {
+    const baseDoc = {
       _id: `trait:${trait.id ?? this.makeId(trait.name!)}`,
-      type: 'trait',
+      type: 'trait' as const,
       name: trait.name!,
       description: trait.description,
       createdAt: trait.createdAt || now,
       updatedAt: now
     };
+    return this.addInstanceContext(baseDoc);
   }
 
   private static docToShift(doc: ShiftDoc): Shift {
@@ -264,17 +520,18 @@ export class Database {
   private static shiftToDoc(shift: Partial<Shift>): Omit<ShiftDoc, '_rev'> {
     const now = new Date().toISOString();
 
-    return {
+    const baseDoc = {
       _id: `shift:${shift.id ?? this.makeId(shift.name!, shift.startDateTime!)}`,
-      type: 'shift',
+      type: 'shift' as const,
       name: shift.name!,
       startDateTime: shift.startDateTime!.toISOString(),
-        endDateTime: shift.endDateTime!.toISOString(),
+      endDateTime: shift.endDateTime!.toISOString(),
       recurrence: shift.recurrence,
       requirements: shift.requirements!,
       createdAt: now,
       updatedAt: now
     };
+    return this.addInstanceContext(baseDoc);
   }
 
   private static docToShiftOccurrence(doc: ShiftOccurrenceDoc): ShiftOccurrence {
@@ -293,9 +550,9 @@ export class Database {
 
   private static shiftOccurrenceToDoc(occurrence: Partial<ShiftOccurrence>): Omit<ShiftOccurrenceDoc, '_rev'> {
     const now = new Date().toISOString();
-    return {
+    const baseDoc = {
       _id: `shift-occurrence:${occurrence.id ?? this.makeId(occurrence.name!, occurrence.startDateTime!)}`,
-      type: 'shift-occurrence',
+      type: 'shift-occurrence' as const,
       parentShiftId: occurrence.parentShiftId!,
       name: occurrence.name!,
       startDateTime: occurrence.startDateTime!.toISOString(),
@@ -307,6 +564,7 @@ export class Database {
       createdAt: now,
       updatedAt: now
     };
+    return this.addInstanceContext(baseDoc);
   }
 
   private static docToStaffMember(doc: StaffDoc): StaffMember {
@@ -332,9 +590,9 @@ export class Database {
 
   private static staffMemberToDoc(staff: Partial<StaffMember>): Omit<StaffDoc, '_rev'> {
     const now = new Date().toISOString();
-    return {
+    const baseDoc = {
       _id: `staff:${staff.id ?? this.makeId(staff.name!, new Date())}`,
-      type: 'staff',
+      type: 'staff' as const,
       name: staff.name!,
       traitIds: staff.traitIds || [],
       constraints: staff.constraints!,
@@ -355,11 +613,11 @@ export class Database {
       createdAt: now,
       updatedAt: now
     };
+    return this.addInstanceContext(baseDoc);
   }
 
   // CRUD operations for Traits
   static async getTraits(): Promise<Trait[]> {
-    await this.init();
     const result = await this.db.allDocs({
       include_docs: true,
       startkey: 'trait:',
@@ -373,7 +631,6 @@ export class Database {
   }
 
   static async saveTrait(trait: Trait): Promise<void> {
-    await this.init();
     const docToSave = this.traitToDoc(trait);
     
     try {
@@ -389,7 +646,6 @@ export class Database {
   }
 
   static async deleteTrait(id: string): Promise<void> {
-    await this.init();
     const doc = await this.db.get(`trait:${id}`);
     await this.db.remove(doc);
   }
@@ -417,7 +673,6 @@ export class Database {
 
   // CRUD operations for Shifts  
   static async getShifts(): Promise<Shift[]> {
-    await this.init();
     const result = await this.db.allDocs({
       include_docs: true,
       startkey: 'shift:',
@@ -430,7 +685,6 @@ export class Database {
   }
 
   static async saveShift(shift: Shift): Promise<void> {
-    await this.init();
     const docToSave = this.shiftToDoc(shift);
     try {
       const existing = await this.db.get(docToSave._id);
@@ -445,14 +699,12 @@ export class Database {
   }
 
   static async deleteShift(id: string): Promise<void> {
-    await this.init();
     const doc = await this.db.get(`shift:${id}`);
     await this.db.remove(doc);
   }
 
   // CRUD operations for Shift Occurrences
   static async getShiftOccurrences(): Promise<ShiftOccurrence[]> {
-    await this.init();
     const result = await this.db.allDocs({
       include_docs: true,
       startkey: 'shift-occurrence:',
@@ -465,7 +717,6 @@ export class Database {
   }
 
   static async saveShiftOccurrence(occurrence: ShiftOccurrence): Promise<void> {
-    await this.init();
     const docToSave = this.shiftOccurrenceToDoc(occurrence);
     
     try {
@@ -481,7 +732,6 @@ export class Database {
   }
 
   static async deleteShiftOccurrence(id: string): Promise<void> {
-    await this.init();
     const doc = await this.db.get(`shift-occurrence:${id}`);
     await this.db.remove(doc);
   }
@@ -497,7 +747,6 @@ export class Database {
 
   // CRUD operations for Staff Members
   static async getStaffMembers(): Promise<StaffMember[]> {
-    await this.init();
     const result = await this.db.allDocs({
       include_docs: true,
       startkey: 'staff:',
@@ -510,7 +759,6 @@ export class Database {
   }
 
   static async saveStaffMember(staff: StaffMember): Promise<void> {
-    await this.init();
     const docToSave = this.staffMemberToDoc(staff);
     
     try {
@@ -526,15 +774,112 @@ export class Database {
   }
 
   static async deleteStaffMember(id: string): Promise<void> {
-    await this.init();
     const doc = await this.db.get(`staff:${id}`);
     await this.db.remove(doc);
   }
 
+  // Enhanced staff member save that can link to user accounts (multi-user mode)
+  static async saveStaffMemberWithUser(staff: StaffMember, userId?: string): Promise<void> {
+    const enhancedStaff: StaffMemberWithUser = {
+      ...staff,
+      userId: userId || undefined
+    };
+    // Cast to any to work around the type issue
+    return this.saveStaffMember(enhancedStaff as any);
+  }
 
-  // Remote sync setup (for future use)
+  // Get staff members with user account linking (multi-user mode)
+  static async getStaffMembersWithUsers(): Promise<StaffMemberWithUser[]> {
+    const staffMembers = await this.getStaffMembers();
+    
+    if (!this.isMultiUserMode) {
+      return staffMembers.map(staff => ({ 
+        ...staff, 
+        hasUserAccount: false,
+        canLogin: false
+      }));
+    }
+
+    // Add user account information
+    return staffMembers.map(staff => {
+      const staffWithUser = staff as StaffMemberWithUser;
+      return {
+        ...staffWithUser,
+        hasUserAccount: Boolean(staffWithUser.userId),
+        canLogin: Boolean(staffWithUser.userId)
+      };
+    });
+  }
+
+  // Get sync status (multi-user mode)
+  static getSyncStatus(): {
+    isMultiUserMode: boolean;
+    isConnected: boolean;
+    instanceId: string | null;
+    lastSync?: Date;
+  } {
+    return {
+      isMultiUserMode: this.isMultiUserMode,
+      isConnected: Boolean(this.syncHandler && this.remoteDB),
+      instanceId: this.currentInstanceId,
+      // lastSync would be tracked from sync events
+    };
+  }
+
+  // Get remote database for debugging (multi-user mode)
+  static getRemoteDB(): PouchDB.Database | null {
+    return this.remoteDB;
+  }
+
+  // Force sync (for manual sync triggers in multi-user mode)
+  static async forceSync(): Promise<void> {
+    if (this.isMultiUserMode && this.remoteDB) {
+      try {
+        await this.db.replicate.to(this.remoteDB);
+        await this.db.replicate.from(this.remoteDB);
+      } catch (err) {
+        console.error('Force sync failed:', err);
+        throw err;
+      }
+    }
+  }
+
+  // Switch instance (for multi-tenant scenarios in multi-user mode)
+  static async switchInstance(instanceId: string): Promise<void> {
+    if (!this.isMultiUserMode) {
+      throw new Error('Instance switching only available in multi-user mode');
+    }
+
+    // Stop current sync
+    await this.stopSync();
+    
+    // Update instance context
+    this.currentInstanceId = instanceId;
+    
+    // Initialize new local database for instance
+    const localDbName = `kvetch-${instanceId}`;
+    const newDB = new PouchDB(localDbName);
+    this.db = newDB;
+    await this.runMigrations();
+    
+    // Restart sync with new filter
+    await this.startSync();
+  }
+
+  // Cleanup when switching to single-user mode
+  static async disableMultiUser(): Promise<void> {
+    await this.stopSync();
+    this.remoteDB = null;
+    this.isMultiUserMode = false;
+    this.currentInstanceId = null;
+    
+    // Reinitialize with single-user database
+    await this.initLocalMode();
+  }
+
+  // Remote sync setup (for backward compatibility, now handled by startRemoteSync)
   static setupRemoteSync(remoteUrl: string): void {
-    if (this.db) {
+    if (this.db && !this.isMultiUserMode) {
       const remoteDB = new PouchDB(remoteUrl);
       this.db.sync(remoteDB, {
         live: true,
@@ -567,3 +912,6 @@ export class Database {
     return name;
   }
 }
+
+// Export legacy class names for backward compatibility
+export const MultiUserDatabase = Database;

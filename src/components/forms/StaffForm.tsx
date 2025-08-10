@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { StaffMember, Trait } from '../../storage/database-pouchdb';
+import type { StaffMember, Trait } from '../../storage/database';
 import type { StaffConstraints } from '../../utils/constraints';
-import { Database } from '../../storage/database-pouchdb';
+import { Database } from '../../storage/database';
 import { TraitAutocomplete } from '../TraitAutocomplete';
 import { StaffAutocomplete } from '../StaffAutocomplete';
 import { toLocalDateInputValue, toLocalDateTimeInputValue } from '../../utils/datetime';

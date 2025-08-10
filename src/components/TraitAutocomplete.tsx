@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import type { Trait } from '../storage/database-pouchdb';
+import type { Trait } from "../storage/database";
 
 interface TraitAutocompleteProps {
   traits: Trait[];

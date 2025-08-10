@@ -1,5 +1,5 @@
 import { addDays, startOfWeek } from 'date-fns';
-import type { ShiftOccurrence } from '../../storage/database-pouchdb';
+import type { ShiftOccurrence } from "../../storage/database";
 
 /**
  * Shift occurrence fixtures for testing

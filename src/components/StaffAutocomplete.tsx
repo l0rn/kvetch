@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import type { StaffMember, Trait } from '../storage/database-pouchdb';
+import type { StaffMember, Trait } from "../storage/database";
 
 interface StaffAutocompleteProps {
   staff: StaffMember[];

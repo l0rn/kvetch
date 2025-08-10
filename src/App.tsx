@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, Link, useLocation, Navigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Database } from './storage/database-pouchdb';
-import type { Shift, StaffMember, ShiftOccurrence, Trait } from './storage/database-pouchdb';
+import { Database } from './storage/database';
+import { useAppConfig } from './config/AppConfig';
+import { useAuth } from './auth/AuthContext';
+import type { Shift, StaffMember, ShiftOccurrence, Trait } from './storage/database';
 import { generateShiftOccurrences } from './utils/recurrence';
 import { ConstraintEngine, type ConstraintContext } from './utils/constraints';
 import { ShiftsView } from './components/views/ShiftsView';
 import { StaffView } from './components/views/StaffView';
 import { WeeklyPlanningView } from './components/views/WeeklyPlanningView';
+import { UserManagementView } from './components/views/UserManagementView';
 import { ShiftOccurrenceForm } from './components/forms/ShiftOccurrenceForm';
 import { Modal } from './components/Modal';
 import { LanguageSwitcher } from './components/LanguageSwitcher';
@@ -16,12 +19,15 @@ import { ToastContainer } from './components/Toast';
 import { useToast } from './hooks/useToast';
 import './i18n';
 import './App.css';
+import './styles/auth.css';
 import { setDefaultOptions } from 'date-fns';
 
 function App() {
   const location = useLocation();
   const { t, i18n } = useTranslation();
   const { toasts, removeToast, addToast } = useToast();
+  const { isFeatureEnabled } = useAppConfig();
+  const { user } = useAuth();
   const [shifts, setShifts] = useState<Shift[]>([]);
   const [staff, setStaff] = useState<StaffMember[]>([]);
   const [shiftOccurrences, setShiftOccurrences] = useState<ShiftOccurrence[]>([]);
@@ -234,6 +240,14 @@ function App() {
             >
               {t('navigation.planning')}
             </Link>
+            {isFeatureEnabled('userManagement') && (user?.role === 'admin' || user?.role === 'instance-admin') && (
+              <Link 
+                to="/users"
+                className={`nav-link ${location.pathname === '/users' ? 'active' : ''}`}
+              >
+                {t('navigation.users', 'Users')}
+              </Link>
+            )}
           </nav>
           
           <div className="header-actions">
@@ -308,6 +322,12 @@ function App() {
               />
             } 
           />
+          {isFeatureEnabled('userManagement') && (
+            <Route 
+              path="/users" 
+              element={<UserManagementView />} 
+            />
+          )}
         </Routes>
         
         {/* Occurrence Edit Modal */}

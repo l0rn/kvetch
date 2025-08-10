@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Database } from './storage/database';
 import { useAppConfig } from './config/AppConfig';
 import { useAuth } from './auth/AuthContext';
-import type { Shift, StaffMember, ShiftOccurrence, Trait } from './storage/database';
+import type { Shift, StaffMember, ShiftOccurrence, Trait, StaffDoc, TraitDoc, ShiftDoc } from './storage/database';
 import { generateShiftOccurrences } from './utils/recurrence';
 import { ConstraintEngine, type ConstraintContext } from './utils/constraints';
 import { ShiftsView } from './components/views/ShiftsView';
@@ -42,33 +42,109 @@ function App() {
   const language= i18n.language || 'en';
   
   setDefaultOptions({ weekStartsOn: 1 }); // Set Monday as the first day of the week
+
+  // Load initial data
   useEffect(() => {
-    loadData();
+    Database.getShifts().then(setShifts);
+    Database.getStaffMembers().then(setStaff);
+    Database.getTraits().then(setAllTraits);
+    Database.getShiftOccurrences().then(storedOccurrences => {
+      // This is tricky, as we need to merge with generated occurrences
+      // We'll handle this reactively below
+    });
   }, []);
 
-  const loadData = async () => {
-    const [shiftsData, staffData, occurrencesData, traitsData] = await Promise.all([
-      Database.getShifts(),
-      Database.getStaffMembers(),
-      Database.getShiftOccurrences(),
-      Database.getTraits()
-    ]);
-    setShifts(shiftsData);
-    setStaff(staffData);
-    setAllTraits(traitsData);
+  // Live updates for all data types
+  useEffect(() => {
+    const staffListener = Database.liveGetStaffMembers((change: PouchDB.Core.ChangesResultChange<StaffDoc>) => {
+      if (change.deleted) {
+        setStaff(prev => prev.filter(s => s.id !== change.id.replace('staff:', '')));
+      } else if (change.doc) {
+        const member = Database.docToStaffMember(change.doc);
+        setStaff(prev => {
+          const index = prev.findIndex(s => s.id === member.id);
+          if (index > -1) {
+            const newStaff = [...prev];
+            newStaff[index] = member;
+            return newStaff;
+          }
+          return [...prev, member];
+        });
+      }
+    });
+
+    const traitsListener = Database.liveGetTraits((change: PouchDB.Core.ChangesResultChange<TraitDoc>) => {
+      if (change.deleted) {
+        setAllTraits(prev => prev.filter(t => t.id !== change.id.replace('trait:', '')));
+      } else if (change.doc) {
+        const newTrait = Database.docToTrait(change.doc);
+        setAllTraits(prev => {
+          const index = prev.findIndex(t => t.id === newTrait.id);
+          if (index > -1) {
+            const newTraits = [...prev];
+            newTraits[index] = newTrait;
+            return newTraits;
+          }
+          return [...prev, newTrait].sort((a, b) => a.name.localeCompare(b.name));
+        });
+      }
+    });
+
+    const shiftsListener = Database.liveGetShifts((change: PouchDB.Core.ChangesResultChange<ShiftDoc>) => {
+      if (change.deleted) {
+        setShifts(prev => prev.filter(s => s.id !== change.id.replace('shift:', '')));
+      } else if (change.doc) {
+        const newShift = Database.docToShift(change.doc);
+        setShifts(prev => {
+          const index = prev.findIndex(s => s.id === newShift.id);
+          if (index > -1) {
+            const newShifts = [...prev];
+            newShifts[index] = newShift;
+            return newShifts;
+          }
+          return [...prev, newShift];
+        });
+      }
+    });
+
+    return () => {
+      staffListener.cancel();
+      traitsListener.cancel();
+      shiftsListener.cancel();
+    };
+  }, []);
+
+  // Recalculate shift occurrences whenever shifts or stored occurrences change
+  useEffect(() => {
+    const generatedOccurrences = shifts.flatMap(shift => generateShiftOccurrences(shift));
     
-    // Generate all shift occurrences from shifts and merge with stored modifications
-    const generatedOccurrences = shiftsData.flatMap(shift => generateShiftOccurrences(shift));
-    const storedOccurrenceMap = new Map(occurrencesData.map(occ => [occ.id, occ]));
-    
-    // Merge generated occurrences with stored modifications
-    const finalOccurrences = generatedOccurrences.map(generated => {
-      const stored = storedOccurrenceMap.get(generated.id);
-      return stored || generated;
-    }).filter(occ => !occ.isDeleted);
-    
-    setShiftOccurrences(finalOccurrences);
-  };
+    Database.getShiftOccurrences().then(storedOccurrences => {
+      const storedOccurrenceMap = new Map(storedOccurrences.map(occ => [occ.id, occ]));
+      const finalOccurrences = generatedOccurrences.map(generated => {
+        const stored = storedOccurrenceMap.get(generated.id);
+        return stored || generated;
+      }).filter(occ => !occ.isDeleted);
+      setShiftOccurrences(finalOccurrences);
+    });
+
+    // Also listen for live changes to stored occurrences
+    const occurrencesListener = Database.liveGetShiftOccurrences(() => {
+      // This will trigger a re-fetch and merge of occurrences
+      Database.getShiftOccurrences().then(storedOccurrences => {
+        const storedOccurrenceMap = new Map(storedOccurrences.map(occ => [occ.id, occ]));
+        const finalOccurrences = shifts.flatMap(shift => generateShiftOccurrences(shift)).map(generated => {
+          const stored = storedOccurrenceMap.get(generated.id);
+          return stored || generated;
+        }).filter(occ => !occ.isDeleted);
+        setShiftOccurrences(finalOccurrences);
+      });
+    });
+
+    return () => {
+      occurrencesListener.cancel();
+    };
+
+  }, [shifts]); // Dependency on shifts is key
 
   const handleSaveShift = async (shiftData: Partial<Shift>, isDestructive: boolean = false) => {
     const newShift: Shift = {
@@ -80,7 +156,6 @@ function App() {
       await Database.deleteShiftOccurrencesByParent(editingShift.id);
     }
     await Database.saveShift(newShift);
-    await loadData();
     setShowShiftForm(false);
     setEditingShift(null);
   };
@@ -93,7 +168,6 @@ function App() {
   const handleDeleteShift = async (shiftId: string) => {
     await Database.deleteShift(shiftId);
     await Database.deleteShiftOccurrencesByParent(shiftId);
-    await loadData();
   };
 
   const handleSaveStaff = async (staffData: Omit<StaffMember, 'id'>) => {
@@ -103,7 +177,6 @@ function App() {
     };
     
     await Database.saveStaffMember(newStaff);
-    await loadData();
     setShowStaffForm(false);
     setEditingStaff(null);
   };
@@ -115,12 +188,10 @@ function App() {
 
   const handleDeleteStaff = async (staffId: string) => {
     await Database.deleteStaffMember(staffId);
-    await loadData();
   };
 
   const handleSaveOccurrence = async (occurrence: ShiftOccurrence) => {
     await Database.saveShiftOccurrence(occurrence);
-    await loadData();
     setShowOccurrenceForm(false);
     setEditingOccurrence(null);
   };
@@ -169,7 +240,6 @@ function App() {
         isModified: true
       };
       await Database.saveShiftOccurrence(updatedOccurrence);
-      await loadData();
     }
   };
 
@@ -182,7 +252,6 @@ function App() {
         isModified: true
       };
       await Database.saveShiftOccurrence(updatedOccurrence);
-      await loadData();
     }
   };
 
@@ -208,7 +277,6 @@ function App() {
     }
     if (updates.length > 0) {
       await Promise.all(updates);
-      await loadData();
     }
   };
 
@@ -337,7 +405,7 @@ function App() {
             setShowOccurrenceForm(false);
             setEditingOccurrence(null);
           }}
-          title={`Edit Occurrence - ${editingOccurrence ? new Date(editingOccurrence.startDateTime).toLocaleDateString(i18n.language) : ''}`}
+          title={`Edit Occurrence - ${editingOccurrence ? new Date(editingOccurrence.startDateTime).toLocaleDateString(i11.language) : ''}`}
         >
           {editingOccurrence && (
             <ShiftOccurrenceForm

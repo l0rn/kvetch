@@ -486,7 +486,7 @@ export class Database {
   }
 
   // Helper functions to convert between PouchDB docs and legacy interfaces
-  private static docToTrait(doc: TraitDoc): Trait {
+  static docToTrait(doc: TraitDoc): Trait {
     return {
       id: doc._id.replace('trait:', ''),
       name: doc.name,
@@ -508,7 +508,7 @@ export class Database {
     return this.addInstanceContext(baseDoc);
   }
 
-  private static docToShift(doc: ShiftDoc): Shift {
+  static docToShift(doc: ShiftDoc): Shift {
     return {
       id: doc._id.replace('shift:', ''),
       name: doc.name,
@@ -536,7 +536,7 @@ export class Database {
     return this.addInstanceContext(baseDoc);
   }
 
-  private static docToShiftOccurrence(doc: ShiftOccurrenceDoc): ShiftOccurrence {
+  static docToShiftOccurrence(doc: ShiftOccurrenceDoc): ShiftOccurrence {
     return {
       id: doc._id.replace('shift-occurrence:', ''),
       parentShiftId: doc.parentShiftId,
@@ -569,7 +569,7 @@ export class Database {
     return this.addInstanceContext(baseDoc);
   }
 
-  private static docToStaffMember(doc: StaffDoc): StaffMember {
+  static docToStaffMember(doc: StaffDoc): StaffMember {
     return {
       id: doc._id.replace('staff:', ''),
       name: doc.name,
@@ -618,6 +618,21 @@ export class Database {
     return this.addInstanceContext(baseDoc);
   }
 
+  // Generic live query handler
+  private static liveQuery<DocType, ResultType>(
+    prefix: string,
+    docToResult: (doc: DocType) => ResultType,
+    callback: (change: PouchDB.Core.ChangesResultChange<DocType>) => void
+  ): PouchDB.Core.Changes<DocType> {
+    const changes = this.db.changes<DocType>({
+      since: 'now',
+      live: true,
+      include_docs: true,
+      filter: (doc: any) => doc._id.startsWith(prefix)
+    }).on('change', callback);
+    return changes;
+  }
+
   // CRUD operations for Traits
   static async getTraits(): Promise<Trait[]> {
     const result = await this.db.allDocs({
@@ -630,6 +645,22 @@ export class Database {
       .map(row => row.doc as TraitDoc)
       .map(doc => this.docToTrait(doc))
       .sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  static liveGetTraits(callback: (change: PouchDB.Core.ChangesResultChange<TraitDoc>) => void): PouchDB.Core.Changes<TraitDoc> {
+    return this.liveQuery<TraitDoc, Trait>('trait:', this.docToTrait, callback);
+  }
+
+  static liveGetShifts(callback: (change: PouchDB.Core.ChangesResultChange<ShiftDoc>) => void): PouchDB.Core.Changes<ShiftDoc> {
+    return this.liveQuery<ShiftDoc, Shift>('shift:', this.docToShift, callback);
+  }
+
+  static liveGetShiftOccurrences(callback: (change: PouchDB.Core.ChangesResultChange<ShiftOccurrenceDoc>) => void): PouchDB.Core.Changes<ShiftOccurrenceDoc> {
+    return this.liveQuery<ShiftOccurrenceDoc, ShiftOccurrence>('shift-occurrence:', this.docToShiftOccurrence, callback);
+  }
+
+  static liveGetStaffMembers(callback: (change: PouchDB.Core.ChangesResultChange<StaffDoc>) => void): PouchDB.Core.Changes<StaffDoc> {
+    return this.liveQuery<StaffDoc, StaffMember>('staff:', this.docToStaffMember, callback);
   }
 
   static async saveTrait(trait: Trait): Promise<void> {

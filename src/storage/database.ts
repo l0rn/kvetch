@@ -208,7 +208,7 @@ export class Database {
   // Initialize database with config - handles both single-user and multi-user modes
   static async init(config: AppConfig): Promise<void> {
     this.config = config;
-    
+
     if (config.multiUserMode) {
       await this.initMultiUserMode(config);
     } else {
@@ -329,14 +329,11 @@ export class Database {
         fetch: (url, opts = {}) => {
           console.log('📡 PouchDB sync fetch to:', url);
           
-          // Ensure cookies are included in all requests
+          // Only add credentials, preserve all other fetch options and headers
           const fetchOpts: RequestInit = {
             ...opts,
-            credentials: 'include' as RequestCredentials,
-            headers: {
-              ...opts.headers,
-              // CouchDB expects cookies to be sent for authenticated requests
-            }
+            credentials: 'include' as RequestCredentials
+            // Don't modify headers - let PouchDB set Content-Type and other headers as needed
           };
           
           return fetch(url, fetchOpts).then(response => {
@@ -501,7 +498,7 @@ export class Database {
   private static traitToDoc(trait: Partial<Trait>): Omit<TraitDoc, '_rev'> {
     const now = new Date().toISOString();
     const baseDoc = {
-      _id: `trait:${trait.id ?? this.makeId(trait.name!)}`,
+      _id: trait.id ? `trait:${trait.id}` : this.generateDocumentId('trait', trait.name!),
       type: 'trait' as const,
       name: trait.name!,
       description: trait.description,
@@ -526,7 +523,7 @@ export class Database {
     const now = new Date().toISOString();
 
     const baseDoc = {
-      _id: `shift:${shift.id ?? this.makeId(shift.name!, shift.startDateTime!)}`,
+      _id: shift.id ? `shift:${shift.id}` : this.generateDocumentId('shift', shift.name!),
       type: 'shift' as const,
       name: shift.name!,
       startDateTime: shift.startDateTime!.toISOString(),
@@ -556,7 +553,7 @@ export class Database {
   private static shiftOccurrenceToDoc(occurrence: Partial<ShiftOccurrence>): Omit<ShiftOccurrenceDoc, '_rev'> {
     const now = new Date().toISOString();
     const baseDoc = {
-      _id: `shift-occurrence:${occurrence.id ?? this.makeId(occurrence.name!, occurrence.startDateTime!)}`,
+      _id: occurrence.id ? `shift-occurrence:${occurrence.id}` : this.generateDocumentId('shift-occurrence', occurrence.name!),
       type: 'shift-occurrence' as const,
       parentShiftId: occurrence.parentShiftId!,
       name: occurrence.name!,
@@ -596,7 +593,7 @@ export class Database {
   private static staffMemberToDoc(staff: Partial<StaffMember>): Omit<StaffDoc, '_rev'> {
     const now = new Date().toISOString();
     const baseDoc = {
-      _id: `staff:${staff.id ?? this.makeId(staff.name!, new Date())}`,
+      _id: staff.id ? `staff:${staff.id}` : this.generateDocumentId('staff', staff.name!),
       type: 'staff' as const,
       name: staff.name!,
       traitIds: staff.traitIds || [],
@@ -666,8 +663,12 @@ export class Database {
       return existing;
     }
 
+    // Generate standardized ID for new trait - extract ID portion after the type prefix
+    const fullId = this.generateDocumentId('trait', name.trim());
+    const id = fullId.replace('trait:', '');
+
     const newTrait: Trait = {
-      id: Date.now().toString(),
+      id: id,
       name: name.trim(),
       createdAt: new Date().toISOString()
     };
@@ -910,11 +911,11 @@ export class Database {
     return this.db;
   }
 
-  private static makeId(name: string, date: Date | undefined = undefined): string {
-    if (date !== undefined) {
-      return `${name}-${date?.getTime()}`;
-    }
-    return name;
+  // Standardized ID generation function
+  private static generateDocumentId(type: string, name: string): string {
+    const timestamp = Date.now();
+    const safeName = name.toLowerCase().replace(/\s+/g, '-');
+    return `${type}:${safeName}-${timestamp}`;
   }
 }
 

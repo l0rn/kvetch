@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useRef, type ReactNode } from 'react';
 import { AppConfigManager } from '../config/AppConfig';
 import { Database } from '../storage/database';
 
@@ -29,6 +29,26 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const syncStarted = useRef(false);
+
+  // Start remote sync when user becomes authenticated
+  useEffect(() => {
+    const startSyncForUser = async () => {
+      if (user && !syncStarted.current) {
+        syncStarted.current = true;
+        try {
+          console.log('🔄 User authenticated, starting remote sync...');
+          await Database.startRemoteSync();
+          console.log('✅ Remote sync started for authenticated user');
+        } catch (error) {
+          console.error('❌ Failed to start remote sync:', error);
+          // Don't reset syncStarted flag so we don't retry continuously
+        }
+      }
+    };
+
+    startSyncForUser();
+  }, [user]);
 
   useEffect(() => {
     checkExistingAuth();
@@ -54,9 +74,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
             const isValid = await validateSession(session);
             if (isValid) {
               setUser(session.user);
-              // Start remote sync for restored session
-              // Commented out to prevent duplicate sync initialization - sync will be started on fresh login
-              // await Database.startRemoteSync();
             } else {
               // Clear invalid session
               localStorage.removeItem('kvetch_session');
@@ -152,9 +169,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
       localStorage.setItem('kvetch_session', JSON.stringify(sessionData));
       setUser(user);
       
-      // Start remote sync now that user is authenticated
-      await Database.startRemoteSync();
-      
       return true;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Login failed';
@@ -184,6 +198,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // Stop sync and clear local session regardless of server response
       await Database.stopSync();
       localStorage.removeItem('kvetch_session');
+      syncStarted.current = false; // Reset sync flag for potential re-login
       setUser(null);
       setError(null);
     }

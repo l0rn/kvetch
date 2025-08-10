@@ -3,6 +3,8 @@ import { useAppConfig } from './config/AppConfig';
 import { AuthProvider, useAuth } from './auth/AuthContext';
 import { LoginForm } from './components/auth/LoginForm';
 import { UserProfile } from './components/auth/UserProfile';
+import { Database } from './storage/database';
+import { useState, useEffect } from 'react';
 import App from './App';
 import './App.css';
 
@@ -81,6 +83,23 @@ function AppHeader() {
 // Main app wrapper that handles all the toggling logic
 function AppContent() {
   const { config, loading, error } = useAppConfig();
+  const [dbInitialized, setDbInitialized] = useState(false);
+  const [dbError, setDbError] = useState<Error | null>(null);
+
+  // Initialize database when config is loaded
+  useEffect(() => {
+    if (config && !dbInitialized) {
+      Database.init(config)
+        .then(() => {
+          setDbInitialized(true);
+          console.log('✅ Database initialized successfully');
+        })
+        .catch((err) => {
+          console.error('❌ Database initialization failed:', err);
+          setDbError(err);
+        });
+    }
+  }, [config, dbInitialized]);
 
   if (loading) {
     return <LoadingScreen />;
@@ -92,6 +111,14 @@ function AppContent() {
 
   if (!config) {
     return <ConfigError error={new Error('Configuration not loaded')} />;
+  }
+
+  if (dbError) {
+    return <ConfigError error={new Error(`Database initialization failed: ${dbError.message}`)} />;
+  }
+
+  if (!dbInitialized) {
+    return <LoadingScreen />;
   }
 
   return (

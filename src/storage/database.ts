@@ -1,5 +1,5 @@
 import PouchDB from 'pouchdb';
-import { AppConfigManager } from '../config/AppConfig';
+import type { AppConfig } from '../config/AppConfig';
 
 // PouchDB document base interface
 interface BaseDoc {
@@ -195,6 +195,9 @@ export class Database {
   private static db: PouchDB.Database;
   private static readonly SCHEMA_VERSION = 1;
   
+  // Configuration
+  private static config: AppConfig | null = null;
+  
   // Multi-user support fields
   private static remoteDB: PouchDB.Database | null = null;
   private static syncHandler: PouchDB.Replication.Sync<{}> | null = null;
@@ -202,9 +205,9 @@ export class Database {
   private static currentInstanceId: string | null = null;
   private static syncInitializing = false;
 
-  // Initialize database - handles both single-user and multi-user modes
-  static async init(): Promise<void> {
-    const config = await AppConfigManager.getConfig();
+  // Initialize database with config - handles both single-user and multi-user modes
+  static async init(config: AppConfig): Promise<void> {
+    this.config = config;
     
     if (config.multiUserMode) {
       await this.initMultiUserMode(config);
@@ -230,11 +233,7 @@ export class Database {
     
     // Create instance-specific database if needed
     if (!this.db) {
-      if (config.instanceId && localDbName !== 'kvetch') {
-        this.db = new PouchDB(localDbName);
-      } else {
-        this.db = new PouchDB('kvetch');
-      }
+      this.db = new PouchDB(localDbName);
       await this.runMigrations();
     }
 
@@ -298,7 +297,13 @@ export class Database {
     
     this.syncInitializing = true;
 
-    const config = await AppConfigManager.getConfig();
+    if (!this.config) {
+      console.log('❌ No config available, cannot start sync');
+      this.syncInitializing = false;
+      return;
+    }
+
+    const config = this.config;
     console.log('📋 Config loaded:', {
       multiUserMode: config.multiUserMode,
       syncGatewayUrl: config.remote?.syncGatewayUrl,

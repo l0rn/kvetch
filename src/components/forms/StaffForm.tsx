@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { StaffMember, Trait } from '../../storage/database-pouchdb';
+import type { StaffMember, Trait } from '../../storage/database';
 import type { StaffConstraints } from '../../utils/constraints';
-import { MultiUserDatabase as Database } from '../../storage/database-multiuser';
+import { Database } from '../../storage/database';
 import { TraitAutocomplete } from '../TraitAutocomplete';
 import { StaffAutocomplete } from '../StaffAutocomplete';
 import { toLocalDateInputValue, toLocalDateTimeInputValue } from '../../utils/datetime';
@@ -367,7 +367,6 @@ export function StaffForm({ initialStaff, onSave, onCancel }: StaffFormProps) {
     const cleanedConsecutiveRestDays = formData.consecutiveRestDays.map(({ id: _, ...constraint }: ConsecutiveRestDaysConstraintUI) => constraint);
     
     const staffData: Omit<StaffMember, 'id'> = {
-      type: 'staff',
       name: formData.name,
       traitIds: formData.traitIds,
       constraints: {

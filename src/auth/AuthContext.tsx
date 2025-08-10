@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { AppConfigManager } from '../config/AppConfig';
-import { MultiUserDatabase } from '../storage/database-multiuser';
+import { Database } from '../storage/database';
 
 export interface User {
   username: string;
@@ -55,7 +55,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
             if (isValid) {
               setUser(session.user);
               // Start remote sync for restored session
-              await MultiUserDatabase.startRemoteSync();
+              // Commented out to prevent duplicate sync initialization - sync will be started on fresh login
+              // await Database.startRemoteSync();
             } else {
               // Clear invalid session
               localStorage.removeItem('kvetch_session');
@@ -80,13 +81,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const config = await AppConfigManager.getConfig();
       if (!config.remote?.syncGatewayUrl) return false;
 
-      // Try to access user info to validate session
+      // Try to access session info to validate with CouchDB
       const response = await fetch(`${config.remote.syncGatewayUrl}/_session`, {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Cookie': session.sessionId ? `SyncGatewaySession=${session.sessionId}` : ''
-        },
         credentials: 'include'
       });
 
@@ -112,17 +109,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
         throw new Error('Multi-user mode not enabled');
       }
 
-      // Authenticate with Sync Gateway
+      // Authenticate with CouchDB session API
       const response = await fetch(`${config.remote.syncGatewayUrl}/_session`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded',
         },
         credentials: 'include',
-        body: JSON.stringify({
-          name: username,
-          password: password
-        })
+        body: `name=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
       });
 
       if (!response.ok) {
@@ -143,15 +137,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const user: User = {
         username,
         name: userInfo.name || username,
-        role: determineUserRole(userInfo.channels || []),
-        channels: userInfo.channels || [],
-        instanceIds: extractInstanceIds(userInfo.channels || [])
+        role: determineUserRole(userInfo.roles || []),
+        channels: userInfo.roles || [], // In CouchDB, roles are like channels
+        instanceIds: extractInstanceIds(userInfo.roles || [])
       };
 
       // Store session
       const sessionData = {
         user,
-        sessionId: response.headers.get('Set-Cookie')?.match(/SyncGatewaySession=([^;]+)/)?.[1],
+        sessionId: response.headers.get('Set-Cookie')?.match(/AuthSession=([^;]+)/)?.[1],
         expires: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // 24 hours
       };
 
@@ -159,7 +153,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setUser(user);
       
       // Start remote sync now that user is authenticated
-      await MultiUserDatabase.startRemoteSync();
+      await Database.startRemoteSync();
       
       return true;
     } catch (err) {
@@ -188,7 +182,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       console.error('Logout error:', err);
     } finally {
       // Stop sync and clear local session regardless of server response
-      await MultiUserDatabase.stopSync();
+      await Database.stopSync();
       localStorage.removeItem('kvetch_session');
       setUser(null);
       setError(null);
@@ -199,7 +193,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       // Get user info from CouchDB _users database
       const config = await AppConfigManager.getConfig();
-      const baseUrl = config.remote?.syncGatewayUrl; // This is now CouchDB URL
+      const baseUrl = config.remote?.syncGatewayUrl; // This is CouchDB URL
       
       if (baseUrl) {
         // Try to get user document from _users database
@@ -211,7 +205,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           const userDoc = await response.json();
           return {
             name: userDoc.displayName || userDoc.name || username,
-            channels: userDoc.roles || [], // CouchDB stores roles, which we use as channels
+            roles: userDoc.roles || [], // CouchDB stores roles
             instanceIds: userDoc.instanceIds || []
           };
         }
@@ -227,34 +221,37 @@ export function AuthProvider({ children }: AuthProviderProps) {
         if (sessionData.userCtx && sessionData.userCtx.name === username) {
           return {
             name: username,
-            channels: sessionData.userCtx.roles || [],
+            roles: sessionData.userCtx.roles || [],
             instanceIds: []
           };
         }
       }
       
       // Final fallback
-      return { name: username, channels: [], instanceIds: [] };
+      return { name: username, roles: [], instanceIds: [] };
     } catch (err) {
       console.warn('Could not fetch user info:', err);
-      return { name: username, channels: [], instanceIds: [] };
+      return { name: username, roles: [], instanceIds: [] };
     }
   };
 
-  const determineUserRole = (channels: string[]): User['role'] => {
-    if (channels.includes('*') || channels.some(c => c.includes('admin'))) {
-      return channels.some(c => c.startsWith('instance-')) ? 'instance-admin' : 'admin';
+  const determineUserRole = (roles: string[]): User['role'] => {
+    if (roles.includes('_admin') || roles.includes('admin')) {
+      return 'admin';
     }
-    if (channels.some(c => c.includes('managers'))) {
+    if (roles.some(r => r.includes('admin'))) {
+      return 'instance-admin';
+    }
+    if (roles.some(r => r.includes('manager'))) {
       return 'instance-manager';
     }
     return 'instance-staff';
   };
 
-  const extractInstanceIds = (channels: string[]): string[] => {
+  const extractInstanceIds = (roles: string[]): string[] => {
     const instanceIds = new Set<string>();
-    channels.forEach(channel => {
-      const match = channel.match(/^instance-([^-]+)-/);
+    roles.forEach(role => {
+      const match = role.match(/^instance-([^-]+)-/);
       if (match) {
         instanceIds.add(match[1]);
       }

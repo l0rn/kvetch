@@ -2,7 +2,7 @@ import { solve } from 'yalps';
 import { 
   endOfWeek, isWithinInterval, startOfDay, startOfMonth, startOfYear, endOfMonth, endOfYear, eachDayOfInterval
 } from 'date-fns';
-import type { ShiftOccurrence, StaffMember } from '../storage/database-pouchdb';
+import type { ShiftOccurrence, StaffMember } from "../storage/database";
 import type { TFunction } from 'i18next';
 
 // YALPS model type definitions

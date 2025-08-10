@@ -1,5 +1,5 @@
 import { addDays, addWeeks, addMonths, isAfter, parseISO, getDaysInMonth, getDate, setDate, getDay } from 'date-fns';
-import type { Shift, ShiftOccurrence } from '../storage/database-pouchdb';
+import type { Shift, ShiftOccurrence } from "../storage/database";
 
 // Helper function to add months while preserving the day of month (with fallback to last day)
 export const addMonthsWithDayPreservation = (date: Date, monthsToAdd: number): { date: Date, dayAdjusted: boolean } => {

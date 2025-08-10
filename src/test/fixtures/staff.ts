@@ -1,4 +1,4 @@
-import type { StaffMember, Trait } from '../../storage/database-pouchdb';
+import type { StaffMember, Trait } from "../../storage/database";
 
 /**
  * Staff member fixtures for testing

@@ -1,6 +1,6 @@
 import { describe, it } from 'vitest';
 import { yalpsAutoScheduleWeek } from '../utils/yalpsScheduler';
-import type { ShiftOccurrence } from '../storage/database-pouchdb';
+import type { ShiftOccurrence } from "../storage/database";
 import type { TFunction } from 'i18next';
 
 describe('Debug YALPS', () => {

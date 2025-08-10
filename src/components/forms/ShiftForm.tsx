@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { Shift, Trait } from '../../storage/database-pouchdb';
-import { Database } from '../../storage/database-pouchdb';
+import type { Shift, Trait } from "../../storage/database";
+import { Database } from "../../storage/database";
 import { TraitAutocomplete } from '../TraitAutocomplete';
 import { ConfirmDialog } from '../ConfirmDialog';
 import { toLocalDateTimeInputValue } from '../../utils/datetime';

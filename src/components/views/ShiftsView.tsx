@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { Shift, ShiftOccurrence, Trait } from '../../storage/database-pouchdb';
-import { Database } from '../../storage/database-pouchdb';
+import type { Shift, ShiftOccurrence, Trait } from "../../storage/database";
+import { Database } from "../../storage/database";
 import { ShiftForm } from '../forms/ShiftForm';
 import { Modal } from '../Modal';
 import { ConfirmDialog } from '../ConfirmDialog';

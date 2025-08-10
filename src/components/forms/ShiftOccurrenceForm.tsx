@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import type { ShiftOccurrence, StaffMember, Trait } from '../../storage/database-pouchdb';
-import { Database } from '../../storage/database-pouchdb';
+import type { ShiftOccurrence, StaffMember, Trait } from "../../storage/database";
+import { Database } from "../../storage/database";
 import { StaffAutocomplete } from '../StaffAutocomplete';
 import { StaffingStatusBar } from '../StaffingStatusBar';
 import { calculateStaffingStatus } from '../../utils/staffingStatus';

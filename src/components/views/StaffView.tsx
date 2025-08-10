@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { StaffMember, Trait } from '../../storage/database-pouchdb';
-import { Database } from '../../storage/database-pouchdb';
+import type { StaffMember, Trait } from "../../storage/database";
+import { Database } from "../../storage/database";
 import { StaffForm } from '../forms/StaffForm';
 import { Modal } from '../Modal';
 import { ConfirmDialog } from '../ConfirmDialog';

@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, Link, useLocation, Navigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { MultiUserDatabase as Database } from './storage/database-multiuser';
+import { Database } from './storage/database';
 import { useAppConfig } from './config/AppConfig';
 import { useAuth } from './auth/AuthContext';
-import type { Shift, StaffMember, ShiftOccurrence, Trait } from './storage/database-pouchdb';
+import type { Shift, StaffMember, ShiftOccurrence, Trait } from './storage/database';
 import { generateShiftOccurrences } from './utils/recurrence';
 import { ConstraintEngine, type ConstraintContext } from './utils/constraints';
 import { ShiftsView } from './components/views/ShiftsView';

@@ -6,6 +6,7 @@ import { Database } from '../../storage/database';
 import { TraitAutocomplete } from '../TraitAutocomplete';
 import { StaffAutocomplete } from '../StaffAutocomplete';
 import { toLocalDateInputValue, toLocalDateTimeInputValue } from '../../utils/datetime';
+import '../../styles/forms.css';
 
 // UI-specific constraint interfaces with temporary IDs for form management
 interface RestDaysWithStaffConstraintUI {
@@ -384,24 +385,20 @@ export function StaffForm({ initialStaff, onSave, onCancel }: StaffFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ maxWidth: '600px', margin: '0 auto' }}>
-      <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '15px' }}>
-        <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-          {t('staff.name')}
-        </label>
+    <form onSubmit={handleSubmit} className="form-container">
+      <div className="form-group">
+        <label className="form-label">{t('staff.name')}</label>
         <input
           type="text"
           value={formData.name}
           onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
           required
-          style={{ padding: '8px', border: '1px solid var(--accent-gray)', borderRadius: '4px' }}
+          className="form-input"
         />
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '15px' }}>
-        <label style={{ display: 'block', marginBottom: '10px', fontWeight: 'bold' }}>
-          {t('staff.traits')}
-        </label>
+      <div className="form-group">
+        <label className="form-label">{t('staff.traits')}</label>
         <TraitAutocomplete
           traits={traits}
           selectedTraits={formData.traitIds.map(traitId => ({ traitId }))}
@@ -409,11 +406,11 @@ export function StaffForm({ initialStaff, onSave, onCancel }: StaffFormProps) {
           placeholder={t('staff.selectTraits')}
         />
         {formData.traitIds.length > 0 && (
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', marginTop: '10px' }}>
+          <div className="tags-container">
             {formData.traitIds.map((traitId, index) => (
-              <span key={index} style={{ display: 'flex', alignItems: 'center', padding: '6px 10px', backgroundColor: 'var(--background-color)', borderRadius: '4px', fontSize: '14px', border: '1px solid var(--accent-gray)' }}>
+              <span key={index} className="tag-item">
                 {getTraitName(traitId)}
-                <button type="button" onClick={() => removeTrait(traitId)} className="btn btn-danger btn-xs" style={{ marginLeft: '6px' }}>
+                <button type="button" onClick={() => removeTrait(traitId)} className="btn btn-danger btn-xs">
                   ×
                 </button>
               </span>
@@ -422,53 +419,48 @@ export function StaffForm({ initialStaff, onSave, onCancel }: StaffFormProps) {
         )}
       </div>
 
-      <div style={{ marginBottom: '15px' }}>
-        <h4 style={{ marginBottom: '10px', color: 'var(--secondary-color)' }}>{t('staff.constraints')}</h4>
-        <div style={{ display: 'flex', flexDirection: 'row', gap: '15px', flexWrap: 'wrap' }}>
-          <label style={{display: 'flex', alignItems: 'center', fontWeight: 'bold' }}>{t('staff.maxShifts')}</label>
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', fontSize: '14px' }}>
-              {t('staff.maxShiftsPerWeek')}
-            </label>
+      <div className="form-group">
+        <h4 className="form-section-title">{t('staff.constraints')}</h4>
+        <div className="constraint-row">
+          <label className="form-label">{t('staff.maxShifts')}</label>
+          <div className="form-col">
+            <label className="sub-label">{t('staff.maxShiftsPerWeek')}</label>
             <input
               type="number"
               min="0"
               value={formData.maxShiftsPerWeek}
               onChange={(e) => setFormData(prev => ({ ...prev, maxShiftsPerWeek: e.target.value }))}
-              style={{ width: '100px', padding: '8px', border: '1px solid var(--accent-gray)', borderRadius: '4px' }}
+              className="form-input"
+              style={{ width: '100px' }}
             />
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', fontSize: '14px' }}>
-              {t('staff.maxShiftsPerMonth')}
-            </label>
+          <div className="form-col">
+            <label className="sub-label">{t('staff.maxShiftsPerMonth')}</label>
             <input
               type="number"
               min="0"
               value={formData.maxShiftsPerMonth}
               onChange={(e) => setFormData(prev => ({ ...prev, maxShiftsPerMonth: e.target.value }))}
-              style={{ width: '100px', padding: '8px', border: '1px solid var(--accent-gray)', borderRadius: '4px' }}
+              className="form-input"
+              style={{ width: '100px' }}
             />
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', fontSize: '14px' }}>
-              {t('staff.maxShiftsPerYear')}
-            </label>
+          <div className="form-col">
+            <label className="sub-label">{t('staff.maxShiftsPerYear')}</label>
             <input
               type="number"
               min="0"
               value={formData.maxShiftsPerYear}
               onChange={(e) => setFormData(prev => ({ ...prev, maxShiftsPerYear: e.target.value }))}
-              style={{ width: '100px', padding: '8px', border: '1px solid var(--accent-gray)', borderRadius: '4px' }}
+              className="form-input"
+              style={{ width: '100px' }}
             />
           </div>
         </div>
       </div>
 
-      <div style={{ marginBottom: '15px' }}>
-        <label style={{ display: 'block', marginBottom: '10px', fontWeight: 'bold' }}>
-          {t('staff.incompatibleWith')}
-        </label>
+      <div className="form-group">
+        <label className="form-label">{t('staff.incompatibleWith')}</label>
         <StaffAutocomplete
           staff={allStaff.filter(s => s.id !== initialStaff?.id)} // Exclude current staff member
           traits={traits}
@@ -477,19 +469,11 @@ export function StaffForm({ initialStaff, onSave, onCancel }: StaffFormProps) {
           placeholder={t('staff.selectIncompatibleStaff')}
         />
         {formData.incompatibleWith.length > 0 && (
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', marginTop: '10px' }}>
+          <div className="tags-container">
             {formData.incompatibleWith.map((staffId) => (
-              <span key={staffId} style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                padding: '6px 10px', 
-                backgroundColor: 'var(--background-color)', 
-                borderRadius: '4px', 
-                fontSize: '14px', 
-                border: '1px solid var(--accent-gray)' 
-              }}>
+              <span key={staffId} className="tag-item">
                 {getStaffName(staffId)}
-                <button type="button" onClick={() => removeIncompatibleStaff(staffId)} className="btn btn-danger btn-xs" style={{ marginLeft: '6px' }}>
+                <button type="button" onClick={() => removeIncompatibleStaff(staffId)} className="btn btn-danger btn-xs">
                   ×
                 </button>
               </span>
@@ -499,34 +483,26 @@ export function StaffForm({ initialStaff, onSave, onCancel }: StaffFormProps) {
       </div>
 
       {/* Rest Days with Specific Staff Constraints */}
-      <div style={{ marginBottom: '15px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-          <h4 style={{ margin: 0, color: 'var(--secondary-color)' }}>{t('staff.restDaysWithStaff', 'Rest Days with Staff')}</h4>
+      <div className="form-group">
+        <div className="constraint-header">
+          <h4>{t('staff.restDaysWithStaff', 'Rest Days with Staff')}</h4>
           <button type="button" onClick={addRestDaysWithStaff} className="btn btn-secondary btn-small">
             +{t('common.add', 'Add')}
           </button>
         </div>
 
         {formData.restDaysWithStaff.map((constraint: RestDaysWithStaffConstraintUI) => (
-          <div key={constraint.id} style={{ 
-            backgroundColor: editingRestDaysWithStaff[constraint.id] ? 'var(--background-color)' : 'var(--white)', 
-            border: '1px solid var(--accent-gray)',
-            borderRadius: '8px', 
-            padding: '12px', 
-            marginBottom: '10px' 
-          }}>
+          <div key={constraint.id} className={`constraint-block ${editingRestDaysWithStaff[constraint.id] ? 'editing' : ''}`}>
             {editingRestDaysWithStaff[constraint.id] ? (
               // Edit mode
               <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '15px', flexWrap: 'wrap', marginBottom: '10px' }}>
-                  <div style={{ flex: '1', minWidth: '200px' }}>
-                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', fontSize: '14px' }}>
-                      {t('staff.staffMember', 'Staff Member')}
-                    </label>
+                <div className="form-row">
+                  <div className="form-col" style={{ minWidth: '200px' }}>
+                    <label className="sub-label">{t('staff.staffMember', 'Staff Member')}</label>
                     <select
                       value={constraint.staffId}
                       onChange={(e) => updateRestDaysWithStaff(constraint.id, { staffId: e.target.value })}
-                      style={{ width: '100%', padding: '8px', border: '1px solid var(--accent-gray)', borderRadius: '4px' }}
+                      className="form-select"
                     >
                       <option value="">{t('staff.selectStaff', 'Select Staff')}</option>
                       {allStaff.filter(s => s.id !== initialStaff?.id).map((staff) => (
@@ -534,26 +510,22 @@ export function StaffForm({ initialStaff, onSave, onCancel }: StaffFormProps) {
                       ))}
                     </select>
                   </div>
-                  <div style={{ minWidth: '120px' }}>
-                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', fontSize: '14px' }}>
-                      {t('staff.minRestDays', 'Min Rest Days')}
-                    </label>
+                  <div className="form-col" style={{ minWidth: '120px' }}>
+                    <label className="sub-label">{t('staff.minRestDays', 'Min Rest Days')}</label>
                     <input
                       type="number"
                       min="1"
                       value={constraint.minRestDays}
                       onChange={(e) => updateRestDaysWithStaff(constraint.id, { minRestDays: parseInt(e.target.value) })}
-                      style={{ width: '100%', padding: '8px', border: '1px solid var(--accent-gray)', borderRadius: '4px' }}
+                      className="form-input"
                     />
                   </div>
-                  <div style={{ minWidth: '100px' }}>
-                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', fontSize: '14px' }}>
-                      {t('staff.period', 'Period')}
-                    </label>
+                  <div className="form-col" style={{ minWidth: '100px' }}>
+                    <label className="sub-label">{t('staff.period', 'Period')}</label>
                     <select
                       value={constraint.period}
                       onChange={(e) => updateRestDaysWithStaff(constraint.id, { period: e.target.value as 'week' | 'month' })}
-                      style={{ width: '100%', padding: '8px', border: '1px solid var(--accent-gray)', borderRadius: '4px' }}
+                      className="form-select"
                     >
                       <option value="week">{t('staff.perWeek', 'Per Week')}</option>
                       <option value="month">{t('staff.perMonth', 'Per Month')}</option>
@@ -561,23 +533,13 @@ export function StaffForm({ initialStaff, onSave, onCancel }: StaffFormProps) {
                   </div>
                 </div>
                 
-                {/* Error message */}
                 {restDaysWithStaffErrors[constraint.id] && (
-                  <div style={{ 
-                    color: 'var(--danger-color, #dc3545)', 
-                    fontSize: '14px', 
-                    marginTop: '8px', 
-                    marginBottom: '8px',
-                    padding: '8px',
-                    backgroundColor: '#f8d7da',
-                    border: '1px solid #f5c6cb',
-                    borderRadius: '4px'
-                  }}>
+                  <div className="validation-error" style={{ marginTop: '8px' }}>
                     {restDaysWithStaffErrors[constraint.id]}
                   </div>
                 )}
                 
-                <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                <div className="form-actions" style={{ marginTop: '10px' }}>
                   <button type="button" onClick={() => cancelRestDaysWithStaffEdit(constraint.id)} className="btn btn-secondary btn-small">
                     {t('staff.cancel', 'Cancel')}
                   </button>
@@ -588,8 +550,8 @@ export function StaffForm({ initialStaff, onSave, onCancel }: StaffFormProps) {
               </div>
             ) : (
               // Display mode
-              <div style={{ display: 'flex', gap: '8px', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ color: 'var(--secondary-color)' }}>
+              <div className="constraint-display">
+                <span>
                   {getStaffName(constraint.staffId) || t('staff.selectStaff', 'Select Staff')}: {constraint.minRestDays} {t('staff.minRestDays', 'min rest days')} {constraint.period === 'week' ? t('staff.perWeek', 'per week') : t('staff.perMonth', 'per month')}
                 </span>
                 <div style={{ display: 'flex', gap: '8px' }}>
@@ -607,53 +569,43 @@ export function StaffForm({ initialStaff, onSave, onCancel }: StaffFormProps) {
       </div>
 
       {/* Consecutive Rest Days Constraints */}
-      <div style={{ marginBottom: '15px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-          <h4 style={{ margin: 0, color: 'var(--secondary-color)' }}>{t('staff.consecutiveRestDays', 'Consecutive Rest Days')}</h4>
+      <div className="form-group">
+        <div className="constraint-header">
+          <h4>{t('staff.consecutiveRestDays', 'Consecutive Rest Days')}</h4>
           <button type="button" onClick={addConsecutiveRestDays} className="btn btn-secondary btn-small">
             +{t('common.add', 'Add')}
           </button>
         </div>
 
         {formData.consecutiveRestDays.map((constraint: ConsecutiveRestDaysConstraintUI) => (
-          <div key={constraint.id} style={{ 
-            backgroundColor: editingConsecutiveRestDays[constraint.id] ? 'var(--background-color)' : 'var(--white)', 
-            border: '1px solid var(--accent-gray)',
-            borderRadius: '8px', 
-            padding: '12px', 
-            marginBottom: '10px' 
-          }}>
+          <div key={constraint.id} className={`constraint-block ${editingConsecutiveRestDays[constraint.id] ? 'editing' : ''}`}>
             {editingConsecutiveRestDays[constraint.id] ? (
               // Edit mode
               <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '15px', flexWrap: 'wrap', marginBottom: '10px' }}>
-                  <div style={{ minWidth: '150px' }}>
-                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', fontSize: '14px' }}>
-                      {t('staff.minConsecutiveDays', 'Min Consecutive Days')}
-                    </label>
+                <div className="form-row">
+                  <div className="form-col" style={{ minWidth: '150px' }}>
+                    <label className="sub-label">{t('staff.minConsecutiveDays', 'Min Consecutive Days')}</label>
                     <input
                       type="number"
                       min="1"
                       value={constraint.minConsecutiveDays}
                       onChange={(e) => updateConsecutiveRestDays(constraint.id, { minConsecutiveDays: parseInt(e.target.value) })}
-                      style={{ width: '100%', padding: '8px', border: '1px solid var(--accent-gray)', borderRadius: '4px' }}
+                      className="form-input"
                     />
                   </div>
-                  <div style={{ minWidth: '100px' }}>
-                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', fontSize: '14px' }}>
-                      {t('staff.period', 'Period')}
-                    </label>
+                  <div className="form-col" style={{ minWidth: '100px' }}>
+                    <label className="sub-label">{t('staff.period', 'Period')}</label>
                     <select
                       value={constraint.period}
                       onChange={(e) => updateConsecutiveRestDays(constraint.id, { period: e.target.value as 'week' | 'month' })}
-                      style={{ width: '100%', padding: '8px', border: '1px solid var(--accent-gray)', borderRadius: '4px' }}
+                      className="form-select"
                     >
                       <option value="week">{t('staff.perWeek', 'Per Week')}</option>
                       <option value="month">{t('staff.perMonth', 'Per Month')}</option>
                     </select>
                   </div>
                 </div>
-                <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                <div className="form-actions" style={{ marginTop: '10px' }}>
                   <button type="button" onClick={() => cancelConsecutiveRestDaysEdit(constraint.id)} className="btn btn-secondary btn-small">
                     {t('staff.cancel', 'Cancel')}
                   </button>
@@ -664,8 +616,8 @@ export function StaffForm({ initialStaff, onSave, onCancel }: StaffFormProps) {
               </div>
             ) : (
               // Display mode
-              <div style={{ display: 'flex', gap: '8px', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ color: 'var(--secondary-color)' }}>
+              <div className="constraint-display">
+                <span>
                   {constraint.minConsecutiveDays} {t('staff.consecutiveDaysLabel', 'consecutive rest days')} {constraint.period === 'week' ? t('staff.perWeek', 'per week') : t('staff.perMonth', 'per month')}
                 </span>
                 <div style={{ display: 'flex', gap: '8px' }}>
@@ -682,29 +634,22 @@ export function StaffForm({ initialStaff, onSave, onCancel }: StaffFormProps) {
         ))}
       </div>
 
-      <div style={{ marginBottom: '15px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-          <h4 style={{ margin: 0, color: 'var(--secondary-color)' }}>{t('staff.blockedTimes')}</h4>
+      <div className="form-group">
+        <div className="constraint-header">
+          <h4>{t('staff.blockedTimes')}</h4>
           <button type="button" onClick={addNewBlockedTime} className="btn btn-secondary btn-small">
             +{t('common.add')}
           </button>
         </div>
 
         {formData.blockedTimes.map((blockedTime) => (
-          <div key={blockedTime.id} style={{ 
-            backgroundColor: editingBlockedTimes[blockedTime.id] ? 'var(--background-color)' : 'var(--white)', 
-            border: `1px solid var(--accent-gray)`,
-            borderRadius: '8px', 
-            padding: '12px', 
-            marginBottom: '10px' 
-          }}>
+          <div key={blockedTime.id} className={`constraint-block ${editingBlockedTimes[blockedTime.id] ? 'editing' : ''}`}>
             {editingBlockedTimes[blockedTime.id] ? (
               // Edit mode
               <div>
-                
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'row', gap: '10px', marginBottom: '10px' }}>
-                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                <div className="form-row">
+                  <div className="form-col">
+                    <label className="form-label">
                       {blockedTime.isFullDay ? t('staff.startDate') : t('shifts.startDateTime')}
                     </label>
                     <input
@@ -713,11 +658,11 @@ export function StaffForm({ initialStaff, onSave, onCancel }: StaffFormProps) {
                       onChange={(e) => updateBlockedTime(blockedTime.id, { 
                         startDateTime: blockedTime.isFullDay ? new Date(`${e.target.value}00:00`) : new Date(e.target.value) 
                       })}
-                      style={{ padding: '6px', border: '1px solid var(--accent-gray)', borderRadius: '4px' }}
+                      className="form-input"
                     />
                   </div>
-                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                  <div className="form-col">
+                    <label className="form-label">
                       {blockedTime.isFullDay ? t('staff.endDate') : t('shifts.endDateTime')}
                     </label>
                     <input
@@ -727,13 +672,13 @@ export function StaffForm({ initialStaff, onSave, onCancel }: StaffFormProps) {
                         endDateTime: blockedTime.isFullDay ? new Date(`${e.target.value}T23:59`) : new Date(e.target.value) 
                       })}
                       min={blockedTime.isFullDay ? toLocalDateInputValue(blockedTime.startDateTime) : toLocalDateTimeInputValue(blockedTime.startDateTime)}
-                      style={{ padding: '6px', border: '1px solid var(--accent-gray)', borderRadius: '4px' }}
+                      className="form-input"
                     />
                   </div>
                 </div>
                 
-                <div style={{ marginBottom: '10px' }}>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <div className="form-group" style={{marginTop: '10px'}}>
+                  <label className="form-checkbox-label">
                     <input
                       type="checkbox"
                       checked={blockedTime.isFullDay}
@@ -743,8 +688,8 @@ export function StaffForm({ initialStaff, onSave, onCancel }: StaffFormProps) {
                   </label>
                 </div>
 
-                <div style={{ marginBottom: '10px' }}>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <div className="form-group">
+                  <label className="form-checkbox-label">
                     <input
                       type="checkbox"
                       checked={!!blockedTime.recurrence}
@@ -757,28 +702,24 @@ export function StaffForm({ initialStaff, onSave, onCancel }: StaffFormProps) {
                 </div>
 
                 {blockedTime.recurrence && (
-                <>
-                  <div style={{ flex: 1, display: 'flex', flexDirection: 'row', gap: '10px', marginBottom: '10px' }}>
-                      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                        <label style={{ display: 'block', marginBottom: '3px', fontSize: '12px', fontWeight: 'bold' }}>
-                          {t('shifts.recurring')}
-                        </label>
+                <div className="recurrence-section" style={{padding: '10px'}}>
+                  <div className="form-row">
+                      <div className="form-col">
+                        <label className="sub-label">{t('shifts.recurring')}</label>
                         <select
                           value={blockedTime.recurrence.type}
                           onChange={(e) => updateBlockedTime(blockedTime.id, { 
                             recurrence: { ...blockedTime.recurrence!, type: e.target.value as 'daily' | 'weekly' | 'monthly' }
                           })}
-                          style={{ width: '100%', padding: '6px', border: '1px solid var(--accent-gray)', borderRadius: '4px' }}
+                          className="form-select"
                         >
                           <option value="daily">{t('shifts.daily')}</option>
                           <option value="weekly">{t('shifts.weekly')}</option>
                           <option value="monthly">{t('shifts.monthly')}</option>
                         </select>
                       </div>
-                      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                        <label style={{ display: 'block', marginBottom: '3px', fontSize: '12px', fontWeight: 'bold' }}>
-                          {t('staff.interval')}
-                        </label>
+                      <div className="form-col">
+                        <label className="sub-label">{t('staff.interval')}</label>
                         <input
                           type="number"
                           min="1"
@@ -787,11 +728,11 @@ export function StaffForm({ initialStaff, onSave, onCancel }: StaffFormProps) {
                           onChange={(e) => updateBlockedTime(blockedTime.id, { 
                             recurrence: { ...blockedTime.recurrence!, interval: parseInt(e.target.value) || 1 }
                           })}
-                          style={{ padding: '6px', border: '1px solid var(--accent-gray)', borderRadius: '4px' }}
+                          className="form-input"
                         />
                       </div>
-                      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                        <label style={{ display: 'block', marginBottom: '3px', fontSize: '12px', color: 'var(--secondary-color)', opacity: 0.7 }}>
+                      <div className="form-col">
+                        <label className="sub-label" style={{opacity: 0.7}}>
                           {t('shifts.endDate')} ({t('common.optional')})
                         </label>
                         <input
@@ -800,51 +741,40 @@ export function StaffForm({ initialStaff, onSave, onCancel }: StaffFormProps) {
                           onChange={(e) => updateBlockedTime(blockedTime.id, { 
                             recurrence: { ...blockedTime.recurrence!, endDate: new Date(e.target.value) }
                           })}
-                          style={{ padding: '6px', border: '1px solid var(--accent-gray)', borderRadius: '4px' }}
+                          className="form-input"
                         />
                       </div>
                     </div>
                     
                     {blockedTime.recurrence.type === 'weekly' && (
                       <div style={{ marginTop: '10px' }}>
-                        <label style={{ display: 'block', marginBottom: '3px', fontSize: '12px', fontWeight: 'bold' }}>
-                          {t('shifts.selectWeekdays')}
-                        </label>
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                        <label className="sub-label">{t('shifts.selectWeekdays')}</label>
+                        <div className="weekday-selector" style={{gap: '4px'}}>
                           {weekdayNames.map((dayName, index) => (
-                            <label key={index} style={{ 
-                              display: 'flex', 
-                              alignItems: 'center', 
-                              gap: '2px',
-                              padding: '4px 8px',
-                              border: `1px solid var(--accent-gray)`,
-                              borderRadius: '4px',
-                              backgroundColor: (blockedTime.recurrence?.weekdays || []).includes(index) ? 'var(--primary-color)' : 'var(--white)',
-                              color: (blockedTime.recurrence?.weekdays || []).includes(index) ? 'white' : 'var(--text-color)',
-                              cursor: 'pointer',
-                              fontSize: '12px'
-                            }}>
+                            <label key={index} className={`weekday-label ${ (blockedTime.recurrence?.weekdays || []).includes(index) ? 'selected' : ''}`}
+                              style={{padding: '4px 8px', fontSize: '12px'}}
+                            >
                               <input
                                 type="checkbox"
                                 checked={(blockedTime.recurrence?.weekdays || []).includes(index)}
                                 onChange={() => toggleBlockedTimeWeekday(blockedTime.id, index)}
-                                style={{ display: 'none' }}
+                                className="weekday-checkbox"
                               />
                               {dayName}
                             </label>
                           ))}
                         </div>
                         {(!blockedTime.recurrence.weekdays || blockedTime.recurrence.weekdays.length === 0) && (
-                          <p style={{ fontSize: '10px', color: 'var(--secondary-color)', marginTop: '3px' }}>
+                          <p className="weekday-hint" style={{fontSize: '10px', marginTop: '3px'}}>
                             {t('shifts.selectWeekdaysHint')}
                           </p>
                         )}
                       </div>
                     )}
-                </>
+                </div>
                 )}
 
-                <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                <div className="form-actions" style={{marginTop: '10px'}}>
                   <button type="button" onClick={() => cancelBlockedTimeEdit(blockedTime.id)} className="btn btn-secondary btn-small">
                     {t('staff.cancel')}
                   </button>
@@ -855,8 +785,8 @@ export function StaffForm({ initialStaff, onSave, onCancel }: StaffFormProps) {
               </div>
             ) : (
               // Display mode
-              <div style={{ display: 'flex', gap: '8px', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ color: 'var(--secondary-color)' }}>
+              <div className="constraint-display">
+                <span>
                   {(() => {
                     const startDate = new Date(blockedTime.startDateTime);
                     const endDate = new Date(blockedTime.endDateTime);
@@ -893,7 +823,7 @@ export function StaffForm({ initialStaff, onSave, onCancel }: StaffFormProps) {
         ))}
       </div>
 
-      <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+      <div className="form-actions">
         <button type="button" onClick={onCancel} className="btn btn-secondary">
           {t('staff.cancel')}
         </button>

@@ -5,6 +5,7 @@ import { Database } from "../../storage/database";
 import { TraitAutocomplete } from '../TraitAutocomplete';
 import { ConfirmDialog } from '../ConfirmDialog';
 import { toLocalDateTimeInputValue } from '../../utils/datetime';
+import '../../styles/forms.css';
 
 interface ShiftFormProps {
   initialShift?: Shift | null;
@@ -199,10 +200,10 @@ export function ShiftForm({ initialShift, onSave, onCancel }: ShiftFormProps) {
 
   return (
     <>
-      <form onSubmit={handleSubmit} style={{ maxWidth: '600px', margin: '0 auto' }}>
+      <form onSubmit={handleSubmit} className="form-container">
       
-      <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '15px' }}>
-        <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+      <div className="form-group">
+        <label className="form-label">
           {t('shifts.shiftName')} *
         </label>
         <input
@@ -210,13 +211,13 @@ export function ShiftForm({ initialShift, onSave, onCancel }: ShiftFormProps) {
           value={formData.name}
           required
           onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-          style={{ padding: '8px', border: '1px solid var(--accent-gray)', borderRadius: '4px' }}
+          className="form-input"
         />
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'row', gap: '15px', marginBottom: '15px' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-          <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+      <div className="form-row">
+        <div className="form-col">
+          <label className="form-label">
             {t('shifts.startDateTime')} *
           </label>
           <input
@@ -224,11 +225,11 @@ export function ShiftForm({ initialShift, onSave, onCancel }: ShiftFormProps) {
             value={formData.startDateTime}
             onChange={(e) => setFormData(prev => ({ ...prev, startDateTime: e.target.value }))}
             required
-            style={{ padding: '8px', border: '1px solid var(--accent-gray)', borderRadius: '4px' }}
+            className="form-input"
           />
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-          <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+        <div className="form-col">
+          <label className="form-label">
             {t('shifts.endDateTime')} *
           </label>
           <input
@@ -237,13 +238,13 @@ export function ShiftForm({ initialShift, onSave, onCancel }: ShiftFormProps) {
             onChange={(e) => setFormData(prev => ({ ...prev, endDateTime: e.target.value }))}
             min={formData.startDateTime}
             required
-            style={{ padding: '8px', border: '1px solid var(--accent-gray)', borderRadius: '4px' }}
+            className="form-input"
           />
         </div>
       </div>
 
-      <div style={{ marginBottom: '15px' }}>
-        <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+      <div className="form-group">
+        <label className="form-label">
           {t('shifts.staffCount')} *
         </label>
         <input
@@ -252,12 +253,13 @@ export function ShiftForm({ initialShift, onSave, onCancel }: ShiftFormProps) {
           value={formData.staffCount}
           onChange={(e) => setFormData(prev => ({ ...prev, staffCount: parseInt(e.target.value) }))}
           required
-          style={{ width: '150px', padding: '8px', border: '1px solid var(--accent-gray)', borderRadius: '4px' }}
+          className="form-input"
+          style={{ width: '150px' }}
         />
       </div>
 
-      <div style={{ marginBottom: '15px' }}>
-        <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+      <div className="form-group">
+        <label className="form-label">
           {t('shifts.requiredTraits')}
         </label>
         <TraitAutocomplete
@@ -268,9 +270,9 @@ export function ShiftForm({ initialShift, onSave, onCancel }: ShiftFormProps) {
           allowMinCount={true}
         />
         {formData.requiredTraits.length > 0 && (
-          <div style={{ marginTop: '10px' }}>
+          <div className="required-trait-list">
             {formData.requiredTraits.map((requiredTrait, index) => (
-              <div key={index} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px', backgroundColor: 'var(--background-color)', marginBottom: '5px', borderRadius: '4px', border: '1px solid var(--accent-gray)' }}>
+              <div key={index} className="required-trait-item">
                 <span>{getTraitName(requiredTrait.traitId)} ({t('shifts.minimum')} {requiredTrait.minCount})</span>
                 <button type="button" onClick={() => removeRequiredTrait(index)} className="btn btn-danger btn-xs">
                   {t('shifts.remove')}
@@ -281,29 +283,29 @@ export function ShiftForm({ initialShift, onSave, onCancel }: ShiftFormProps) {
         )}
       </div>
 
-      <div style={{ marginBottom: '15px' }}>
-        <label style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+      <div className="form-group">
+        <label className="form-checkbox-label">
           <input
             type="checkbox"
             checked={formData.hasRecurrence}
             onChange={(e) => setFormData(prev => ({ ...prev, hasRecurrence: e.target.checked }))}
           />
-          <span style={{ fontWeight: 'bold' }}>{t('shifts.recurring')}</span>
+          <span>{t('shifts.recurring')}</span>
         </label>
       </div>
 
       {formData.hasRecurrence && (
-        <div style={{ backgroundColor: 'var(--background-color)', padding: '15px', borderRadius: '4px', marginBottom: '15px' }}>
+        <div className="recurrence-section">
 
-          <div style={{ display: 'flex', flexDirection: 'row', gap: '15px', marginBottom: '15px' }}>
-            <div>
-              <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+          <div className="form-row">
+            <div className="form-col">
+              <label className="form-label">
                 {t('shifts.repeat')}
               </label>
               <select
                 value={formData.recurrenceType}
                 onChange={(e) => setFormData(prev => ({ ...prev, recurrenceType: e.target.value as 'daily' | 'weekly' | 'monthly' }))}
-                style={{ padding: '8px', border: '1px solid var(--accent-gray)', borderRadius: '4px' }}
+                className="form-select"
               >
                 <option value="daily">{t('shifts.daily')}</option>
                 <option value="weekly">{t('shifts.weekly')}</option>
@@ -311,8 +313,8 @@ export function ShiftForm({ initialShift, onSave, onCancel }: ShiftFormProps) {
               </select>
             </div>
             
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-              <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+            <div className="form-col">
+              <label className="form-label">
                 {t('shifts.every')} X {formData.recurrenceType === 'daily' ? t('shifts.days') : formData.recurrenceType === 'weekly' ? t('shifts.weeks') : t('shifts.months')}
               </label>
               <input
@@ -321,54 +323,43 @@ export function ShiftForm({ initialShift, onSave, onCancel }: ShiftFormProps) {
                 placeholder={`${t('shifts.every')} X ${formData.recurrenceType === 'daily' ? t('shifts.days').toLowerCase() : formData.recurrenceType === 'weekly' ? t('shifts.weeks').toLowerCase() : t('shifts.months').toLowerCase()}`}
                 value={formData.recurrenceInterval}
                 onChange={(e) => setFormData(prev => ({ ...prev, recurrenceInterval: parseInt(e.target.value) }))}
-                style={{ padding: '8px', border: '1px solid var(--accent-gray)', borderRadius: '4px' }}
+                className="form-input"
               />
             </div>
             
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-              <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+            <div className="form-col">
+              <label className="form-label">
                 {t('shifts.endDate')} ({t('common.optional')})
               </label>
               <input
                 type="date"
                 value={formData.recurrenceEndDate}
                 onChange={(e) => setFormData(prev => ({ ...prev, recurrenceEndDate: e.target.value }))}
-                style={{ padding: '8px', border: '1px solid var(--accent-gray)', borderRadius: '4px' }}
+                className="form-input"
               />
             </div>
           </div>
           
           {formData.recurrenceType === 'weekly' && (
             <div style={{ marginTop: '15px' }}>
-              <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+              <label className="form-label">
                 {t('shifts.selectWeekdays')}
               </label>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+              <div className="weekday-selector">
                 {weekdayNames.map((dayName, index) => (
-                  <label key={index} style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    gap: '4px',
-                    padding: '6px 10px',
-                    border: `1px solid var(--accent-gray)`,
-                    borderRadius: '4px',
-                    backgroundColor: formData.recurrenceWeekdays.includes(index) ? 'var(--primary-color)' : 'var(--white)',
-                    color: formData.recurrenceWeekdays.includes(index) ? 'white' : 'var(--text-color)',
-                    cursor: 'pointer',
-                    fontSize: '14px'
-                  }}>
+                  <label key={index} className={`weekday-label ${formData.recurrenceWeekdays.includes(index) ? 'selected' : ''}`}>
                     <input
                       type="checkbox"
                       checked={formData.recurrenceWeekdays.includes(index)}
                       onChange={() => toggleWeekday(index)}
-                      style={{ display: 'none' }}
+                      className="weekday-checkbox"
                     />
                     {dayName}
                   </label>
                 ))}
               </div>
               {formData.recurrenceWeekdays.length === 0 && (
-                <p style={{ fontSize: '12px', color: 'var(--secondary-color)', marginTop: '5px' }}>
+                <p className="weekday-hint">
                   {t('shifts.selectWeekdaysHint')}
                 </p>
               )}
@@ -379,20 +370,12 @@ export function ShiftForm({ initialShift, onSave, onCancel }: ShiftFormProps) {
 
       {/* Validation error */}
       {validationError && (
-        <div style={{ 
-          color: 'var(--danger-color, #dc3545)', 
-          fontSize: '14px', 
-          marginBottom: '15px',
-          padding: '8px',
-          backgroundColor: '#f8d7da',
-          border: '1px solid #f5c6cb',
-          borderRadius: '4px'
-        }}>
+        <div className="validation-error">
           {validationError}
         </div>
       )}
 
-      <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+      <div className="form-actions">
         <button type="button" onClick={onCancel} className="btn btn-secondary">
           {t('shifts.cancel')}
         </button>

@@ -1,0 +1,109 @@
+/* Styles for WeeklyPlanningView */
+
+.staff-panel-member {
+  padding: 12px;
+  margin-bottom: 8px;
+  background-color: var(--white);
+  border-radius: 6px;
+  cursor: grab;
+  transition: all 0.2s;
+  font-size: 14px;
+  color: var(--text-color);
+  border-width: 3px;
+  border-style: solid;
+}
+
+.staff-panel-member:active {
+  cursor: grabbing;
+}
+
+.staff-panel-member-name {
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+.staff-panel-member-info {
+  font-size: 11px;
+  color: var(--text-color-light);
+  margin-bottom: 2px;
+}
+
+.staff-panel-member-traits {
+  font-size: 10px;
+  color: var(--text-color-light);
+  border-top: 1px solid var(--accent-gray);
+  padding-top: 4px;
+}
+
+/* Staff bubbles/badges inside the planning grid */
+.staff-badge {
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--white);
+  border: 1px solid var(--accent-gray);
+  border-radius: 12px;
+  padding: 3px 8px;
+  font-size: 12px;
+  font-weight: bold;
+  color: var(--text-color);
+  max-width: 120px;
+}
+
+.staff-badge-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-right: 4px;
+}
+
+.staff-badge-remove-btn {
+  background: none;
+  border: none;
+  color: var(--text-color-light);
+  cursor: pointer;
+  font-size: 10px;
+  padding: 0;
+  margin-left: 2px;
+  line-height: 1;
+}
+
+/* Staffing status background colors */
+.shift-cell.status-properly-staffed {
+  background-color: var(--success-background);
+}
+
+.shift-cell.status-under-staffed {
+  background-color: var(--warning-background);
+}
+
+.shift-cell.status-not-staffed,
+.shift-cell.status-constraint-violation {
+  background-color: var(--danger-background);
+}
+
+.shift-cell-empty {
+  background-color: var(--background-color);
+}
+
+/* Shift cell text colors */
+.day-header, .shift-name-cell {
+  color: var(--text-color);
+}
+.day-header div:last-child, .shift-name-cell div:last-child {
+  color: var(--text-color-light);
+}
+.shift-cell .unassigned-text {
+  color: var(--text-color-light);
+  font-size: 12px;
+  font-style: italic;
+}
+.shift-cell .no-occurrence-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 60px;
+  color: var(--text-color-light);
+  font-size: 24px;
+  font-weight: bold;
+}

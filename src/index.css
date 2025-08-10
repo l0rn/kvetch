@@ -4,6 +4,7 @@
   font-weight: 400;
 
   color-scheme: light dark;
+  color: var(--text-color);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -51,13 +52,22 @@ button:focus-visible {
 
 @media (prefers-color-scheme: light) {
   :root {
-    color: #213547;
     background-color: #ffffff;
     --primary-color: #FF6B35;
     --secondary-color: #4A4A4A;
     --background-color: #F4F4F4;
     --white: #FFFFFF;
     --accent-gray: #E0E0E0;
+    --text-color: #213547;
+    --text-color-light: #667085;
+    --text-color-inverted: #FFFFFF;
+    --input-background: #FFFFFF;
+    --success-color: #10B981;
+    --warning-color: #F59E0B;
+    --danger-color: #EF4444;
+    --danger-background: #FEF2F2;
+    --success-background: #D1FAE5;
+    --warning-background: #FFFBEB;
   }
   a:hover {
     color: #747bff;
@@ -69,13 +79,22 @@ button:focus-visible {
 
 @media (prefers-color-scheme: dark) {
   :root {
-    color: rgba(255, 255, 255, 0.87);
     background-color: #242424;
     --primary-color: #FF6B35;
     --secondary-color: #d1d5db;
     --background-color: #111827;
     --white: #1f2937;
     --accent-gray: #374151;
+    --text-color: rgba(255, 255, 255, 0.87);
+    --text-color-light: #9CA3AF;
+    --text-color-inverted: #FFFFFF;
+    --input-background: #1f2937;
+    --success-color: #34D399;
+    --warning-color: #FBBF24;
+    --danger-color: #F87171;
+    --danger-background: #4B1F1F;
+    --success-background: #064E3B;
+    --warning-background: #4A2E0A;
   }
   button {
     background-color: #1a1a1a;

@@ -7,6 +7,7 @@ import type { ShiftOccurrence, StaffMember, Trait } from "../../storage/database
 import { calculateStaffingStatus, type StaffingStatus } from '../../utils/staffingStatus';
 import { yalpsAutoScheduleWeek, type YALPSSchedulingResult } from '../../utils/yalpsScheduler';
 import { ConfirmDialog } from '../ConfirmDialog';
+import '../../styles/planning.css';
 
 
 interface WeeklyPlanningViewProps {
@@ -125,32 +126,38 @@ export function WeeklyPlanningView({
   const [refreshKey, setRefreshKey] = useState(new Date());
   // Memoized staffing status cache - only recalculates when relevant data changes
   const staffingStatusCache = useMemo(() => {
-    const cache: { [occurrenceId: string]: { backgroundColor: string; status: StaffingStatus } } = {};
+    const cache: { [occurrenceId: string]: { statusClassName: string; status: StaffingStatus } } = {};
     
     for (const occurrence of weekOccurrences) {
       const assignedStaffMembers = staff.filter(s => occurrence.assignedStaff.includes(s.id));
       const status = calculateStaffingStatus(occurrence, assignedStaffMembers, allTraits, t, i18n.language, shiftOccurrences, staff);
       
-      let backgroundColor: string;
-      if (status.status === 'properly-staffed') {
-        backgroundColor = '#d4edda'; // green
-      } else if (status.status === 'not-staffed' || status.status === 'constraint-violation') {
-        backgroundColor = '#f8d7da'; // red
-      } else {
-        backgroundColor = '#fff3cd'; // orange/yellow
+      let statusClassName: string;
+      switch (status.status) {
+        case 'properly-staffed':
+          statusClassName = 'status-properly-staffed';
+          break;
+        case 'under-staffed':
+          statusClassName = 'status-under-staffed';
+          break;
+        case 'not-staffed':
+        case 'constraint-violation':
+          statusClassName = 'status-constraint-violation';
+          break;
+        default:
+          statusClassName = 'status-under-staffed';
       }
       
-      cache[occurrence.id] = { backgroundColor, status };
+      cache[occurrence.id] = { statusClassName, status };
     }
     
     return cache;
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [staff, allTraits, shiftOccurrences, t, weekOccurrences, i18n.language, refreshKey, refreshKey]);
+  }, [staff, allTraits, shiftOccurrences, t, weekOccurrences, i18n.language, refreshKey]);
 
-  // Optimized background color lookup - no computation on each call
-  const getStaffingBackgroundColor = (occurrence: ShiftOccurrence | undefined): string => {
-    if (!occurrence) return '#f8f9fa'; // light gray for no occurrence
-    return staffingStatusCache[occurrence.id]?.backgroundColor || '#fff3cd';
+  const getStaffingClass = (occurrence: ShiftOccurrence | undefined): string => {
+    if (!occurrence) return 'shift-cell-empty';
+    return staffingStatusCache[occurrence.id]?.statusClassName || 'status-under-staffed';
   };
 
   // Calculate staff scheduling status and counts
@@ -219,8 +226,8 @@ export function WeeklyPlanningView({
 
   const getStaffStatusColor = (status: string) => {
     switch (status) {
-      case 'overscheduled': return '#ffc107'; // orange
-      default: return '#28a745'; // green
+      case 'overscheduled': return 'var(--warning-color)';
+      default: return 'var(--success-color)';
     }
   };
 
@@ -411,37 +418,28 @@ export function WeeklyPlanningView({
             
             return (
               <div
-                className="staff-member"
+                className="staff-member staff-panel-member"
                 key={staffMember.id}
                 draggable
                 onDragStart={(e) => handleStaffDragStart(e, staffMember)}
-                style={{
-                  padding: '12px',
-                  marginBottom: '8px',
-                  backgroundColor: 'white',
-                  border: `3px solid ${statusColor}`,
-                  borderRadius: '6px',
-                  cursor: 'grab',
-                  transition: 'all 0.2s',
-                  fontSize: '14px'
-                }}
+                style={{ borderColor: statusColor }}
                 onMouseDown={(e) => (e.currentTarget.style.cursor = 'grabbing')}
                 onMouseUp={(e) => (e.currentTarget.style.cursor = 'grab')}
               >
-                <div style={{ fontWeight: 'bold', marginBottom: '6px' }}>
+                <div className="staff-panel-member-name">
                   {staffMember.name}
                 </div>
-                <div style={{ fontSize: '11px', color: '#666', marginBottom: '2px' }}>
+                <div className="staff-panel-member-info">
                   {t('staff.week')}: {staffInfo.shiftsThisWeek}/{staffInfo.weeklyMax === Infinity ? '∞' : staffInfo.weeklyMax}
                 </div>
-                <div style={{ fontSize: '11px', color: '#666', marginBottom: '2px' }}>
+                <div className="staff-panel-member-info">
                   {t('staff.month')}: {staffInfo.shiftsThisMonth}/{staffInfo.monthlyMax === Infinity ? '∞' : staffInfo.monthlyMax}
                 </div>
-                <div style={{ fontSize: '11px', color: '#666', marginBottom: '4px' }}>
+                <div className="staff-panel-member-info" style={{marginBottom: '4px'}}>
                   {t('staff.year')}: {staffInfo.shiftsThisYear}/{staffInfo.yearlyMax === Infinity ? '∞' : staffInfo.yearlyMax}
                 </div>
                 {staffMember.traitIds.length > 0 && (
-                  <div style={{ fontSize: '10px', color: '#888', borderTop: '1px solid #eee', paddingTop: '4px' }}>
+                  <div className="staff-panel-member-traits">
                     {staffMember.traitIds.map(traitId => 
                       allTraits.find(t => t.id === traitId)?.name
                     ).filter(Boolean).join(', ')}
@@ -552,8 +550,8 @@ export function WeeklyPlanningView({
                 </th>
                 {weekDays.map(day => (
                   <th key={day.toISOString()} className="day-header">
-                    <div style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{format(day, 'EEEE', { locale: dateLocale })}</div>
-                    <div style={{ fontSize: '12px', fontWeight: 'normal', color: '#666' }}>
+                    <div>{format(day, 'EEEE', { locale: dateLocale })}</div>
+                    <div>
                       {day.toLocaleDateString(dateLocale.code, { 
                         month: 'short', 
                         day: '2-digit' 
@@ -570,13 +568,11 @@ export function WeeklyPlanningView({
                   <tr key={shiftKey}>
                     <td className="shift-name-cell">
                       <div>{shift.name}</div>
-                      <div style={{ fontSize: '12px', color: '#666', fontWeight: 'normal' }}>
-                        {shift.timeDisplay}
-                      </div>
+                      <div>{shift.timeDisplay}</div>
                     </td>
                     {weekDays.map(day => {
                       const occurrence = getOccurrenceForShiftAndDay(shiftKey, day);
-                      const backgroundColor = getStaffingBackgroundColor(occurrence);
+                      const staffingClass = getStaffingClass(occurrence);
                       const assignedStaffMembers = occurrence 
                         ? staff.filter(s => occurrence.assignedStaff.includes(s.id))
                         : [];
@@ -584,8 +580,8 @@ export function WeeklyPlanningView({
                       return (
                         <td
                           key={`${shiftKey}-${day.toISOString()}`}
-                          className="shift-cell"
-                          style={{ backgroundColor, cursor: occurrence ? 'pointer' : 'default' }}
+                          className={`shift-cell ${staffingClass}`}
+                          style={{ cursor: occurrence ? 'pointer' : 'default' }}
                           onDrop={(e) => handleShiftDrop(e, occurrence)}
                           onDragOver={handleShiftDragOver}
                           onClick={() => occurrence && onEditOccurrence?.(occurrence)}
@@ -593,27 +589,8 @@ export function WeeklyPlanningView({
                           {occurrence ? (
                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
                               {assignedStaffMembers.map(staffMember => (
-                                <div
-                                  key={staffMember.id}
-                                  style={{
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    backgroundColor: 'rgba(255,255,255,0.9)',
-                                    border: '1px solid #ccc',
-                                    borderRadius: '12px',
-                                    padding: '3px 8px',
-                                    fontSize: '12px',
-                                    fontWeight: 'bold',
-                                    color: '#333',
-                                    maxWidth: '120px'
-                                  }}
-                                >
-                                  <span style={{ 
-                                    overflow: 'hidden', 
-                                    textOverflow: 'ellipsis', 
-                                    whiteSpace: 'nowrap',
-                                    marginRight: '4px'
-                                  }}>
+                                <div key={staffMember.id} className="staff-badge">
+                                  <span className="staff-badge-name">
                                     {staffMember.name}
                                   </span>
                                   <button
@@ -621,16 +598,7 @@ export function WeeklyPlanningView({
                                       e.stopPropagation();
                                       handleRemoveStaff(occurrence.id, staffMember.id);
                                     }}
-                                    style={{
-                                      background: 'none',
-                                      border: 'none',
-                                      color: '#666',
-                                      cursor: 'pointer',
-                                      fontSize: '10px',
-                                      padding: '0',
-                                      marginLeft: '2px',
-                                      lineHeight: '1'
-                                    }}
+                                    className="staff-badge-remove-btn"
                                     title={`Remove ${staffMember.name}`}
                                   >
                                     ✕
@@ -638,26 +606,13 @@ export function WeeklyPlanningView({
                                 </div>
                               ))}
                               {assignedStaffMembers.length === 0 && (
-                                <div style={{ 
-                                  color: '#666', 
-                                  fontSize: '12px',
-                                  fontStyle: 'italic'
-                                }}>
+                                <div className="unassigned-text">
                                   {t('planning.noStaffAssigned')}
                                 </div>
                               )}
                             </div>
                           ) : (
-                            <div style={{ 
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              height: '100%',
-                              minHeight: '60px',
-                              color: '#999',
-                              fontSize: '24px',
-                              fontWeight: 'bold'
-                            }}>
+                            <div className="no-occurrence-text">
                               ✕
                             </div>
                           )}

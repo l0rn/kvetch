@@ -802,7 +802,7 @@
 }
 
 .modal-content {
-  background-color: white;
+  background-color: var(--white);
   border-radius: 8px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
   max-width: 90vw;
@@ -816,13 +816,13 @@
   justify-content: space-between;
   align-items: center;
   padding: 20px 20px 0 20px;
-  border-bottom: 1px solid #dee2e6;
+  border-bottom: 1px solid var(--accent-gray);
   margin-bottom: 20px;
 }
 
 .modal-title {
   margin: 0;
-  color: #333;
+  color: var(--secondary-color);
 }
 
 .modal-close-btn {
@@ -830,7 +830,7 @@
   border: none;
   font-size: 24px;
   cursor: pointer;
-  color: #666;
+  color: var(--secondary-color);
   padding: 0;
   width: 30px;
   height: 30px;
@@ -858,7 +858,7 @@
 }
 
 .confirm-dialog-content {
-  background-color: white;
+  background-color: var(--white);
   border-radius: 8px;
   padding: 24px;
   max-width: 500px;
@@ -879,13 +879,13 @@
 .confirm-dialog-message {
   margin: 0 0 12px 0;
   line-height: 1.5;
-  color: #333;
+  color: var(--text-color);
 }
 
 .confirm-dialog-question {
   margin: 0;
   font-weight: bold;
-  color: #d32f2f;
+  color: var(--danger-color);
 }
 
 .confirm-dialog-actions {
@@ -915,7 +915,7 @@
   .modal-header {
     padding: 16px;
     margin-bottom: 0;
-    border-bottom: 1px solid #dee2e6;
+    border-bottom: 1px solid var(--accent-gray);
     flex-shrink: 0;
     background: var(--white);
     position: sticky;

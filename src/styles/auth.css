@@ -147,7 +147,13 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+}
+
+.user-profile:hover {
+  background: rgba(255, 107, 53, 0.05);
 }
 
 .user-avatar {
@@ -161,26 +167,39 @@
   justify-content: center;
   font-weight: 600;
   font-size: 0.875rem;
+  flex-shrink: 0;
 }
 
 .user-details {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  min-width: 0;
+  flex: 1;
 }
 
 .user-name {
   font-weight: 600;
   font-size: 0.875rem;
   color: var(--secondary-color);
+  line-height: 1.2;
+  margin-bottom: 0.125rem;
+}
+
+.user-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .role-badge {
-  padding: 0.125rem 0.5rem;
+  padding: 0.125rem 0.375rem;
   border-radius: 12px;
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
   font-weight: 500;
   text-transform: lowercase;
+  line-height: 1;
 }
 
 .role-badge-admin {
@@ -209,13 +228,20 @@
 }
 
 .user-instances {
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
   color: var(--secondary-color);
   opacity: 0.8;
+  line-height: 1;
 }
 
 .user-actions {
-  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.user-actions .btn-sm {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+  border-radius: 6px;
 }
 
 /* Loading and error states */
@@ -269,6 +295,211 @@
   padding: 2rem;
   background: var(--background-color);
   min-height: 100vh;
+}
+
+/* Staff and Shifts table styles */
+.staff-table-container,
+.shifts-table-container {
+  overflow-x: auto;
+  margin-top: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.staff-table,
+.shifts-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--white);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.staff-table th,
+.staff-table td,
+.shifts-table th,
+.shifts-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--accent-gray);
+}
+
+.staff-table th,
+.shifts-table th {
+  background: var(--background-color);
+  font-weight: 600;
+  color: var(--secondary-color);
+}
+
+.staff-table tbody tr:hover,
+.shifts-table tbody tr:hover {
+  background: rgba(255, 107, 53, 0.05);
+}
+
+.traits-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.trait-badge {
+  padding: 0.125rem 0.375rem;
+  background: var(--primary-color);
+  color: white;
+  border-radius: 12px;
+  font-size: 0.6875rem;
+  font-weight: 500;
+}
+
+.constraints-list {
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.constraints-list > div {
+  margin-bottom: 0.25rem;
+}
+
+.blocked-times-summary {
+  font-size: 0.8rem;
+}
+
+.blocked-times-count {
+  font-weight: 500;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.blocked-times-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.blocked-time-item {
+  background: var(--accent-gray);
+  padding: 0.125rem 0.25rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+}
+
+.recurrence-indicator {
+  font-size: 0.6875rem;
+  opacity: 0.7;
+}
+
+.blocked-times-more {
+  color: var(--secondary-color);
+  opacity: 0.7;
+  font-size: 0.75rem;
+  align-self: center;
+}
+
+.empty-state-inline {
+  color: var(--secondary-color);
+  opacity: 0.6;
+  font-style: italic;
+}
+
+/* Shifts table specific styles */
+.shift-name {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.shift-schedule {
+  font-size: 0.9rem;
+}
+
+.shift-time {
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.shift-duration {
+  color: var(--secondary-color);
+  opacity: 0.8;
+}
+
+.shift-requirements {
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.required-traits {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.trait-requirement {
+  background: var(--accent-gray);
+  padding: 0.125rem 0.25rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
+
+.assignment-status {
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.assignment-ratio {
+  display: block;
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 0.25rem;
+}
+
+.assignment-complete {
+  color: #198754;
+}
+
+.assignment-incomplete {
+  color: #dc3545;
+}
+
+.assignment-occurrences {
+  font-size: 0.75rem;
+  color: var(--secondary-color);
+  opacity: 0.8;
+}
+
+.recurrence-info {
+  font-size: 0.8rem;
+}
+
+.recurrence-type {
+  font-weight: 500;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.recurrence-details {
+  color: var(--secondary-color);
+  opacity: 0.8;
+  line-height: 1.3;
+}
+
+.view-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.view-header h1 {
+  margin: 0;
+  color: var(--secondary-color);
+}
+
+.view-content {
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .access-denied {
@@ -346,6 +577,21 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+
+.form-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.form-checkbox input[type="checkbox"] {
+  margin: 0;
+}
+
+.form-checkbox label {
+  margin: 0;
+  cursor: pointer;
 }
 
 .logout-confirm-content {

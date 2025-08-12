@@ -59,7 +59,13 @@
     "keepOriginal": "Original beibehalten",
     "confirmDelete": "Schicht löschen",
     "confirmDeleteMessage": "Sind Sie sicher, dass Sie die Schicht \"{{name}}\" löschen möchten?",
-    "confirmDeleteQuestion": "Diese Aktion kann nicht rückgängig gemacht werden und löscht auch alle Vorkommen und Zuweisungen."
+    "confirmDeleteQuestion": "Diese Aktion kann nicht rückgängig gemacht werden und löscht auch alle Vorkommen und Zuweisungen.",
+    "name": "Name",
+    "schedule": "Zeitplan",
+    "requirements": "Anforderungen",
+    "staffCountShort": "Personal",
+    "acrossOccurrencesShort": "{{count}}x",
+    "oneTime": "einmalig"
   },
   "staff": {
     "title": "Mitarbeiter",
@@ -115,7 +121,13 @@
     "endDate": "Enddatum",
     "confirmDelete": "Mitarbeiter löschen",
     "confirmDeleteMessage": "Sind Sie sicher, dass Sie den Mitarbeiter \"{{name}}\" löschen möchten?",
-    "confirmDeleteQuestion": "Diese Aktion kann nicht rückgängig gemacht werden und entfernt sie aus allen geplanten Schichten."
+    "confirmDeleteQuestion": "Diese Aktion kann nicht rückgängig gemacht werden und entfernt sie aus allen geplanten Schichten.",
+    "email": "E-Mail",
+    "actions": "Aktionen",
+    "maxShiftsPerWeekShort": "Woche",
+    "maxShiftsPerMonthShort": "Monat",
+    "maxShiftsPerYearShort": "Jahr",
+    "incompatibleWithShort": "Unverträglich"
   },
   "planning": {
     "title": "Wochenplanung",
@@ -200,7 +212,11 @@
     "close": "Schließen",
     "delete": "Löschen",
     "cancel": "Abbrechen",
-    "add": "Hinzufügen"
+    "add": "Hinzufügen",
+    "edit": "Bearbeiten",
+    "actions": "Aktionen",
+    "none": "Keine",
+    "notAvailable": "N/V"
   },
   "validation": {
     "endAfterStart": "End- und -zeit müssen nach Start- und -zeit liegen.",
@@ -277,6 +293,18 @@
     "confirmPassword": "Passwort bestätigen",
     "passwordMismatch": "Passwörter stimmen nicht überein",
     "passwordTooShort": "Passwort muss mindestens 6 Zeichen lang sein",
-    "confirmDelete": "Sind Sie sicher, dass Sie diesen Benutzer löschen möchten?"
+    "confirmDelete": "Benutzer löschen",
+    "confirmDeleteMessage": "Sind Sie sicher, dass Sie Benutzer \"{{name}}\" löschen möchten?",
+    "confirmDeleteQuestion": "Diese Aktion kann nicht rückgängig gemacht werden und entfernt sie dauerhaft aus dem System.",
+    "email": "E-Mail",
+    "linkedStaff": "Verknüpfter Mitarbeiter",
+    "unknownStaff": "Unbekannter Mitarbeiter",
+    "editUser": "Benutzer bearbeiten",
+    "updateUser": "Benutzer aktualisieren",
+    "optionalForEdit": "leer lassen, um aktuelles zu behalten",
+    "linkToStaff": "Mit Mitarbeiter verknüpfen",
+    "noStaffLink": "Kein Mitarbeiter",
+    "createStaffMember": "Neuen Mitarbeiter erstellen und verknüpfen",
+    "userCreatedStaffFailed": "Benutzer erfolgreich gespeichert, aber Erstellung des verknüpften Mitarbeiters fehlgeschlagen"
   }
 }

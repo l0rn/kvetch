@@ -61,12 +61,14 @@ export function StaffView({
 
   return (
     <div className="staff-view">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <h2>{t('staff.title')}</h2>
+      <div className="view-header">
+        <h1>{t('staff.title')}</h1>
         <button onClick={onShowStaffForm} className="btn btn-primary">
           {t('staff.createStaff')}
         </button>
       </div>
+
+      <div className="view-content">
 
       <Modal
         isOpen={showStaffForm}
@@ -80,62 +82,96 @@ export function StaffView({
         />
       </Modal>
 
-      <div className="staff-list">
-        {staff.map(member => (
-          <div key={member.id} className="staff-item" style={{ border: '1px solid #ddd', padding: '15px', marginBottom: '10px', borderRadius: '4px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
-              <div>
-                <h3>{member.name}</h3>
-                <p><strong>{t('staff.traits')}:</strong> {member.traitIds.length > 0 ? member.traitIds.map(getTraitName).join(', ') : t('staff.none')}</p>
-                <div style={{ marginTop: '10px' }}>
-                  {member.constraints.maxShiftsPerWeek && <p><strong>{t('staff.maxShiftsPerWeek')}:</strong> {member.constraints.maxShiftsPerWeek}</p>}
-                  {member.constraints.maxShiftsPerMonth && <p><strong>{t('staff.maxShiftsPerMonth')}:</strong> {member.constraints.maxShiftsPerMonth}</p>}
-                  {member.constraints.maxShiftsPerYear && <p><strong>{t('staff.maxShiftsPerYear')}:</strong> {member.constraints.maxShiftsPerYear}</p>}
-                  {member.constraints.incompatibleWith.length > 0 && (
-                    <p><strong>{t('staff.incompatibleWith')}:</strong> {staff.find(s => s.id === member.constraints.incompatibleWith[0])?.name}</p>
-                  )}
-                </div>
-                {member.blockedTimes.length > 0 && (
-                  <div style={{ marginTop: '10px' }}>
-                    <p><strong>{t('staff.blockedTimes')}:</strong> {t('staff.blockedTimeEntries', { count: member.blockedTimes.length })}</p>
-                    <div style={{ fontSize: '12px', color: '#666' }}>
-                      {member.blockedTimes.slice(0, 3).map((bt, index) => (
-                        <div key={index}>
-                          {new Date(bt.startDateTime).toLocaleDateString(i18n.language)} {bt.isFullDay ? `(${t('staff.fullDay')})` : `${new Date(bt.startDateTime).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' })}-${new Date(bt.endDateTime).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' })}`}
-                          {bt.recurrence && ` (${bt.recurrence.type})`}
-                        </div>
-                      ))}
-                      {member.blockedTimes.length > 3 && <div>{t('staff.andMore', { count: member.blockedTimes.length - 3 })}</div>}
+        <div className="staff-table-container">
+          <table className="staff-table users-table">
+            <thead>
+              <tr>
+                <th>{t('staff.name')}</th>
+                <th>{t('staff.email')}</th>
+                <th>{t('staff.traits')}</th>
+                <th>{t('staff.constraints')}</th>
+                <th>{t('staff.blockedTimes')}</th>
+                <th>{t('common.actions')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {staff.map(member => (
+                <tr key={member.id}>
+                  <td>{member.name}</td>
+                  <td>{member.email || t('common.notAvailable')}</td>
+                  <td>
+                    {member.traitIds.length > 0 ? (
+                      <div className="traits-list">
+                        {member.traitIds.map(traitId => (
+                          <span key={traitId} className="trait-badge">{getTraitName(traitId)}</span>
+                        ))}
+                      </div>
+                    ) : (
+                      <span className="empty-state-inline">{t('staff.none')}</span>
+                    )}
+                  </td>
+                  <td>
+                    <div className="constraints-list">
+                      {member.constraints.maxShiftsPerWeek && <div><strong>{t('staff.maxShiftsPerWeekShort')}:</strong> {member.constraints.maxShiftsPerWeek}</div>}
+                      {member.constraints.maxShiftsPerMonth && <div><strong>{t('staff.maxShiftsPerMonthShort')}:</strong> {member.constraints.maxShiftsPerMonth}</div>}
+                      {member.constraints.maxShiftsPerYear && <div><strong>{t('staff.maxShiftsPerYearShort')}:</strong> {member.constraints.maxShiftsPerYear}</div>}
+                      {member.constraints.incompatibleWith.length > 0 && (
+                        <div><strong>{t('staff.incompatibleWithShort')}:</strong> {staff.find(s => s.id === member.constraints.incompatibleWith[0])?.name}</div>
+                      )}
                     </div>
-                  </div>
-                )}
-              </div>
-              <div>
-                <button onClick={() => onEditStaff(member)} className="btn btn-secondary btn-small" style={{ marginRight: '10px' }}>
-                  {t('staff.edit')}
-                </button>
-                <button onClick={() => handleDeleteStaff(member)} className="btn btn-danger btn-small">
-                  {t('staff.delete')}
-                </button>
-              </div>
-            </div>
-          </div>
-        ))}
-        {staff.length === 0 && (
-          <p>{t('staff.noStaff')}</p>
-        )}
+                  </td>
+                  <td>
+                    {member.blockedTimes.length > 0 ? (
+                      <div className="blocked-times-summary">
+                        <span className="blocked-times-count">{t('staff.blockedTimeEntries', { count: member.blockedTimes.length })}</span>
+                        <div className="blocked-times-preview">
+                          {member.blockedTimes.slice(0, 2).map((bt, index) => (
+                            <div key={index} className="blocked-time-item">
+                              {new Date(bt.startDateTime).toLocaleDateString(i18n.language, { month: 'short', day: 'numeric' })}
+                              {bt.recurrence && <span className="recurrence-indicator">⟲</span>}
+                            </div>
+                          ))}
+                          {member.blockedTimes.length > 2 && <div className="blocked-times-more">+{member.blockedTimes.length - 2}</div>}
+                        </div>
+                      </div>
+                    ) : (
+                      <span className="empty-state-inline">{t('common.none')}</span>
+                    )}
+                  </td>
+                  <td>
+                    <div className="table-actions">
+                      <button onClick={() => onEditStaff(member)} className="btn btn-sm btn-secondary" style={{ marginRight: '0.5rem' }}>
+                        {t('staff.edit')}
+                      </button>
+                      <button onClick={() => handleDeleteStaff(member)} className="btn btn-sm btn-danger">
+                        {t('staff.delete')}
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {staff.length === 0 && (
+                <tr>
+                  <td colSpan={6} className="empty-state">
+                    {t('staff.noStaff')}
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      <ConfirmDialog
-        isOpen={deleteConfirmStaff !== null}
-        title={t('staff.confirmDelete')}
-        message={t('staff.confirmDeleteMessage', { name: deleteConfirmStaff?.name })}
-        question={t('staff.confirmDeleteQuestion')}
-        confirmText={t('common.delete')}
-        cancelText={t('common.cancel')}
-        onConfirm={confirmDeleteStaff}
-        onCancel={cancelDeleteStaff}
-      />
+        <ConfirmDialog
+          isOpen={deleteConfirmStaff !== null}
+          title={t('staff.confirmDelete')}
+          message={t('staff.confirmDeleteMessage', { name: deleteConfirmStaff?.name })}
+          question={t('staff.confirmDeleteQuestion')}
+          confirmText={t('common.delete')}
+          cancelText={t('common.cancel')}
+          onConfirm={confirmDeleteStaff}
+          onCancel={cancelDeleteStaff}
+        />
     </div>
   );
 }

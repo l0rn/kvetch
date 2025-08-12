@@ -5,7 +5,8 @@ import type { AppConfig } from '../config/AppConfig';
 interface BaseDoc {
   _id: string;
   _rev?: string;
-  type: 'trait' | 'shift' | 'shift-occurrence' | 'staff' | 'schema-version';
+  _deleted: boolean;
+  type: 'trait' | 'shift' | 'shift-occurrence' | 'staff' | 'schema-version' | 'user';
   createdAt: string;
   updatedAt: string;
   instanceId?: string; // Added for multi-user support
@@ -15,6 +16,17 @@ interface BaseDoc {
 interface SchemaVersionDoc extends BaseDoc {
   type: 'schema-version';
   version: number;
+}
+
+// User document
+export interface UserDoc extends BaseDoc {
+  type: 'user';
+  name: string;
+  email: string;
+  role: 'instance-admin' | 'instance-manager' | 'instance-staff';
+  hashedPassword?: string;
+  linkedStaffId?: string;
+  isActive: boolean;
 }
 
 // Trait document
@@ -110,6 +122,16 @@ export interface Trait {
   createdAt: string;
 }
 
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: 'instance-admin' | 'instance-manager' | 'instance-staff';
+  linkedStaffId?: string;
+  isActive: boolean;
+  createdAt: string;
+}
+
 export interface Shift {
   id: string;
   name: string;
@@ -181,6 +203,8 @@ export interface StaffMember {
       weekdays?: number[]; // For weekly recurrence: 0=Sunday, 1=Monday, etc.
     };
   }>;
+  email?: string;
+  linkedUserId?: string; // Link to user account for multi-user mode
 }
 
 // Extended StaffMember interface for multi-user features
@@ -586,7 +610,9 @@ export class Database {
             endDate: bt.recurrence?.endDate ? new Date(bt.recurrence.endDate) : undefined
           }
           : undefined
-      }))
+      })),
+      email: (doc as any).email, // Safe casting for new field
+      linkedUserId: (doc as any).linkedUserId
     };
   }
 
@@ -612,6 +638,8 @@ export class Database {
             : undefined
         };
       }) ?? [],
+      email: staff.email,
+      linkedUserId: staff.linkedUserId,
       createdAt: now,
       updatedAt: now
     };
@@ -679,8 +707,9 @@ export class Database {
   }
 
   static async deleteTrait(id: string): Promise<void> {
-    const doc = await this.db.get(`trait:${id}`);
-    await this.db.remove(doc);
+    const doc = await this.db.get<TraitDoc>(`trait:${id}`);
+    doc._deleted = true;
+    await this.db.put(doc);
   }
 
   static async findTraitByName(name: string): Promise<Trait | null> {
@@ -736,8 +765,9 @@ export class Database {
   }
 
   static async deleteShift(id: string): Promise<void> {
-    const doc = await this.db.get(`shift:${id}`);
-    await this.db.remove(doc);
+    const doc = await this.db.get<ShiftDoc>(`shift:${id}`);
+    doc._deleted = true; // Mark as deleted
+    await this.db.put(doc);
   }
 
   // CRUD operations for Shift Occurrences
@@ -769,8 +799,9 @@ export class Database {
   }
 
   static async deleteShiftOccurrence(id: string): Promise<void> {
-    const doc = await this.db.get(`shift-occurrence:${id}`);
-    await this.db.remove(doc);
+    const doc = await this.db.get<ShiftOccurrenceDoc>(`shift-occurrence:${id}`);
+    doc._deleted = true; // Mark as deleted
+    await this.db.put(doc);
   }
 
   static async deleteShiftOccurrencesByParent(parentShiftId: string): Promise<void> {
@@ -811,8 +842,9 @@ export class Database {
   }
 
   static async deleteStaffMember(id: string): Promise<void> {
-    const doc = await this.db.get(`staff:${id}`);
-    await this.db.remove(doc);
+    const doc = await this.db.get<StaffDoc>(`staff:${id}`);
+    doc._deleted = true;
+    await this.db.put(doc);
   }
 
   // Enhanced staff member save that can link to user accounts (multi-user mode)
@@ -942,10 +974,96 @@ export class Database {
     return this.db;
   }
 
+  // User management functions
+  static docToUser(doc: UserDoc): User {
+    return {
+      id: doc._id.replace('user:', ''),
+      name: doc.name,
+      email: doc.email,
+      role: doc.role,
+      linkedStaffId: doc.linkedStaffId,
+      isActive: doc.isActive,
+      createdAt: doc.createdAt
+    };
+  }
+
+  static userToDoc(user: User): UserDoc {
+    return {
+      _id: `user:${user.id}`,
+      type: 'user',
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      linkedStaffId: user.linkedStaffId,
+      isActive: user.isActive,
+      createdAt: user.createdAt,
+      updatedAt: new Date().toISOString(),
+      _deleted: false,
+      instanceId: this.currentInstanceId || undefined
+    };
+  }
+
+  static async getUsers(): Promise<User[]> {
+    const result = await this.db.allDocs<UserDoc>({
+      include_docs: true,
+      startkey: 'user:',
+      endkey: 'user:\uffff'
+    });
+    
+    return result.rows
+      .map(row => row.doc as UserDoc)
+      .filter(doc => !doc._deleted)
+      .map(doc => this.docToUser(doc));
+  }
+
+  static async saveUser(user: User): Promise<void> {
+    const docToSave = this.userToDoc(user);
+    
+    try {
+      const existing = await this.db.get(docToSave._id);
+      await this.db.put({ ...docToSave, _rev: existing._rev });
+    } catch (err: unknown) {
+      if ((err as { status?: number }).status === 404) {
+        await this.db.put(docToSave);
+      } else {
+        throw err;
+      }
+    }
+  }
+
+  static async deleteUser(id: string): Promise<void> {
+    const doc = await this.db.get<UserDoc>(`user:${id}`);
+    doc._deleted = true;
+    await this.db.put(doc);
+  }
+
+  static liveGetUsers(callback: (change: PouchDB.Core.ChangesResultChange<UserDoc>) => void): { cancel: () => void } {
+    const changes = this.db.changes<UserDoc>({
+      since: 'now',
+      live: true,
+      include_docs: true,
+      filter: (doc: UserDoc) => doc.type === 'user'
+    }).on('change', callback);
+
+    return {
+      cancel: () => changes.cancel()
+    };
+  }
+
   // Standardized ID generation function
   private static generateDocumentId(type: string, name: string): string {
     const timestamp = Date.now();
-    const safeName = name.toLowerCase().replace(/\s+/g, '-');
+    // Make name safe: lowercase, replace whitespace and special chars, ensure it doesn't start with underscore
+    let safeName = name.toLowerCase()
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9-]/g, '')  // Remove non-alphanumeric chars except dashes
+      .replace(/^_+/, '');         // Remove leading underscores
+    
+    // Ensure the name is not empty after sanitization
+    if (!safeName) {
+      safeName = 'item';
+    }
+    
     return `${type}:${safeName}-${timestamp}`;
   }
 }

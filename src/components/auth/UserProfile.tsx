@@ -42,22 +42,17 @@ export function UserProfile({ showLogoutConfirm = true }: UserProfileProps) {
   return (
     <>
       <div className="user-profile">
-        <div className="user-info">
-          <div className="user-avatar">
-            {user.name?.charAt(0).toUpperCase() || user.username.charAt(0).toUpperCase()}
+        <div className="user-avatar">
+          {user.name?.charAt(0).toUpperCase() || user.username.charAt(0).toUpperCase()}
+        </div>
+        <div className="user-details">
+          <div className="user-name">
+            {user.name || user.username}
           </div>
-          <div className="user-details">
-            <div className="user-name">
-              {user.name || user.username}
-            </div>
+          <div className="user-meta">
             <div className={getRoleBadgeClass(user.role)}>
               {getRoleDisplayName(user.role)}
             </div>
-            {user.instanceIds.length > 0 && (
-              <div className="user-instances">
-                {t('auth.instances', 'Instances')}: {user.instanceIds.join(', ')}
-              </div>
-            )}
           </div>
         </div>
 
@@ -80,7 +75,7 @@ export function UserProfile({ showLogoutConfirm = true }: UserProfileProps) {
         >
           <div className="logout-confirm-content">
             <p>{t('auth.signOutMessage', 'Are you sure you want to sign out?')}</p>
-            <div className="modal-actions">
+            <div className="form-actions-center">
               <button
                 className="btn btn-secondary"
                 onClick={() => setShowLogoutModal(false)}

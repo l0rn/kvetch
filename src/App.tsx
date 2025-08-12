@@ -308,7 +308,7 @@ function App() {
             >
               {t('navigation.planning')}
             </Link>
-            {isFeatureEnabled('userManagement') && (user?.role === 'admin' || user?.role === 'instance-admin') && (
+            {isFeatureEnabled('userManagement') && (user?.role === 'admin' || user?.role === 'instance-admin' || user?.role === 'instance-manager') && (
               <Link 
                 to="/users"
                 className={`nav-link ${location.pathname === '/users' ? 'active' : ''}`}
@@ -405,7 +405,7 @@ function App() {
             setShowOccurrenceForm(false);
             setEditingOccurrence(null);
           }}
-          title={`Edit Occurrence - ${editingOccurrence ? new Date(editingOccurrence.startDateTime).toLocaleDateString(i11.language) : ''}`}
+          title={`Edit Occurrence - ${editingOccurrence ? new Date(editingOccurrence.startDateTime).toLocaleDateString(i18n.language) : ''}`}
         >
           {editingOccurrence && (
             <ShiftOccurrenceForm

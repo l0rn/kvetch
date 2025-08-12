@@ -67,6 +67,12 @@
   justify-content: flex-end;
 }
 
+.form-actions-center {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
 .recurrence-section {
   background-color: var(--background-color);
   padding: 15px;

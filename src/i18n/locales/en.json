@@ -59,7 +59,13 @@
     "keepOriginal": "Keep Original",
     "confirmDelete": "Delete Shift",
     "confirmDeleteMessage": "Are you sure you want to delete the shift \"{{name}}\"?",
-    "confirmDeleteQuestion": "This action cannot be undone and will also delete all occurrences and assignments."
+    "confirmDeleteQuestion": "This action cannot be undone and will also delete all occurrences and assignments.",
+    "name": "Name",
+    "schedule": "Schedule",
+    "requirements": "Requirements",
+    "staffCountShort": "Staff",
+    "acrossOccurrencesShort": "{{count}} times",
+    "oneTime": "One-time"
   },
   "staff": {
     "title": "Staff Members",
@@ -115,7 +121,13 @@
     "endDate": "End Date",
     "confirmDelete": "Delete Staff Member",
     "confirmDeleteMessage": "Are you sure you want to delete the staff member \"{{name}}\"?",
-    "confirmDeleteQuestion": "This action cannot be undone and will remove them from all scheduled shifts."
+    "confirmDeleteQuestion": "This action cannot be undone and will remove them from all scheduled shifts.",
+    "email": "Email",
+    "actions": "Actions",
+    "maxShiftsPerWeekShort": "Week",
+    "maxShiftsPerMonthShort": "Month",
+    "maxShiftsPerYearShort": "Year",
+    "incompatibleWithShort": "Incompatible"
   },
   "planning": {
     "title": "Weekly Planning",
@@ -200,7 +212,11 @@
     "close": "Close",
     "delete": "Delete",
     "cancel": "Cancel",
-    "add": "Add"
+    "add": "Add",
+    "edit": "Edit",
+    "actions": "Actions",
+    "none": "None",
+    "notAvailable": "N/A"
   },
   "validation": {
     "endAfterStart": "End date and time must be after start date and time.",
@@ -277,6 +293,18 @@
     "confirmPassword": "Confirm Password",
     "passwordMismatch": "Passwords do not match",
     "passwordTooShort": "Password must be at least 6 characters",
-    "confirmDelete": "Are you sure you want to delete this user?"
+    "confirmDelete": "Delete User",
+    "confirmDeleteMessage": "Are you sure you want to delete user \"{{name}}\"?",
+    "confirmDeleteQuestion": "This action cannot be undone and will remove them from the system permanently.",
+    "email": "Email",
+    "linkedStaff": "Linked Staff",
+    "unknownStaff": "Unknown Staff",
+    "editUser": "Edit User",
+    "updateUser": "Update User",
+    "optionalForEdit": "leave blank to keep current",
+    "linkToStaff": "Link to Staff Member",
+    "noStaffLink": "No staff member",
+    "createStaffMember": "Create and link new staff member",
+    "userCreatedStaffFailed": "User saved successfully, but failed to create linked staff member"
   }
 }

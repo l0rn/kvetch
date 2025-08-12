@@ -71,12 +71,14 @@ export function ShiftsView({
   };
   return (
     <div className="shifts-view">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <h2>{t('shifts.title')}</h2>
+      <div className="view-header">
+        <h1>{t('shifts.title')}</h1>
         <button onClick={onShowShiftForm} className="btn btn-primary">
           {t('shifts.createShift')}
         </button>
       </div>
+
+      <div className="view-content">
 
       <Modal
         isOpen={showShiftForm}
@@ -90,54 +92,110 @@ export function ShiftsView({
         />
       </Modal>
 
-      <div className="shifts-list">
-        {shifts.map(shift => (
-          <div key={shift.id} className="shift-item" style={{ border: '1px solid #ddd', padding: '15px', marginBottom: '10px', borderRadius: '4px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
-              <div>
-                <h3>{shift.name}</h3>
-                <p><strong>{t('shifts.startDateTime')}:</strong> {new Date(shift.startDateTime).toLocaleString(i18n.language, {year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'})}</p>
-                <p><strong>{t('shifts.endDateTime')}:</strong> {new Date(shift.endDateTime).toLocaleString(i18n.language, {year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'})}</p>
-                <p><strong>{t('shifts.staffCount')}:</strong> {shift.requirements.staffCount}</p>
-                {(() => {
-                  const stats = getShiftAssignmentStats(shift.id);
-                  return (
-                    <p><strong>{t('shifts.assignmentStatus')}:</strong> {stats.totalAssigned}/{stats.totalRequired} {t('shifts.acrossOccurrences', { count: stats.totalOccurrences })}</p>
-                  );
-                })()}
-                {shift.requirements.requiredTraits && shift.requirements.requiredTraits.length > 0 && (
-                  <p><strong>{t('shifts.requiredTraits')}:</strong> {shift.requirements.requiredTraits.map(rt => `${getTraitName(rt.traitId)} (${rt.minCount})`).join(', ')}</p>
-                )}
-                {shift.recurrence && (
-                  <p><strong>{t('shifts.recurrence')}:</strong> {t(`shifts.${shift.recurrence.type}`)} {t('shifts.every')} {shift.recurrence.interval} {shift.recurrence.endDate ? t('shifts.until', { date: shift.recurrence.endDate }) : ''}</p>
-                )}
-              </div>
-              <div>
-                <button onClick={() => onEditShift(shift)} className="btn btn-secondary btn-small" style={{ marginRight: '10px' }}>
-                  {t('shifts.edit')}
-                </button>
-                <button onClick={() => handleDeleteShift(shift)} className="btn btn-danger btn-small">
-                  {t('shifts.delete')}
-                </button>
-              </div>
-            </div>
-          </div>
-        ))}
-        {shifts.length === 0 && (
-          <p>{t('shifts.noShifts')}</p>
-        )}
+        <div className="shifts-table-container">
+          <table className="shifts-table users-table">
+            <thead>
+              <tr>
+                <th>{t('shifts.name')}</th>
+                <th>{t('shifts.schedule')}</th>
+                <th>{t('shifts.requirements')}</th>
+                <th>{t('shifts.assignmentStatus')}</th>
+                <th>{t('shifts.recurrence')}</th>
+                <th>{t('common.actions')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {shifts.map(shift => {
+                const stats = getShiftAssignmentStats(shift.id);
+                return (
+                  <tr key={shift.id}>
+                    <td>
+                      <div className="shift-name">{shift.name}</div>
+                    </td>
+                    <td>
+                      <div className="shift-schedule">
+                        <div className="shift-time">
+                          {new Date(shift.startDateTime).toLocaleString(i18n.language, {month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'})}
+                        </div>
+                        <div className="shift-duration">
+                          {new Date(shift.endDateTime).toLocaleTimeString(i18n.language, {hour: '2-digit', minute: '2-digit'})}
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <div className="shift-requirements">
+                        <div><strong>{t('shifts.staffCountShort')}:</strong> {shift.requirements.staffCount}</div>
+                        {shift.requirements.requiredTraits && shift.requirements.requiredTraits.length > 0 && (
+                          <div className="required-traits">
+                            {shift.requirements.requiredTraits.map(rt => (
+                              <span key={rt.traitId} className="trait-requirement">
+                                {getTraitName(rt.traitId)} ({rt.minCount})
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </td>
+                    <td>
+                      <div className="assignment-status">
+                        <span className={`assignment-ratio ${stats.totalAssigned >= stats.totalRequired ? 'assignment-complete' : 'assignment-incomplete'}`}>
+                          {stats.totalAssigned}/{stats.totalRequired}
+                        </span>
+                        <div className="assignment-occurrences">
+                          {t('shifts.acrossOccurrencesShort', { count: stats.totalOccurrences })}
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      {shift.recurrence ? (
+                        <div className="recurrence-info">
+                          <span className="recurrence-type">{t(`shifts.${shift.recurrence.type}`)}</span>
+                          <div className="recurrence-details">
+                            {t('shifts.every')} {shift.recurrence.interval}
+                            {shift.recurrence.endDate && (
+                              <div>{t('shifts.until', { date: new Date(shift.recurrence.endDate).toLocaleDateString(i18n.language) })}</div>
+                            )}
+                          </div>
+                        </div>
+                      ) : (
+                        <span className="empty-state-inline">{t('shifts.oneTime')}</span>
+                      )}
+                    </td>
+                    <td>
+                      <div className="table-actions">
+                        <button onClick={() => onEditShift(shift)} className="btn btn-sm btn-secondary" style={{ marginRight: '0.5rem' }}>
+                          {t('shifts.edit')}
+                        </button>
+                        <button onClick={() => handleDeleteShift(shift)} className="btn btn-sm btn-danger">
+                          {t('shifts.delete')}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+              {shifts.length === 0 && (
+                <tr>
+                  <td colSpan={6} className="empty-state">
+                    {t('shifts.noShifts')}
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      <ConfirmDialog
-        isOpen={deleteConfirmShift !== null}
-        title={t('shifts.confirmDelete')}
-        message={t('shifts.confirmDeleteMessage', { name: deleteConfirmShift?.name })}
-        question={t('shifts.confirmDeleteQuestion')}
-        confirmText={t('common.delete')}
-        cancelText={t('common.cancel')}
-        onConfirm={confirmDeleteShift}
-        onCancel={cancelDeleteShift}
-      />
+        <ConfirmDialog
+          isOpen={deleteConfirmShift !== null}
+          title={t('shifts.confirmDelete')}
+          message={t('shifts.confirmDeleteMessage', { name: deleteConfirmShift?.name })}
+          question={t('shifts.confirmDeleteQuestion')}
+          confirmText={t('common.delete')}
+          cancelText={t('common.cancel')}
+          onConfirm={confirmDeleteShift}
+          onCancel={cancelDeleteShift}
+        />
     </div>
   );
 }

@@ -48,15 +48,11 @@ function App() {
     Database.getShifts().then(setShifts);
     Database.getStaffMembers().then(setStaff);
     Database.getTraits().then(setAllTraits);
-    Database.getShiftOccurrences().then(storedOccurrences => {
-      // This is tricky, as we need to merge with generated occurrences
-      // We'll handle this reactively below
-    });
   }, []);
 
   // Live updates for all data types
   useEffect(() => {
-    const staffListener = Database.liveGetStaffMembers((change: PouchDB.Core.ChangesResultChange<StaffDoc>) => {
+    const staffListener = Database.liveGetStaffMembers((change: PouchDB.Core.ChangesResponseChange<StaffDoc>) => {
       if (change.deleted) {
         setStaff(prev => prev.filter(s => s.id !== change.id.replace('staff:', '')));
       } else if (change.doc) {
@@ -73,7 +69,7 @@ function App() {
       }
     });
 
-    const traitsListener = Database.liveGetTraits((change: PouchDB.Core.ChangesResultChange<TraitDoc>) => {
+    const traitsListener = Database.liveGetTraits((change: PouchDB.Core.ChangesResponseChange<TraitDoc>) => {
       if (change.deleted) {
         setAllTraits(prev => prev.filter(t => t.id !== change.id.replace('trait:', '')));
       } else if (change.doc) {
@@ -90,7 +86,7 @@ function App() {
       }
     });
 
-    const shiftsListener = Database.liveGetShifts((change: PouchDB.Core.ChangesResultChange<ShiftDoc>) => {
+    const shiftsListener = Database.liveGetShifts((change: PouchDB.Core.ChangesResponseChange<ShiftDoc>) => {
       if (change.deleted) {
         setShifts(prev => prev.filter(s => s.id !== change.id.replace('shift:', '')));
       } else if (change.doc) {

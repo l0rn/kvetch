@@ -137,7 +137,7 @@ export function WeeklyPlanningView({
         case 'properly-staffed':
           statusClassName = 'status-properly-staffed';
           break;
-        case 'under-staffed':
+        case 'understaffed':
           statusClassName = 'status-under-staffed';
           break;
         case 'not-staffed':

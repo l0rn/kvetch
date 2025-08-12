@@ -54,7 +54,7 @@ export function UserManagementView() {
   useEffect(() => {
     if (!canManageUsers) return;
 
-    const userListener = Database.liveGetUsers((change: PouchDB.Core.ChangesResultChange<UserDoc>) => {
+    const userListener = Database.liveGetUsers((change: PouchDB.Core.ChangesResponseChange<UserDoc>) => {
       if (change.deleted) {
         setUsers(prev => prev.filter(u => u.id !== change.id.replace('user:', '')));
       } else if (change.doc) {
@@ -473,7 +473,7 @@ export function UserManagementView() {
             <button
               type="submit"
               className="btn btn-primary"
-              disabled={!formData.name || (!editingUser && !formData.password) || (formData.password && formData.password !== formData.confirmPassword)}
+              disabled={!formData.name || (!editingUser && !formData.password) || (!!formData.password && formData.password !== formData.confirmPassword)}
             >
               {editingUser ? t('userManagement.updateUser') : t('userManagement.createUser')}
             </button>

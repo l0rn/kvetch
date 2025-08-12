@@ -647,10 +647,9 @@ export class Database {
   }
 
   // Generic live query handler
-  private static liveQuery<DocType, ResultType>(
+  private static liveQuery<DocType extends {}>(
     prefix: string,
-    docToResult: (doc: DocType) => ResultType,
-    callback: (change: PouchDB.Core.ChangesResultChange<DocType>) => void
+    callback: (change: PouchDB.Core.ChangesResponseChange<DocType>) => void
   ): PouchDB.Core.Changes<DocType> {
     const changes = this.db.changes<DocType>({
       since: 'now',
@@ -675,20 +674,20 @@ export class Database {
       .sort((a, b) => a.name.localeCompare(b.name));
   }
 
-  static liveGetTraits(callback: (change: PouchDB.Core.ChangesResultChange<TraitDoc>) => void): PouchDB.Core.Changes<TraitDoc> {
-    return this.liveQuery<TraitDoc, Trait>('trait:', this.docToTrait, callback);
+  static liveGetTraits(callback: (change: PouchDB.Core.ChangesResponseChange<TraitDoc>) => void): PouchDB.Core.Changes<TraitDoc> {
+    return this.liveQuery<TraitDoc>('trait:', callback);
   }
 
-  static liveGetShifts(callback: (change: PouchDB.Core.ChangesResultChange<ShiftDoc>) => void): PouchDB.Core.Changes<ShiftDoc> {
-    return this.liveQuery<ShiftDoc, Shift>('shift:', this.docToShift, callback);
+  static liveGetShifts(callback: (change: PouchDB.Core.ChangesResponseChange<ShiftDoc>) => void): PouchDB.Core.Changes<ShiftDoc> {
+    return this.liveQuery<ShiftDoc>('shift:', callback);
   }
 
-  static liveGetShiftOccurrences(callback: (change: PouchDB.Core.ChangesResultChange<ShiftOccurrenceDoc>) => void): PouchDB.Core.Changes<ShiftOccurrenceDoc> {
-    return this.liveQuery<ShiftOccurrenceDoc, ShiftOccurrence>('shift-occurrence:', this.docToShiftOccurrence, callback);
+  static liveGetShiftOccurrences(callback: (change: PouchDB.Core.ChangesResponseChange<ShiftOccurrenceDoc>) => void): PouchDB.Core.Changes<ShiftOccurrenceDoc> {
+    return this.liveQuery<ShiftOccurrenceDoc>('shift-occurrence:', callback);
   }
 
-  static liveGetStaffMembers(callback: (change: PouchDB.Core.ChangesResultChange<StaffDoc>) => void): PouchDB.Core.Changes<StaffDoc> {
-    return this.liveQuery<StaffDoc, StaffMember>('staff:', this.docToStaffMember, callback);
+  static liveGetStaffMembers(callback: (change: PouchDB.Core.ChangesResponseChange<StaffDoc>) => void): PouchDB.Core.Changes<StaffDoc> {
+    return this.liveQuery<StaffDoc>('staff:', callback);
   }
 
   static async saveTrait(trait: Trait): Promise<void> {
@@ -1037,7 +1036,7 @@ export class Database {
     await this.db.put(doc);
   }
 
-  static liveGetUsers(callback: (change: PouchDB.Core.ChangesResultChange<UserDoc>) => void): { cancel: () => void } {
+  static liveGetUsers(callback: (change: PouchDB.Core.ChangesResponseChange<UserDoc>) => void): { cancel: () => void } {
     const changes = this.db.changes<UserDoc>({
       since: 'now',
       live: true,

@@ -1,7 +1,6 @@
 {
-  "syncGatewayUrl": "https://your-sync-gateway.example.com",
+  "couchDBUrl": "https://couchDBUrl",
   "databaseName": "kvetch-shared",
-  "adminApiUrl": "https://your-sync-gateway-admin.example.com",
   "features": {
     "userManagement": true,
     "staffAccounts": true,

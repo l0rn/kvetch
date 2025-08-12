@@ -96,10 +96,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const validateSession = async (session: any): Promise<boolean> => {
     try {
       const config = await AppConfigManager.getConfig();
-      if (!config.remote?.syncGatewayUrl) return false;
+      if (!config.remote?.couchDBUrl) return false;
 
       // Try to access session info to validate with CouchDB
-      const response = await fetch(`${config.remote.syncGatewayUrl}/_session`, {
+      const response = await fetch(`${config.remote.couchDBUrl}/_session`, {
         method: 'GET',
         credentials: 'include'
       });
@@ -122,12 +122,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setError(null);
 
       const config = await AppConfigManager.getConfig();
-      if (!config.multiUserMode || !config.remote?.syncGatewayUrl) {
+      if (!config.multiUserMode || !config.remote?.couchDBUrl) {
         throw new Error('Multi-user mode not enabled');
       }
 
       // Authenticate with CouchDB session API
-      const response = await fetch(`${config.remote.syncGatewayUrl}/_session`, {
+      const response = await fetch(`${config.remote.couchDBUrl}/_session`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
@@ -183,9 +183,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const logout = async (): Promise<void> => {
     try {
       const config = await AppConfigManager.getConfig();
-      if (config.multiUserMode && config.remote?.syncGatewayUrl) {
+      if (config.multiUserMode && config.remote?.couchDBUrl) {
         // Call logout endpoint
-        await fetch(`${config.remote.syncGatewayUrl}/_session`, {
+        await fetch(`${config.remote.couchDBUrl}/_session`, {
           method: 'DELETE',
           credentials: 'include'
         }).catch(() => {
@@ -208,7 +208,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       // Get user info from CouchDB _users database
       const config = await AppConfigManager.getConfig();
-      const baseUrl = config.remote?.syncGatewayUrl; // This is CouchDB URL
+      const baseUrl = config.remote?.couchDBUrl; // This is CouchDB URL
       
       if (baseUrl) {
         // Try to get user document from _users database

@@ -330,11 +330,11 @@ export class Database {
     const config = this.config;
     console.log('📋 Config loaded:', {
       multiUserMode: config.multiUserMode,
-      syncGatewayUrl: config.remote?.syncGatewayUrl,
+      couchDBUrl: config.remote?.couchDBUrl,
       instanceId: config.instanceId
     });
     
-    if (!config.remote?.syncGatewayUrl || !config.instanceId) {
+    if (!config.remote?.couchDBUrl || !config.instanceId) {
       console.log('❌ Missing sync config, cannot start sync');
       this.syncInitializing = false;
       return;
@@ -343,7 +343,7 @@ export class Database {
     // Initialize remote database connection if not already done
     if (!this.remoteDB) {
       // Use cookie-based authentication instead of basic auth
-      const baseUrl = config.remote.syncGatewayUrl;
+      const baseUrl = config.remote.couchDBUrl;
       const remoteUrl = `${baseUrl}/kvetch-instance-${config.instanceId}`;
       
       console.log('🏗️ Initializing PouchDB connection to:', remoteUrl, '(with cookie auth)');

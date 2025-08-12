@@ -2,9 +2,11 @@
 // This is the single entry point for enabling/disabling multi-user features
 
 export interface RemoteConfig {
-  syncGatewayUrl: string;
+  couchDBUrl: string;
   databaseName: string;
-  adminApiUrl?: string;
+  // SaaS mode specific settings
+  isSaaSMode?: boolean;
+  instanceId?: string;
   features?: {
     userManagement?: boolean;
     staffAccounts?: boolean;
@@ -61,21 +63,20 @@ class ConfigManager {
     const envConfig = this.loadFromEnvironment();
     
     // If multi-user mode is enabled, try to load remote config
-    if (envConfig.multiUserMode && !envConfig.remote?.syncGatewayUrl) {
+    if (envConfig.multiUserMode && !envConfig.remote?.couchDBUrl) {
       try {
         const remoteConfig = await this.loadFromRemote();
         
         // Validate that we have required config
-        if (!remoteConfig.syncGatewayUrl) {
-          throw new Error('syncGatewayUrl is required');
+        if (!remoteConfig.couchDBUrl) {
+          throw new Error('couchDBUrl is required');
         }
         
         return {
           ...envConfig,
           remote: {
-            syncGatewayUrl: remoteConfig.syncGatewayUrl,
+            couchDBUrl: remoteConfig.couchDBUrl,
             databaseName: remoteConfig.databaseName || 'kvetch-shared',
-            adminApiUrl: remoteConfig.adminApiUrl,
             features: remoteConfig.features
           }
         };
@@ -108,17 +109,29 @@ class ConfigManager {
 
     if (multiUserEnabled) {
       config.multiUserMode = true;
+      
+      // Determine if this is SaaS mode or self-hosted CouchDB mode
+      const isSaaSMode = import.meta.env.VITE_SAAS_MODE === 'true';
+      const couchDBUrl = import.meta.env.VITE_COUCHDB_URL || 'http://localhost:5984';
+      
+      // In SaaS mode, derive instanceId from domain; otherwise use env var
+      let instanceId = import.meta.env.VITE_INSTANCE_ID;
+      if (isSaaSMode && !isDevelopment) {
+        instanceId = this.extractInstanceIdFromDomain();
+      }
+      
       config.remote = {
-        syncGatewayUrl: import.meta.env.VITE_SYNC_GATEWAY_URL || 'http://localhost:4984',
+        couchDBUrl,
         databaseName: import.meta.env.VITE_DATABASE_NAME || 'kvetch-shared',
-        adminApiUrl: import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:4985',
+        isSaaSMode,
+        instanceId,
         features: {
           userManagement: (import.meta.env.VITE_ENABLE_USER_MANAGEMENT || 'true') === 'true',
           staffAccounts: (import.meta.env.VITE_ENABLE_STAFF_ACCOUNTS || 'true') === 'true',
           instanceSelection: (import.meta.env.VITE_ENABLE_INSTANCE_SELECTION || 'false') === 'true'
         }
       };
-      config.instanceId = import.meta.env.VITE_INSTANCE_ID;
+      config.instanceId = instanceId;
       config.instanceName = import.meta.env.VITE_INSTANCE_NAME;
     }
 
@@ -139,14 +152,15 @@ class ConfigManager {
       const remoteConfig = await response.json();
       
       // Validate required fields
-      if (!remoteConfig.syncGatewayUrl) {
-        throw new Error('syncGatewayUrl is required in remote config');
+      if (!remoteConfig.couchDBUrl) {
+        throw new Error('couchDBUrl is required in remote config');
       }
       
       return {
-        syncGatewayUrl: remoteConfig.syncGatewayUrl,
+        couchDBUrl: remoteConfig.couchDBUrl,
         databaseName: remoteConfig.databaseName || 'kvetch-shared',
-        adminApiUrl: remoteConfig.adminApiUrl,
+        isSaaSMode: remoteConfig.isSaaSMode === true,
+        instanceId: remoteConfig.instanceId,
         features: {
           userManagement: remoteConfig.features?.userManagement !== false,
           staffAccounts: remoteConfig.features?.staffAccounts !== false,
@@ -169,8 +183,8 @@ class ConfigManager {
     return this.config?.remote?.features?.[feature] === true;
   }
 
-  getSyncGatewayUrl(): string | null {
-    return this.config?.remote?.syncGatewayUrl || null;
+  getCouchDBUrl(): string | null {
+    return this.config?.remote?.couchDBUrl || null;
   }
 
   getDatabaseName(): string {
@@ -179,6 +193,32 @@ class ConfigManager {
 
   getInstanceId(): string | null {
     return this.config?.instanceId || null;
+  }
+
+  // Extract instance ID from current domain (for SaaS mode)
+  private extractInstanceIdFromDomain(): string | undefined {
+    if (typeof window === 'undefined') return undefined;
+    
+    const hostname = window.location.hostname;
+    
+    // For custom domains, the SaaS server will handle the mapping
+    // For subdomains like customer1.yourapp.com, extract the subdomain
+    const parts = hostname.split('.');
+    if (parts.length >= 3) {
+      const subdomain = parts[0];
+      // Valid subdomain pattern (not www or admin)
+      if (subdomain && subdomain !== 'www' && subdomain !== 'admin' && subdomain !== 'api') {
+        return subdomain;
+      }
+    }
+    
+    // For custom domains, return the full hostname as identifier
+    // The server will map this to the correct instance
+    if (parts.length >= 2 && !hostname.includes('localhost') && !hostname.includes('127.0.0.1')) {
+      return hostname;
+    }
+    
+    return undefined;
   }
 
   // For testing/development - allow manual override

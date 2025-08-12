@@ -59,9 +59,8 @@ Deploy a `config.json` file to your web server's public directory:
 
 ```json
 {
-  "syncGatewayUrl": "https://your-sync-gateway.example.com",
+  "couchdb": "https://couchdb-url",
   "databaseName": "kvetch-shared",
-  "adminApiUrl": "https://your-sync-gateway-admin.example.com",
   "features": {
     "userManagement": true,
     "staffAccounts": true,
@@ -99,29 +98,15 @@ Deploy a `config.json` file to your web server's public directory:
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `VITE_MULTI_USER_MODE` | `false` | Enable/disable multi-user features |
-| `VITE_SYNC_GATEWAY_URL` | `http://localhost:4984` | Sync Gateway public API |
+| `VITE_COUCHDB_URL` | `http://localhost:5984` | The couchdb url if multi-user mode is enabled |
 | `VITE_DATABASE_NAME` | `kvetch-shared` | Database name |
-| `VITE_ADMIN_API_URL` | `http://localhost:4985` | Sync Gateway admin API |
-| `VITE_INSTANCE_ID` | - | Instance ID for multi-tenant setups |
-| `VITE_INSTANCE_NAME` | - | Display name for instance |
-| `VITE_ENABLE_USER_MANAGEMENT` | `true` | Show user management UI |
-| `VITE_ENABLE_STAFF_ACCOUNTS` | `true` | Allow linking staff to user accounts |
-| `VITE_ENABLE_INSTANCE_SELECTION` | `false` | Enable instance switching |
 
 ### Production Config (/config.json)
 
 ```json
 {
-  "syncGatewayUrl": "https://sync.example.com",
+  "couchDbUrl": "https://couchdburl",
   "databaseName": "kvetch-shared", 
-  "adminApiUrl": "https://admin.example.com",
-  "features": {
-    "userManagement": true,
-    "staffAccounts": true,
-    "instanceSelection": false
-  },
-  "instanceId": "restaurant-1",
-  "instanceName": "Main Restaurant"
 }
 ```
 

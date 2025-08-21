@@ -29,8 +29,6 @@ Create a `.env` file:
 # Enable multi-user mode
 VITE_MULTI_USER_MODE=true
 
-# Point to your CouchDB + Sync Gateway (from kvetch-gateway repo)
-VITE_SYNC_GATEWAY_URL=http://localhost:4984
 VITE_DATABASE_NAME=kvetch-shared
 VITE_ADMIN_API_URL=http://localhost:4985
 

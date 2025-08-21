@@ -116,7 +116,7 @@ class ConfigManager {
       
       // In SaaS mode, derive instanceId from domain; otherwise use env var
       let instanceId = import.meta.env.VITE_INSTANCE_ID;
-      if (isSaaSMode && !isDevelopment) {
+      if (isSaaSMode) {
         instanceId = this.extractInstanceIdFromDomain();
       }
       
@@ -201,6 +201,15 @@ class ConfigManager {
     
     const hostname = window.location.hostname;
     
+    // In development, check for query parameter first
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const instanceParam = urlParams.get('instance');
+      if (instanceParam) {
+        return instanceParam;
+      }
+    }
+    
     // For custom domains, the SaaS server will handle the mapping
     // For subdomains like customer1.yourapp.com, extract the subdomain
     const parts = hostname.split('.');
@@ -225,6 +234,57 @@ class ConfigManager {
   setConfig(config: Partial<AppConfig>): void {
     if (this.config) {
       this.config = { ...this.config, ...config };
+    }
+  }
+
+  // Validate that the current instance exists in SaaS mode
+  async validateInstance(): Promise<{ valid: boolean; instanceName?: string; error?: string }> {
+    if (!this.config?.multiUserMode || !this.config.remote?.isSaaSMode) {
+      return { valid: true }; // Non-SaaS mode doesn't require validation
+    }
+
+    const instanceId = this.config.instanceId;
+    if (!instanceId) {
+      return { valid: false, error: 'No instance ID provided' };
+    }
+
+    try {
+      // Check if instance database exists
+      const couchDBUrl = this.config.remote.couchDBUrl;
+      if (!couchDBUrl) {
+        return { valid: false, error: 'CouchDB URL not configured' };
+      }
+
+      const instanceDbName = `kvetch-instance-${instanceId}`;
+      const response = await fetch(`${couchDBUrl}/${instanceDbName}`, {
+        method: 'HEAD' // Use HEAD to just check existence
+      });
+
+      if (response.status === 404) {
+        return { valid: false, error: 'Instance not found' };
+      } else if (!response.ok) {
+        return { valid: false, error: 'Failed to validate instance' };
+      }
+
+      // Try to get instance info from subscription database
+      try {
+        const subscriptionsResponse = await fetch(`${couchDBUrl}/kvetch-subscriptions/${instanceId}`);
+        if (subscriptionsResponse.ok) {
+          const subscription = await subscriptionsResponse.json();
+          return { 
+            valid: true, 
+            instanceName: subscription.displayName || subscription.customerInfo?.name || instanceId 
+          };
+        }
+      } catch (err) {
+        // Subscription info not available, but instance DB exists
+        console.warn('Could not fetch subscription info:', err);
+      }
+
+      return { valid: true, instanceName: instanceId };
+    } catch (error) {
+      console.error('Instance validation failed:', error);
+      return { valid: false, error: 'Network error during validation' };
     }
   }
 }

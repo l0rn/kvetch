@@ -5,6 +5,9 @@ import { VitePWA } from 'vite-plugin-pwa'
 // https://vite.dev/config/
 export default defineConfig({
   base: '/',
+  server: {
+    allowedHosts: ['foo.kvetch.local', 'bar.kvetch.local'],
+  },
   plugins: [
     react({
       jsxRuntime: 'automatic'

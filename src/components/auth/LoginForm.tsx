@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../auth/AuthContext';
+import { AppConfigManager } from '../../config/AppConfig';
 
 interface LoginFormProps {
   onSuccess?: () => void;
+  instanceName?: string;
 }
 
-export function LoginForm({ onSuccess }: LoginFormProps) {
+export function LoginForm({ onSuccess, instanceName }: LoginFormProps) {
   const { t } = useTranslation();
   const { login, isLoading, error } = useAuth();
   const [formData, setFormData] = useState({
@@ -14,6 +16,25 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
     password: ''
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [currentInstanceName, setCurrentInstanceName] = useState(instanceName);
+
+  useEffect(() => {
+    if (!instanceName) {
+      // Try to get instance name from config
+      const getInstanceName = async () => {
+        const config = await AppConfigManager.getConfig();
+        if (config.multiUserMode && config.remote?.isSaaSMode) {
+          const validation = await AppConfigManager.validateInstance();
+          if (validation.valid && validation.instanceName) {
+            setCurrentInstanceName(validation.instanceName);
+          } else {
+            setCurrentInstanceName(config.instanceId || 'Unknown');
+          }
+        }
+      };
+      getInstanceName();
+    }
+  }, [instanceName]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,6 +60,12 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
         <p className="login-form-subtitle">
           {t('auth.signInSubtitle', 'Access your shift planning workspace')}
         </p>
+        {currentInstanceName && (
+          <div className="instance-branding">
+            <span className="instance-label">{t('auth.workspace', 'Workspace')}</span>
+            <span className="instance-name">{currentInstanceName}</span>
+          </div>
+        )}
       </div>
 
       <form onSubmit={handleSubmit} className="login-form">
@@ -85,8 +112,12 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
         </div>
 
         {error && (
-          <div className="error-message" role="alert">
-            {t('auth.loginError', 'Login failed')}: {error}
+          <div className="auth-error-message" role="alert">
+            <div className="error-icon">⚠️</div>
+            <div className="error-content">
+              <div className="error-title">{t('auth.loginError', 'Login failed')}</div>
+              <div className="error-details">{error}</div>
+            </div>
           </div>
         )}
 

@@ -3,7 +3,9 @@ import { useAppConfig } from './config/AppConfig';
 import { AuthProvider, useAuth } from './auth/AuthContext';
 import { LoginForm } from './components/auth/LoginForm';
 import { UserProfile } from './components/auth/UserProfile';
+import { InstanceNotFound } from './components/InstanceNotFound';
 import { Database } from './storage/database';
+import { AppConfigManager } from './config/AppConfig';
 import { useState, useEffect } from 'react';
 import App from './App';
 import './App.css';
@@ -31,7 +33,7 @@ function ConfigError({ error }: { error: Error }) {
 }
 
 // Authentication gate component
-function AuthenticatedApp() {
+function AuthenticatedApp({ instanceName }: { instanceName?: string }) {
   const { isAuthenticated, isLoading } = useAuth();
   const { config } = useAppConfig();
 
@@ -54,7 +56,7 @@ function AuthenticatedApp() {
             <h1>Kvetch</h1>
             <p>Shift Planning</p>
           </div>
-          <LoginForm />
+          <LoginForm instanceName={instanceName} />
         </div>
       </div>
     );
@@ -65,7 +67,7 @@ function AuthenticatedApp() {
 }
 
 // Enhanced header that shows user info in multi-user mode
-function AppHeader() {
+function AppHeader({ instanceName }: { instanceName?: string }) {
   const { config } = useAppConfig();
   const { isAuthenticated } = useAuth();
 
@@ -75,6 +77,12 @@ function AppHeader() {
 
   return (
     <div className="auth-header">
+      {instanceName && (
+        <div className="header-instance-info">
+          <span className="instance-indicator">🏢</span>
+          <span className="instance-text">{instanceName}</span>
+        </div>
+      )}
       <UserProfile />
     </div>
   );
@@ -85,10 +93,39 @@ function AppContent() {
   const { config, loading, error } = useAppConfig();
   const [dbInitialized, setDbInitialized] = useState(false);
   const [dbError, setDbError] = useState<Error | null>(null);
+  const [instanceValidation, setInstanceValidation] = useState<{
+    checked: boolean;
+    valid: boolean;
+    instanceName?: string;
+    error?: string;
+  }>({ checked: false, valid: true });
 
-  // Initialize database when config is loaded
+  // Validate instance before proceeding
   useEffect(() => {
-    if (config && !dbInitialized) {
+    if (config && !instanceValidation.checked) {
+      AppConfigManager.validateInstance()
+        .then((validation) => {
+          setInstanceValidation({
+            checked: true,
+            valid: validation.valid,
+            instanceName: validation.instanceName,
+            error: validation.error
+          });
+        })
+        .catch((err) => {
+          console.error('❌ Instance validation failed:', err);
+          setInstanceValidation({
+            checked: true,
+            valid: false,
+            error: err.message
+          });
+        });
+    }
+  }, [config, instanceValidation.checked]);
+
+  // Initialize database when config is loaded and instance is validated
+  useEffect(() => {
+    if (config && !dbInitialized && instanceValidation.checked && instanceValidation.valid) {
       Database.init(config)
         .then(() => {
           setDbInitialized(true);
@@ -99,7 +136,7 @@ function AppContent() {
           setDbError(err);
         });
     }
-  }, [config, dbInitialized]);
+  }, [config, dbInitialized, instanceValidation]);
 
   if (loading) {
     return <LoadingScreen />;
@@ -113,6 +150,21 @@ function AppContent() {
     return <ConfigError error={new Error('Configuration not loaded')} />;
   }
 
+  // Show loading while validating instance
+  if (!instanceValidation.checked) {
+    return <LoadingScreen />;
+  }
+
+  // Show 404 if instance validation failed
+  if (!instanceValidation.valid) {
+    return (
+      <InstanceNotFound
+        instanceId={config.instanceId}
+        error={instanceValidation.error}
+      />
+    );
+  }
+
   if (dbError) {
     return <ConfigError error={new Error(`Database initialization failed: ${dbError.message}`)} />;
   }
@@ -123,8 +175,8 @@ function AppContent() {
 
   return (
     <>
-      <AppHeader />
-      <AuthenticatedApp />
+      <AppHeader instanceName={instanceValidation.instanceName} />
+      <AuthenticatedApp instanceName={instanceValidation.instanceName} />
     </>
   );
 }

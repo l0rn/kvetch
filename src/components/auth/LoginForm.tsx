@@ -23,7 +23,7 @@ export function LoginForm({ onSuccess, instanceName }: LoginFormProps) {
       // Try to get instance name from config
       const getInstanceName = async () => {
         const config = await AppConfigManager.getConfig();
-        if (config.multiUserMode && config.remote?.isSaaSMode) {
+        if (config.multiUserMode && config?.isSaaSMode) {
           const validation = await AppConfigManager.validateInstance();
           if (validation.valid && validation.instanceName) {
             setCurrentInstanceName(validation.instanceName);
@@ -131,6 +131,19 @@ export function LoginForm({ onSuccess, instanceName }: LoginFormProps) {
       </form>
 
       <div className="login-form-footer">
+        <div className="login-help-links">
+          <button
+            type="button"
+            className="forgot-password-link"
+            onClick={() => {
+              // This will be handled by the parent component
+              const event = new CustomEvent('showForgotPassword');
+              window.dispatchEvent(event);
+            }}
+          >
+            {t('auth.forgotPassword', 'Forgot Password?')}
+          </button>
+        </div>
         <p className="login-help-text">
           {t('auth.needHelp', 'Need help signing in? Contact your administrator.')}
         </p>

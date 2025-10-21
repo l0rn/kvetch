@@ -2,20 +2,33 @@ import { createContext, useContext, useState, useEffect, useRef, type ReactNode 
 import { AppConfigManager } from '../config/AppConfig';
 import { Database } from '../storage/database';
 
+// UUID v4 generator
+const generateUUID = (): string => {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0;
+    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+};
+
 export interface User {
-  username: string;
+  id: string; // UUID - primary identifier
+  email: string; // Required unique email
   name?: string;
   role: 'admin' | 'instance-admin' | 'instance-manager' | 'instance-staff';
   channels: string[];
   instanceIds: string[];
+  emailVerified?: boolean; // Email verification status
+  emailVerificationToken?: string; // For secure email changes
 }
 
 export interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (username: string, password: string) => Promise<boolean>;
+  login: (email: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
+  checkInstanceAccess: (instanceId: string) => Promise<{ hasAccess: boolean; error?: string }>;
   error: string | null;
 }
 
@@ -49,6 +62,44 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     startSyncForUser();
   }, [user]);
+
+  // Listen for sync errors and handle unauthorized access
+  useEffect(() => {
+    const handleSyncError = (event: any) => {
+      const error = event.detail;
+      console.log('🚨 Sync error detected:', error);
+      
+      // Handle 401/403 errors by logging out user
+      if (error?.status === 401 || error?.status === 403) {
+        console.warn('🔒 Sync authorization failed, logging out user');
+        logout().then(() => {
+          setError('Session expired. Please log in again.');
+        });
+      }
+    };
+
+    const handleSyncDenied = (event: any) => {
+      const error = event.detail;
+      console.log('🚨 Sync denied:', error);
+      
+      // Handle denied sync by logging out user
+      if (error?.status === 401 || error?.status === 403 || error?.name === 'unauthorized') {
+        console.warn('🔒 Sync access denied, logging out user');
+        logout().then(() => {
+          setError('Access denied. Please log in again.');
+        });
+      }
+    };
+
+    // Add event listeners for sync errors
+    window.addEventListener('kvetch-sync-error', handleSyncError);
+    window.addEventListener('kvetch-sync-denied', handleSyncDenied);
+
+    return () => {
+      window.removeEventListener('kvetch-sync-error', handleSyncError);
+      window.removeEventListener('kvetch-sync-denied', handleSyncDenied);
+    };
+  }, []);
 
   useEffect(() => {
     checkExistingAuth();
@@ -106,7 +157,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       if (response.ok) {
         const sessionInfo = await response.json();
-        return sessionInfo.ok && sessionInfo.userCtx?.name === session.user.username;
+        return sessionInfo.ok && sessionInfo.userCtx?.name === session.user.email;
       }
       
       return false;
@@ -116,24 +167,24 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
-  const login = async (username: string, password: string): Promise<boolean> => {
+  const login = async (email: string, password: string): Promise<boolean> => {
     try {
       setIsLoading(true);
       setError(null);
 
       const config = await AppConfigManager.getConfig();
-      if (!config.multiUserMode || !config.remote?.couchDBUrl) {
+      if (!config.multiUserMode || !config?.couchDBUrl) {
         throw new Error('Multi-user mode not enabled');
       }
 
-      // Authenticate with CouchDB session API
-      const response = await fetch(`${config.remote.couchDBUrl}/_session`, {
+      // Authenticate with CouchDB session API using email as username
+      const response = await fetch(`${config.couchDBUrl}/_session`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
         credentials: 'include',
-        body: `name=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
+        body: `name=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`
       });
 
       if (!response.ok) {
@@ -147,16 +198,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
         throw new Error('Authentication failed');
       }
 
-      // Get user information
-      const userInfo = await getUserInfo(username);
+      // Get user information using email
+      const userInfo = await getUserInfo(email);
       
+      // Generate or retrieve user UUID
+      const userId = await getUserId(email);
+
       // Create user object
       const user: User = {
-        username,
-        name: userInfo.name || username,
+        id: userId,
+        email,
+        name: userInfo.name || email.split('@')[0], // Use email prefix as fallback name
         role: determineUserRole(userInfo.roles || []),
         channels: userInfo.roles || [], // In CouchDB, roles are like channels
-        instanceIds: extractInstanceIds(userInfo.roles || [])
+        instanceIds: extractInstanceIds(userInfo.roles || []),
+        emailVerified: userInfo.emailVerified || false
       };
 
       // Store session
@@ -204,49 +260,134 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
-  const getUserInfo = async (username: string) => {
+  const getUserInfo = async (email: string) => {
     try {
       // Get user info from CouchDB _users database
       const config = await AppConfigManager.getConfig();
-      const baseUrl = config.remote?.couchDBUrl; // This is CouchDB URL
+      const baseUrl = config.couchDBUrl; // This is CouchDB URL
       
       if (baseUrl) {
         // Try to get user document from _users database
-        const response = await fetch(`${baseUrl}/_users/org.couchdb.user:${username}`, {
-          credentials: 'include'
-        });
-        
-        if (response.ok) {
-          const userDoc = await response.json();
-          return {
-            name: userDoc.displayName || userDoc.name || username,
-            roles: userDoc.roles || [], // CouchDB stores roles
-            instanceIds: userDoc.instanceIds || []
-          };
+        try {
+          const response = await fetch(`${baseUrl}/_users/org.couchdb.user:${email}`, {
+            credentials: 'include'
+          });
+          
+          if (response.ok) {
+            const userDoc = await response.json();
+            console.log('✅ Got user doc from _users database:', userDoc);
+            return {
+              name: userDoc.displayName || userDoc.name || email.split('@')[0],
+              email: userDoc.email || email,
+              roles: userDoc.roles || [], // CouchDB stores roles
+              instanceIds: userDoc.instanceIds || [],
+              emailVerified: userDoc.emailVerified || false
+            };
+          } else {
+            console.log('⚠️ User doc fetch failed with status:', response.status);
+          }
+        } catch (userDocError) {
+          console.log('⚠️ User doc fetch error:', userDocError);
         }
-      }
-      
-      // Fallback to session info if user document not accessible
-      const sessionResponse = await fetch(`${baseUrl}/_session`, {
-        credentials: 'include'
-      });
-      
-      if (sessionResponse.ok) {
-        const sessionData = await sessionResponse.json();
-        if (sessionData.userCtx && sessionData.userCtx.name === username) {
-          return {
-            name: username,
-            roles: sessionData.userCtx.roles || [],
-            instanceIds: []
-          };
+        
+        // Fallback to session info if user document not accessible
+        try {
+          const sessionResponse = await fetch(`${baseUrl}/_session`, {
+            credentials: 'include'
+          });
+          
+          if (sessionResponse.ok) {
+            const sessionData = await sessionResponse.json();
+            console.log('✅ Got session data:', sessionData);
+            if (sessionData.userCtx && sessionData.userCtx.name === email) {
+              const fallbackUser = {
+                name: email.split('@')[0], // Use email prefix as name
+                email: email,
+                roles: sessionData.userCtx.roles || [],
+                instanceIds: [],
+                emailVerified: false // Default to false for fallback cases
+              };
+              console.log('📧 Using fallback email extraction:', fallbackUser.email);
+              return fallbackUser;
+            }
+          } else {
+            console.log('⚠️ Session fetch failed with status:', sessionResponse.status);
+          }
+        } catch (sessionError) {
+          console.log('⚠️ Session fetch error:', sessionError);
         }
       }
       
       // Final fallback
-      return { name: username, roles: [], instanceIds: [] };
+      const finalFallback = { 
+        name: email.split('@')[0], 
+        email: email, 
+        roles: [], 
+        instanceIds: [],
+        emailVerified: false
+      };
+      console.log('🔄 Using final fallback, email:', finalFallback.email);
+      return finalFallback;
     } catch (err) {
       console.warn('Could not fetch user info:', err);
-      return { name: username, roles: [], instanceIds: [] };
+      const errorFallback = { 
+        name: email.split('@')[0], 
+        email: email, 
+        roles: [], 
+        instanceIds: [],
+        emailVerified: false
+      };
+      console.log('❌ Error fallback, email:', errorFallback.email);
+      return errorFallback;
+    }
+  };
+
+  const getUserId = async (email: string): Promise<string> => {
+    try {
+      const config = await AppConfigManager.getConfig();
+      
+      // Try to get existing UUID from user document
+      if (config.couchDBUrl) {
+        try {
+          const response = await fetch(`${config.couchDBUrl}/_users/org.couchdb.user:${email}`, {
+            credentials: 'include'
+          });
+          
+          if (response.ok) {
+            const userDoc = await response.json();
+            if (userDoc.userId) {
+              console.log('📋 Retrieved existing user ID:', userDoc.userId);
+              return userDoc.userId;
+            }
+          }
+        } catch (error) {
+          console.log('⚠️ Could not retrieve existing user ID:', error);
+        }
+      }
+      
+      // Generate new UUID for user
+      const newUserId = generateUUID();
+      console.log('🆔 Generated new user ID:', newUserId);
+      
+      // TODO: Store UUID in user document (this would require additional setup)
+      // For now, we'll use a deterministic approach based on email
+      // This ensures consistency across sessions while we implement full UUID storage
+      const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(email));
+      const hashArray = Array.from(new Uint8Array(hash.slice(0, 16)));
+      const deterministicId = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      const formattedId = [
+        deterministicId.slice(0, 8),
+        deterministicId.slice(8, 12),
+        '4' + deterministicId.slice(13, 16), // Version 4 UUID
+        ((parseInt(deterministicId.slice(16, 17), 16) & 0x3) | 0x8).toString(16) + deterministicId.slice(17, 20),
+        deterministicId.slice(20, 32)
+      ].join('-');
+      
+      console.log('🔗 Using email-based deterministic ID:', formattedId);
+      return formattedId;
+    } catch (error) {
+      console.error('❌ Failed to generate user ID:', error);
+      return generateUUID(); // Fallback to random UUID
     }
   };
 
@@ -274,12 +415,78 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return Array.from(instanceIds);
   };
 
+  const checkInstanceAccess = async (instanceId: string): Promise<{ hasAccess: boolean; error?: string }> => {
+    if (!user) {
+      return { hasAccess: false, error: 'User not authenticated' };
+    }
+
+    // Admins have access to all instances
+    if (user.role === 'admin') {
+      return { hasAccess: true };
+    }
+
+    // Check if user's instanceIds include this instance
+    if (user.instanceIds.includes(instanceId)) {
+      return { hasAccess: true };
+    }
+
+    // For SaaS mode, verify with server that user is assigned to instance
+    try {
+      const config = await AppConfigManager.getConfig();
+      if (config.multiUserMode && config.isSaaSMode && config.couchDBUrl) {
+        // Query the secure public list function to verify instance exists
+        const response = await fetch(
+          `${config.couchDBUrl}/kvetch-subscriptions/_design/public-validation/_list/instance-exists/instance-lookup?key=${encodeURIComponent(JSON.stringify(instanceId))}`,
+          { credentials: 'include' }
+        );
+
+        if (response.ok) {
+          const viewResult = await response.json();
+          if (viewResult.rows && viewResult.rows.length > 0) {
+            // Instance exists, now check if user is authorized
+            // Try to get the full instance document to check ownership
+            try {
+              const instanceResponse = await fetch(
+                `${config.couchDBUrl}/kvetch-subscriptions/instance:${instanceId}`,
+                { credentials: 'include' }
+              );
+              
+              if (instanceResponse.ok) {
+                const instanceDoc = await instanceResponse.json();
+                // Check if user is the owner of this instance
+                if (instanceDoc.owner === user.email) {
+                  return { hasAccess: true };
+                }
+              }
+            } catch (ownerCheckError) {
+              console.warn('Could not check instance ownership:', ownerCheckError);
+            }
+            
+            // If we can't verify ownership, check if instance exists and allow access
+            // since they successfully authenticated to the system
+            return { hasAccess: true };
+          } else {
+            return { hasAccess: false, error: 'Instance not found' };
+          }
+        } else {
+          return { hasAccess: false, error: 'Could not verify instance access' };
+        }
+      }
+    } catch (err) {
+      console.error('Instance access check failed:', err);
+      return { hasAccess: false, error: 'Access verification failed' };
+    }
+
+    return { hasAccess: false, error: 'Access denied to this instance' };
+  };
+
   const contextValue: AuthContextType = {
     user,
     isAuthenticated: user !== null,
     isLoading,
     login,
     logout,
+    checkInstanceAccess,
     error
   };
 

@@ -29,7 +29,6 @@ Create a `.env` file:
 # Enable multi-user mode
 VITE_MULTI_USER_MODE=true
 
-VITE_DATABASE_NAME=kvetch-shared
 VITE_ADMIN_API_URL=http://localhost:4985
 
 # Optional: Instance configuration
@@ -97,7 +96,6 @@ Deploy a `config.json` file to your web server's public directory:
 |----------|---------|-------------|
 | `VITE_MULTI_USER_MODE` | `false` | Enable/disable multi-user features |
 | `VITE_COUCHDB_URL` | `http://localhost:5984` | The couchdb url if multi-user mode is enabled |
-| `VITE_DATABASE_NAME` | `kvetch-shared` | Database name |
 
 ### Production Config (/config.json)
 

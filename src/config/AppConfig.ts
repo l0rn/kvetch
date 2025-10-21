@@ -1,7 +1,7 @@
-// Centralized configuration system for Kvetch
-// This is the single entry point for enabling/disabling multi-user features
+export interface AppConfig {
+  // Core feature flag - when false, app works as single-user offline-only
+  multiUserMode: boolean;
 
-export interface RemoteConfig {
   couchDBUrl: string;
   databaseName: string;
   // SaaS mode specific settings
@@ -12,18 +12,6 @@ export interface RemoteConfig {
     staffAccounts?: boolean;
     instanceSelection?: boolean;
   };
-}
-
-export interface AppConfig {
-  // Core feature flag - when false, app works as single-user offline-only
-  multiUserMode: boolean;
-  
-  // Remote configuration
-  remote?: RemoteConfig;
-  
-  // Instance configuration (for multi-tenant mode)
-  instanceId?: string;
-  instanceName?: string;
   
   // Development settings
   isDevelopment: boolean;
@@ -53,8 +41,7 @@ class ConfigManager {
       return this.configPromise;
     }
 
-    this.configPromise = this.loadConfig();
-    this.config = await this.configPromise;
+    this.config = await this.loadConfig();
     return this.config;
   }
 
@@ -63,31 +50,12 @@ class ConfigManager {
     const envConfig = this.loadFromEnvironment();
     
     // If multi-user mode is enabled, try to load remote config
-    if (envConfig.multiUserMode && !envConfig.remote?.couchDBUrl) {
-      try {
-        const remoteConfig = await this.loadFromRemote();
+    if (envConfig.multiUserMode) {
+              
+      return {
+        ...envConfig,
+        databaseName: `kvetch-shared-${envConfig.instanceId}`,
         
-        // Validate that we have required config
-        if (!remoteConfig.couchDBUrl) {
-          throw new Error('couchDBUrl is required');
-        }
-        
-        return {
-          ...envConfig,
-          remote: {
-            couchDBUrl: remoteConfig.couchDBUrl,
-            databaseName: remoteConfig.databaseName || 'kvetch-shared',
-            features: remoteConfig.features
-          }
-        };
-      } catch (error) {
-        console.warn('Failed to load remote config, falling back to environment:', error);
-        // If remote config fails, disable multi-user mode
-        return {
-          ...envConfig,
-          multiUserMode: false,
-          remote: undefined
-        };
       }
     }
 
@@ -98,7 +66,7 @@ class ConfigManager {
     const isDevelopment = import.meta.env.DEV;
     
     // Base configuration
-    const config: AppConfig = {
+    let config: Partial<AppConfig> = {
       multiUserMode: false,
       isDevelopment,
       version: import.meta.env.VITE_APP_VERSION || '1.0.0'
@@ -120,7 +88,8 @@ class ConfigManager {
         instanceId = this.extractInstanceIdFromDomain();
       }
       
-      config.remote = {
+      config = {
+        ...config,
         couchDBUrl,
         databaseName: import.meta.env.VITE_DATABASE_NAME || 'kvetch-shared',
         isSaaSMode,
@@ -132,45 +101,9 @@ class ConfigManager {
         }
       };
       config.instanceId = instanceId;
-      config.instanceName = import.meta.env.VITE_INSTANCE_NAME;
     }
 
-    return config;
-  }
-
-  private async loadFromRemote(): Promise<Partial<RemoteConfig>> {
-    // Try to load configuration from /config.json (production deployment)
-    try {
-      const response = await fetch('/config.json', {
-        cache: 'no-cache'
-      });
-      
-      if (!response.ok) {
-        throw new Error(`Config fetch failed: ${response.status}`);
-      }
-      
-      const remoteConfig = await response.json();
-      
-      // Validate required fields
-      if (!remoteConfig.couchDBUrl) {
-        throw new Error('couchDBUrl is required in remote config');
-      }
-      
-      return {
-        couchDBUrl: remoteConfig.couchDBUrl,
-        databaseName: remoteConfig.databaseName || 'kvetch-shared',
-        isSaaSMode: remoteConfig.isSaaSMode === true,
-        instanceId: remoteConfig.instanceId,
-        features: {
-          userManagement: remoteConfig.features?.userManagement !== false,
-          staffAccounts: remoteConfig.features?.staffAccounts !== false,
-          instanceSelection: remoteConfig.features?.instanceSelection === true
-        }
-      };
-    } catch (error) {
-      console.info('Remote config not available:', error);
-      throw error;
-    }
+    return config as AppConfig;
   }
 
   // Helper methods for feature flags
@@ -178,17 +111,17 @@ class ConfigManager {
     return this.config?.multiUserMode === true;
   }
 
-  isFeatureEnabled(feature: keyof NonNullable<RemoteConfig['features']>): boolean {
+  isFeatureEnabled(feature: keyof NonNullable<AppConfig['features']>): boolean {
     if (!this.isMultiUserMode()) return false;
-    return this.config?.remote?.features?.[feature] === true;
+    return this.config?.features?.[feature] === true;
   }
 
   getCouchDBUrl(): string | null {
-    return this.config?.remote?.couchDBUrl || null;
+    return this.config?.couchDBUrl || null;
   }
 
   getDatabaseName(): string {
-    return this.config?.remote?.databaseName || 'kvetch';
+    return this.config?.databaseName || 'kvetch';
   }
 
   getInstanceId(): string | null {
@@ -201,13 +134,11 @@ class ConfigManager {
     
     const hostname = window.location.hostname;
     
-    // In development, check for query parameter first
-    if (hostname === 'localhost' || hostname === '127.0.0.1') {
-      const urlParams = new URLSearchParams(window.location.search);
-      const instanceParam = urlParams.get('instance');
-      if (instanceParam) {
-        return instanceParam;
-      }
+    // Check for query parameter first
+    const urlParams = new URLSearchParams(window.location.search);
+    const instanceParam = urlParams.get('instance');
+    if (instanceParam) {
+      return instanceParam;
     }
     
     // For custom domains, the SaaS server will handle the mapping
@@ -239,7 +170,7 @@ class ConfigManager {
 
   // Validate that the current instance exists in SaaS mode
   async validateInstance(): Promise<{ valid: boolean; instanceName?: string; error?: string }> {
-    if (!this.config?.multiUserMode || !this.config.remote?.isSaaSMode) {
+    if (!this.config?.multiUserMode || !this.config?.isSaaSMode) {
       return { valid: true }; // Non-SaaS mode doesn't require validation
     }
 
@@ -248,40 +179,58 @@ class ConfigManager {
       return { valid: false, error: 'No instance ID provided' };
     }
 
+    // In development mode (localhost), skip strict validation
+    if (this.config.isDevelopment && (
+      window.location.hostname === 'localhost' || 
+      window.location.hostname === '127.0.0.1'
+    )) {
+      console.log('Development mode: skipping strict instance validation');
+      return { valid: true, instanceName: instanceId };
+    }
+
     try {
-      // Check if instance database exists
-      const couchDBUrl = this.config.remote.couchDBUrl;
+      // Use public view to validate instance existence without exposing personal data
+      const couchDBUrl = this.config.couchDBUrl;
       if (!couchDBUrl) {
         return { valid: false, error: 'CouchDB URL not configured' };
       }
 
-      const instanceDbName = `kvetch-instance-${instanceId}`;
-      const response = await fetch(`${couchDBUrl}/${instanceDbName}`, {
-        method: 'HEAD' // Use HEAD to just check existence
-      });
-
-      if (response.status === 404) {
-        return { valid: false, error: 'Instance not found' };
-      } else if (!response.ok) {
-        return { valid: false, error: 'Failed to validate instance' };
-      }
-
-      // Try to get instance info from subscription database
       try {
-        const subscriptionsResponse = await fetch(`${couchDBUrl}/kvetch-subscriptions/${instanceId}`);
-        if (subscriptionsResponse.ok) {
-          const subscription = await subscriptionsResponse.json();
-          return { 
-            valid: true, 
-            instanceName: subscription.displayName || subscription.customerInfo?.name || instanceId 
-          };
+        // Query the secure public list function that requires explicit key
+        const publicResponse = await fetch(
+          `${couchDBUrl}/kvetch-subscriptions/_design/public-validation/_list/instance-exists/instance-lookup?key=${encodeURIComponent(JSON.stringify(instanceId))}`
+        );
+        
+        if (publicResponse.ok) {
+          const viewResult = await publicResponse.json();
+          if (viewResult.rows && viewResult.rows.length > 0) {
+            const instanceData = viewResult.rows[0].value;
+            if (instanceData.status === 'active') {
+              return { 
+                valid: true, 
+                instanceName: instanceData.name || instanceId 
+              };
+            } else {
+              return { valid: false, error: `Instance is ${instanceData.status}` };
+            }
+          } else {
+            return { valid: false, error: 'Instance not found' };
+          }
+        } else if (publicResponse.status === 404) {
+          return { valid: false, error: 'Instance not found' };
+        } else {
+          console.warn('Public view returned error:', publicResponse.status, publicResponse.statusText);
         }
       } catch (err) {
-        // Subscription info not available, but instance DB exists
-        console.warn('Could not fetch subscription info:', err);
+        console.warn('Could not fetch instance validation:', err);
       }
 
-      return { valid: true, instanceName: instanceId };
+      // If subscription check fails, assume valid for development
+      if (this.config.isDevelopment) {
+        return { valid: true, instanceName: instanceId };
+      }
+
+      return { valid: false, error: 'Instance validation failed' };
     } catch (error) {
       console.error('Instance validation failed:', error);
       return { valid: false, error: 'Network error during validation' };
@@ -310,8 +259,8 @@ export function useAppConfig() {
     loading,
     error,
     isMultiUserMode: config?.multiUserMode === true,
-    isFeatureEnabled: (feature: keyof NonNullable<RemoteConfig['features']>) => 
-      config?.multiUserMode === true && config?.remote?.features?.[feature] === true
+    isFeatureEnabled: (feature: keyof NonNullable<AppConfig['features']>) => 
+      config?.multiUserMode === true && config?.features?.[feature] === true
   };
 }
 

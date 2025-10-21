@@ -4,9 +4,13 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/',
+  base: process.env.BASE_URL,
   server: {
-    allowedHosts: ['foo.kvetch.local', 'bar.kvetch.local'],
+    allowedHosts: [
+      'dev.kvetchapp.de',
+      '.dev.kvetchapp.de', // Allow all subdomains
+      'localhost'
+    ],
   },
   plugins: [
     react({

@@ -1,7 +1,9 @@
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, useLocation, Routes, Route } from 'react-router-dom';
 import { useAppConfig } from './config/AppConfig';
 import { AuthProvider, useAuth } from './auth/AuthContext';
 import { LoginForm } from './components/auth/LoginForm';
+import { ForgotPasswordForm } from './components/auth/ForgotPasswordForm';
+import { ResetPasswordForm } from './components/auth/ResetPasswordForm';
 import { UserProfile } from './components/auth/UserProfile';
 import { InstanceNotFound } from './components/InstanceNotFound';
 import { Database } from './storage/database';
@@ -32,10 +34,40 @@ function ConfigError({ error }: { error: Error }) {
   );
 }
 
-// Authentication gate component
-function AuthenticatedApp({ instanceName }: { instanceName?: string }) {
-  const { isAuthenticated, isLoading } = useAuth();
+// Authentication and public routes component
+function AuthenticationRouter({ instanceName }: { instanceName?: string }) {
+  const { isAuthenticated, isLoading, checkInstanceAccess } = useAuth();
   const { config } = useAppConfig();
+  const location = useLocation();
+  const [authView, setAuthView] = useState<'login' | 'forgot-password'>('login');
+  const [instanceAccess, setInstanceAccess] = useState<{
+    checked: boolean;
+    hasAccess: boolean;
+    error?: string;
+  }>({ checked: false, hasAccess: true });
+
+  // Check instance access after authentication - ALWAYS declare hooks at top level
+  useEffect(() => {
+    if (isAuthenticated && config?.instanceId && !instanceAccess.checked) {
+      checkInstanceAccess(config.instanceId).then((result) => {
+        setInstanceAccess({
+          checked: true,
+          hasAccess: result.hasAccess,
+          error: result.error
+        });
+      });
+    }
+  }, [isAuthenticated, config?.instanceId, instanceAccess.checked, checkInstanceAccess]);
+
+  // Handle forgot password event from LoginForm
+  useEffect(() => {
+    const handleShowForgotPassword = () => {
+      setAuthView('forgot-password');
+    };
+
+    window.addEventListener('showForgotPassword', handleShowForgotPassword);
+    return () => window.removeEventListener('showForgotPassword', handleShowForgotPassword);
+  }, []);
 
   // If not in multi-user mode, render app directly
   if (!config?.multiUserMode) {
@@ -47,7 +79,34 @@ function AuthenticatedApp({ instanceName }: { instanceName?: string }) {
     return <LoadingScreen />;
   }
 
-  // Show login form if not authenticated in multi-user mode
+  // Check for password reset route - accessible without authentication
+  if (location.pathname === '/reset-password') {
+    const urlParams = new URLSearchParams(location.search);
+    const token = urlParams.get('token');
+    
+    return (
+      <div className="login-screen">
+        <div className="login-container">
+          <div className="app-branding">
+            <h1>Kvetch</h1>
+            <p>Shift Planning</p>
+          </div>
+          <ResetPasswordForm 
+            token={token || ''}
+            onSuccess={() => {
+              // Redirect to login after successful reset
+              window.location.href = '/';
+            }}
+            onError={(error) => {
+              console.error('Reset password error:', error);
+            }}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  // Show login/forgot password form if not authenticated in multi-user mode
   if (!isAuthenticated) {
     return (
       <div className="login-screen">
@@ -56,7 +115,38 @@ function AuthenticatedApp({ instanceName }: { instanceName?: string }) {
             <h1>Kvetch</h1>
             <p>Shift Planning</p>
           </div>
-          <LoginForm instanceName={instanceName} />
+          {authView === 'login' ? (
+            <LoginForm instanceName={instanceName} />
+          ) : (
+            <ForgotPasswordForm 
+              onBack={() => setAuthView('login')}
+              onSuccess={() => {
+                // Show success message and go back to login
+                setTimeout(() => setAuthView('login'), 3000);
+              }}
+            />
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Show loading while checking instance access
+  if (isAuthenticated && config?.instanceId && !instanceAccess.checked) {
+    return <LoadingScreen />;
+  }
+
+  // Show access denied message if user doesn't have access to this instance
+  if (isAuthenticated && config?.instanceId && !instanceAccess.hasAccess) {
+    return (
+      <div className="access-denied-screen">
+        <div className="access-denied-container">
+          <div className="app-branding">
+            <h1>Access Denied</h1>
+            <p>You don't have access to this instance: <strong>{instanceName || config.instanceId}</strong></p>
+            {instanceAccess.error && <p className="error-message">{instanceAccess.error}</p>}
+            <p>Please contact your administrator to get access to this instance.</p>
+          </div>
         </div>
       </div>
     );
@@ -176,7 +266,7 @@ function AppContent() {
   return (
     <>
       <AppHeader instanceName={instanceValidation.instanceName} />
-      <AuthenticatedApp instanceName={instanceValidation.instanceName} />
+      <AuthenticationRouter instanceName={instanceValidation.instanceName} />
     </>
   );
 }

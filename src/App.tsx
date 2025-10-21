@@ -11,6 +11,8 @@ import { ShiftsView } from './components/views/ShiftsView';
 import { StaffView } from './components/views/StaffView';
 import { WeeklyPlanningView } from './components/views/WeeklyPlanningView';
 import { UserManagementView } from './components/views/UserManagementView';
+import { UserSettingsView } from './components/views/UserSettingsView';
+import { EmailVerificationView } from './components/views/EmailVerificationView';
 import { ShiftOccurrenceForm } from './components/forms/ShiftOccurrenceForm';
 import { Modal } from './components/Modal';
 import { LanguageSwitcher } from './components/LanguageSwitcher';
@@ -20,6 +22,7 @@ import { useToast } from './hooks/useToast';
 import './i18n';
 import './App.css';
 import './styles/auth.css';
+import './styles/settings.css';
 import { setDefaultOptions } from 'date-fns';
 
 function App() {
@@ -312,6 +315,14 @@ function App() {
                 {t('navigation.users', 'Users')}
               </Link>
             )}
+            {user && (
+              <Link 
+                to="/settings"
+                className={`nav-link ${location.pathname === '/settings' ? 'active' : ''}`}
+              >
+                {t('navigation.settings', 'Settings')}
+              </Link>
+            )}
           </nav>
           
           <div className="header-actions">
@@ -324,7 +335,7 @@ function App() {
         </div>
       </header>
 
-      <main className="app-main">
+      <main className="app-main">        
         <Routes>
           <Route path="/" element={<Navigate to="/planning" replace />} />
           <Route 
@@ -392,6 +403,14 @@ function App() {
               element={<UserManagementView />} 
             />
           )}
+          <Route 
+            path="/settings" 
+            element={<UserSettingsView />} 
+          />
+          <Route 
+            path="/verify-email" 
+            element={<EmailVerificationView />} 
+          />
         </Routes>
         
         {/* Occurrence Edit Modal */}

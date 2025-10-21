@@ -666,6 +666,47 @@
   }
 }
 
+/* Access denied screen styles */
+.access-denied-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: var(--background-color);
+  padding: 20px;
+}
+
+.access-denied-container {
+  max-width: 500px;
+  padding: 40px;
+  background-color: var(--card-background-color, #fff);
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.access-denied-container h1 {
+  color: #e74c3c;
+  margin-bottom: 20px;
+  font-size: 2rem;
+}
+
+.access-denied-container p {
+  margin-bottom: 15px;
+  line-height: 1.6;
+  color: var(--text-color);
+}
+
+.access-denied-container .error-message {
+  color: #e74c3c;
+  font-style: italic;
+  background-color: #fdf2f2;
+  padding: 10px;
+  border-radius: 6px;
+  border-left: 4px solid #e74c3c;
+}
+
 /* Mobile Styles */
 @media (max-width: 480px) {
   .weekly-planning-container {

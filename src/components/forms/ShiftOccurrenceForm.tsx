@@ -22,6 +22,7 @@ export function ShiftOccurrenceForm({ occurrence, onSave, onCancel }: ShiftOccur
     endDateTime: toLocalDateTimeInputValue(occurrence.endDateTime),
     staffCount: occurrence.requirements.staffCount,
     requiredTraits: occurrence.requirements.requiredTraits || [],
+    excludedTraits: occurrence.requirements.excludedTraits || [],
     assignedStaff: occurrence.assignedStaff || [],
   });
 
@@ -74,6 +75,7 @@ export function ShiftOccurrenceForm({ occurrence, onSave, onCancel }: ShiftOccur
       requirements: {
         staffCount: formData.staffCount,
         requiredTraits: formData.requiredTraits.length > 0 ? formData.requiredTraits : undefined,
+        excludedTraits: formData.excludedTraits.length > 0 ? formData.excludedTraits : undefined,
       },
       assignedStaff: formData.assignedStaff,
       isModified: true, // Mark as modified since it's different from parent shift

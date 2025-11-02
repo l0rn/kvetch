@@ -43,6 +43,7 @@ export function ShiftForm({ initialShift, onSave, onCancel }: ShiftFormProps) {
     recurrenceEndDate: initialShift?.recurrence?.endDate || '',
     recurrenceWeekdays: initialShift?.recurrence?.weekdays || [],
     requiredTraits: initialShift?.requirements.requiredTraits || [],
+    excludedTraits: initialShift?.requirements.excludedTraits || [],
   });
 
   useEffect(() => {
@@ -83,17 +84,26 @@ export function ShiftForm({ initialShift, onSave, onCancel }: ShiftFormProps) {
     // Check trait requirement changes
     const oldTraits = initialShift.requirements.requiredTraits || [];
     const newTraits = newShiftData.requirements?.requiredTraits ?? [];
-    
+
     if (oldTraits.length !== newTraits.length) return true;
-    
+
     // Check if traits or their min counts changed
     for (let i = 0; i < oldTraits.length; i++) {
       const oldTrait = oldTraits[i];
       const newTrait = newTraits.find(t => t.traitId === oldTrait.traitId);
-      
+
       if (!newTrait || newTrait.minCount !== oldTrait.minCount) {
         return true;
       }
+    }
+
+    // Check excluded traits changes
+    const oldExcluded = initialShift.requirements.excludedTraits || [];
+    const newExcluded = newShiftData.requirements?.excludedTraits || [];
+
+    if (oldExcluded.length !== newExcluded.length ||
+        JSON.stringify(oldExcluded.sort()) !== JSON.stringify(newExcluded.sort())) {
+      return true;
     }
 
     return false;
@@ -118,6 +128,7 @@ export function ShiftForm({ initialShift, onSave, onCancel }: ShiftFormProps) {
       requirements: {
         staffCount: formData.staffCount,
         requiredTraits: formData.requiredTraits.length > 0 ? formData.requiredTraits : undefined,
+        excludedTraits: formData.excludedTraits.length > 0 ? formData.excludedTraits : undefined,
       },
       recurrence: formData.hasRecurrence ? {
         type: formData.recurrenceType as 'daily' | 'weekly' | 'monthly',
@@ -171,6 +182,31 @@ export function ShiftForm({ initialShift, onSave, onCancel }: ShiftFormProps) {
     setFormData(prev => ({
       ...prev,
       requiredTraits: prev.requiredTraits.filter((_, i) => i !== index)
+    }));
+  };
+
+  const handleExcludedTraitSelect = async (trait: Trait) => {
+    let traitToUse = trait;
+
+    // If trait doesn't have an ID, create it
+    if (!trait.id) {
+      traitToUse = await Database.createOrFindTrait(trait.name);
+    }
+
+    setFormData(prev => ({
+      ...prev,
+      excludedTraits: [...prev.excludedTraits, traitToUse.id]
+    }));
+
+    // Always refresh traits list after selection (in case a new trait was created)
+    const allTraits = await Database.getTraits();
+    setTraits(allTraits);
+  };
+
+  const removeExcludedTrait = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      excludedTraits: prev.excludedTraits.filter((_, i) => i !== index)
     }));
   };
 
@@ -275,6 +311,31 @@ export function ShiftForm({ initialShift, onSave, onCancel }: ShiftFormProps) {
               <div key={index} className="required-trait-item">
                 <span>{getTraitName(requiredTrait.traitId)} ({t('shifts.minimum')} {requiredTrait.minCount})</span>
                 <button type="button" onClick={() => removeRequiredTrait(index)} className="btn btn-danger btn-xs">
+                  {t('shifts.remove')}
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="form-group">
+        <label className="form-label">
+          {t('shifts.excludedTraits')}
+        </label>
+        <TraitAutocomplete
+          traits={traits}
+          selectedTraits={formData.excludedTraits.map(traitId => ({ traitId, minCount: 1 }))}
+          onTraitSelect={handleExcludedTraitSelect}
+          placeholder={t('shifts.searchCreateExcludedTrait')}
+          allowMinCount={false}
+        />
+        {formData.excludedTraits.length > 0 && (
+          <div className="required-trait-list">
+            {formData.excludedTraits.map((traitId, index) => (
+              <div key={index} className="required-trait-item">
+                <span>{getTraitName(traitId)}</span>
+                <button type="button" onClick={() => removeExcludedTrait(index)} className="btn btn-danger btn-xs">
                   {t('shifts.remove')}
                 </button>
               </div>

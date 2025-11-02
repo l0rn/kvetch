@@ -372,6 +372,16 @@ function buildSchedulingModel(
           isAvailable = false;
         }
       }
+
+      // Check excluded traits - staff with these traits cannot be scheduled
+      if (shift.requirements.excludedTraits && shift.requirements.excludedTraits.length > 0) {
+        for (const excludedTraitId of shift.requirements.excludedTraits) {
+          if (staffMember.traitIds.includes(excludedTraitId)) {
+            isAvailable = false;
+            break;
+          }
+        }
+      }
       
       if (isAvailable) {
         const varName = `x_${staffMember.id}_${shift.id}`;

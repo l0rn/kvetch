@@ -4,16 +4,35 @@
     "shifts": "Schichten",
     "staff": "Personal",
     "planning": "Planung",
-    "users": "Benutzer"
+    "users": "Benutzer",
+    "staffBlockedTimes": "Blockierte Zeiten"
+  },
+  "data": {
+    "exportData": "Daten exportieren",
+    "importData": "Daten importieren",
+    "exportSuccess": "Daten erfolgreich exportiert",
+    "importSuccess": "Daten erfolgreich importiert: {{success}} Dokumente",
+    "importError": "Fehler beim Importieren der Daten: {{error}}",
+    "importPartialSuccess": "Import abgeschlossen mit {{success}} erfolgreichen und {{errors}} fehlgeschlagenen Dokumenten",
+    "selectFile": "JSON-Datei zum Importieren auswählen"
   },
   "calendar": {
     "sunday": "So",
     "monday": "Mo",
-    "tuesday": "Di", 
+    "tuesday": "Di",
     "wednesday": "Mi",
     "thursday": "Do",
     "friday": "Fr",
-    "saturday": "Sa"
+    "saturday": "Sa",
+    "showAll": "Alle anzeigen",
+    "filterByStaff": "Nach Personal filtern",
+    "recurringEvent": "Wiederkehrend",
+    "agenda": "Agenda",
+    "date": "Datum",
+    "time": "Zeit",
+    "event": "Ereignis",
+    "noBlockedTimes": "Keine blockierten Zeiten in diesem Zeitraum",
+    "timeRange": "Zeitbereich"
   },
   "shifts": {
     "title": "Schichten",
@@ -65,7 +84,11 @@
     "requirements": "Anforderungen",
     "staffCountShort": "Personal",
     "acrossOccurrencesShort": "{{count}}x",
-    "oneTime": "einmalig"
+    "oneTime": "einmalig",
+    "excludedTraits": "Ausgeschlossene Eigenschaften (Anti-Traits)",
+    "searchCreateExcludedTrait": "Ausgeschlossene Eigenschaft suchen oder erstellen...",
+    "excluded": "Ausgeschlossen",
+    "required": "Erforderlich"
   },
   "staff": {
     "title": "Mitarbeiter",
@@ -151,7 +174,14 @@
     "print": "Drucken",
     "printTooltip": "Wöchentlichen Schichtplan drucken",
     "constraintViolation": "Einschränkungsverletzung",
-    "constraintWarning": "Einschränkungswarnung"
+    "constraintWarning": "Einschränkungswarnung",
+    "clickToPreviewSchedulability": "Klicken Sie, um eine Vorschau anzuzeigen, für welche Schichten dieses Personalmitglied eingeplant werden kann",
+    "clickToDeselect": "Klicken Sie zum Abwählen und Ausblenden der Planbarkeitsvorschau",
+    "canSchedule": "Dieses Personalmitglied kann für diese Schicht eingeplant werden",
+    "cannotSchedule": "Kann dieses Personalmitglied nicht einplanen",
+    "missingRequiredTrait": "Fehlende erforderliche Eigenschaft(en): {{traits}}",
+    "hasExcludedTrait": "Hat ausgeschlossene Eigenschaft(en): {{traits}}",
+    "insufficientSlotsForTrait": "Nur {{slotsLeft}} Platz/Plätze übrig für {{stillNeeded}} erforderliche {{trait}}"
   },
   "shiftOccurrence": {
     "editingOccurrence": "Einzelnes Vorkommen bearbeiten",
@@ -216,7 +246,8 @@
     "edit": "Bearbeiten",
     "actions": "Aktionen",
     "none": "Keine",
-    "notAvailable": "N/V"
+    "notAvailable": "N/V",
+    "day": "Tag"
   },
   "validation": {
     "endAfterStart": "End- und -zeit müssen nach Start- und -zeit liegen.",

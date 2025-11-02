@@ -1,0 +1,160 @@
+.calendar-view {
+  padding: 20px;
+}
+
+.calendar-container {
+  background: var(--white);
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.calendar-filters {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  border: 1px solid var(--accent-gray);
+}
+
+.calendar-filters span {
+  color: var(--text-color);
+}
+
+/* Base calendar styling */
+.rbc-calendar {
+  font-family: inherit;
+  color: var(--text-color);
+}
+
+/* Header styling */
+.rbc-header {
+  padding: 10px 3px;
+  font-weight: 600;
+  font-size: 14px;
+  background: var(--background-color);
+  color: var(--text-color);
+  border-color: var(--accent-gray);
+}
+
+/* Main calendar views */
+.rbc-month-view {
+  background: var(--white);
+  border: 1px solid var(--accent-gray);
+}
+
+.rbc-time-view {
+  background: var(--white);
+  border: 1px solid var(--accent-gray);
+}
+
+/* Day cells for month view */
+.rbc-day-bg {
+  background: var(--white);
+}
+
+.rbc-off-range-bg {
+  background: var(--background-color);
+}
+
+.rbc-today {
+  background-color: var(--warning-background);
+}
+
+/* Events */
+.rbc-event {
+  padding: 2px 5px;
+  font-size: 12px;
+}
+
+/* Toolbar */
+.rbc-toolbar {
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.rbc-toolbar button {
+  color: var(--text-color);
+  background: var(--background-color);
+  border: 1px solid var(--accent-gray);
+  font-size: 14px;
+  padding: 6px 12px;
+}
+
+.rbc-toolbar button:hover {
+  background: var(--input-background);
+  border-color: var(--accent-gray);
+}
+
+.rbc-toolbar button:active,
+.rbc-toolbar button.rbc-active {
+  background-color: var(--primary-color);
+  color: var(--text-color-inverted);
+  border-color: var(--primary-color);
+}
+
+/* Month view - minimize gridlines */
+.rbc-month-row {
+  border-top: 1px solid var(--accent-gray);
+}
+
+.rbc-month-row:first-child {
+  border-top: none;
+}
+
+.rbc-date-cell {
+  border-left: 1px solid var(--accent-gray);
+}
+
+.rbc-date-cell:first-child {
+  border-left: none;
+}
+
+.rbc-date-cell a {
+  color: var(--text-color);
+}
+
+/* Week/Day view time slots - minimize gridlines */
+.rbc-time-header-content {
+  border-left: 1px solid var(--accent-gray);
+}
+
+.rbc-day-slot {
+  border-left: 1px solid var(--accent-gray);
+}
+
+.rbc-day-slot:first-child {
+  border-left: none;
+}
+
+.rbc-time-slot {
+  border-top: 1px solid rgba(128, 128, 128, 0.1);
+}
+
+.rbc-time-header-cell {
+  color: var(--text-color);
+}
+
+.rbc-label {
+  color: var(--text-color-light);
+}
+
+.rbc-current-time-indicator {
+  background-color: var(--primary-color);
+}
+
+.rbc-time-gutter {
+  color: var(--text-color-light);
+}
+
+.rbc-allday-cell {
+  color: var(--text-color);
+}
+
+@media print {
+  .calendar-filters {
+    display: none;
+  }
+
+  .rbc-toolbar {
+    display: none;
+  }
+}

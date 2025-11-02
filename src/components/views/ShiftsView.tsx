@@ -127,9 +127,20 @@ export function ShiftsView({
                         <div><strong>{t('shifts.staffCountShort')}:</strong> {shift.requirements.staffCount}</div>
                         {shift.requirements.requiredTraits && shift.requirements.requiredTraits.length > 0 && (
                           <div className="required-traits">
+                            <div style={{ fontSize: '0.85em', color: '#666', marginBottom: '2px' }}>{t('shifts.required')}:</div>
                             {shift.requirements.requiredTraits.map(rt => (
                               <span key={rt.traitId} className="trait-requirement">
                                 {getTraitName(rt.traitId)} ({rt.minCount})
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                        {shift.requirements.excludedTraits && shift.requirements.excludedTraits.length > 0 && (
+                          <div className="excluded-traits" style={{ marginTop: '4px' }}>
+                            <div style={{ fontSize: '0.85em', color: '#666', marginBottom: '2px' }}>{t('shifts.excluded')}:</div>
+                            {shift.requirements.excludedTraits.map(traitId => (
+                              <span key={traitId} className="trait-requirement" style={{ backgroundColor: '#fee', color: '#c33' }}>
+                                {getTraitName(traitId)}
                               </span>
                             ))}
                           </div>

@@ -107,3 +107,49 @@
   font-size: 24px;
   font-weight: bold;
 }
+
+/* Staff selection and schedulability preview */
+.staff-selected {
+  box-shadow: 0 0 0 3px var(--primary-color, #007bff) !important;
+  border-color: var(--primary-color, #007bff) !important;
+  background-color: rgba(0, 123, 255, 0.1) !important;
+}
+
+.schedulability-indicator {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+  z-index: 10;
+  cursor: help;
+  transition: transform 0.2s;
+}
+
+.schedulability-indicator:hover {
+  transform: scale(1.2);
+}
+
+.schedulability-indicator.schedulable {
+  background-color: #28a745;
+  color: white;
+}
+
+.schedulability-indicator.blocked {
+  background-color: #dc3545;
+  color: white;
+}
+
+.shift-schedulable {
+  border: 2px solid #28a745 !important;
+}
+
+.shift-blocked {
+  border: 2px solid #dc3545 !important;
+}

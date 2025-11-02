@@ -13,10 +13,12 @@ import { WeeklyPlanningView } from './components/views/WeeklyPlanningView';
 import { UserManagementView } from './components/views/UserManagementView';
 import { UserSettingsView } from './components/views/UserSettingsView';
 import { EmailVerificationView } from './components/views/EmailVerificationView';
+import { StaffBlockedTimeCalendar } from './components/views/StaffBlockedTimeCalendar';
 import { ShiftOccurrenceForm } from './components/forms/ShiftOccurrenceForm';
 import { Modal } from './components/Modal';
 import { LanguageSwitcher } from './components/LanguageSwitcher';
 import { HamburgerMenu } from './components/HamburgerMenu';
+import { DataManagement } from './components/DataManagement';
 import { ToastContainer } from './components/Toast';
 import { useToast } from './hooks/useToast';
 import './i18n';
@@ -301,11 +303,17 @@ function App() {
             >
               {t('navigation.staff')}
             </Link>
-            <Link 
+            <Link
               to="/planning"
               className={`nav-link ${location.pathname.startsWith('/planning') ? 'active' : ''}`}
             >
               {t('navigation.planning')}
+            </Link>
+            <Link
+              to="/calendar"
+              className={`nav-link ${location.pathname === '/calendar' ? 'active' : ''}`}
+            >
+              {t('navigation.calendar')}
             </Link>
             {isFeatureEnabled('userManagement') && (user?.role === 'admin' || user?.role === 'instance-admin' || user?.role === 'instance-manager') && (
               <Link 
@@ -326,10 +334,12 @@ function App() {
           </nav>
           
           <div className="header-actions">
+            <DataManagement onShowToast={addToast} />
             <LanguageSwitcher />
-            <HamburgerMenu 
-              onLanguageChange={i18n.changeLanguage} 
-              currentLanguage={i18n.language} 
+            <HamburgerMenu
+              onLanguageChange={i18n.changeLanguage}
+              currentLanguage={i18n.language}
+              onShowToast={addToast}
             />
           </div>
         </div>
@@ -379,8 +389,8 @@ function App() {
             path="/planning" 
             element={<Navigate to={`/planning/${new Date().toISOString().split('T')[0]}`} replace />} 
           />
-          <Route 
-            path="/planning/:weekStr" 
+          <Route
+            path="/planning/:weekStr"
             element={
               <WeeklyPlanningView
                 shiftOccurrences={shiftOccurrences}
@@ -395,7 +405,11 @@ function App() {
                   setShowOccurrenceForm(true);
                 }}
               />
-            } 
+            }
+          />
+          <Route
+            path="/calendar"
+            element={<StaffBlockedTimeCalendar />}
           />
           {isFeatureEnabled('userManagement') && (
             <Route 

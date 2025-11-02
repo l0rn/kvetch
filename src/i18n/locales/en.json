@@ -1,19 +1,38 @@
 {
   "navigation": {
     "calendar": "Calendar",
-    "shifts": "Shifts", 
+    "shifts": "Shifts",
     "staff": "Staff",
     "planning": "Planning",
-    "users": "Users"
+    "users": "Users",
+    "staffBlockedTimes": "Staff Blocked Times"
+  },
+  "data": {
+    "exportData": "Export Data",
+    "importData": "Import Data",
+    "exportSuccess": "Data exported successfully",
+    "importSuccess": "Data imported successfully: {{success}} documents",
+    "importError": "Error importing data: {{error}}",
+    "importPartialSuccess": "Import completed with {{success}} successful and {{errors}} failed documents",
+    "selectFile": "Select JSON file to import"
   },
   "calendar": {
     "sunday": "Sun",
     "monday": "Mon",
-    "tuesday": "Tue", 
+    "tuesday": "Tue",
     "wednesday": "Wed",
     "thursday": "Thu",
     "friday": "Fri",
-    "saturday": "Sat"
+    "saturday": "Sat",
+    "showAll": "Show All",
+    "filterByStaff": "Filter by Staff",
+    "recurringEvent": "Recurring",
+    "agenda": "Agenda",
+    "date": "Date",
+    "time": "Time",
+    "event": "Event",
+    "noBlockedTimes": "No blocked times in this period",
+    "timeRange": "Time Range"
   },
   "shifts": {
     "title": "Shifts",
@@ -65,7 +84,11 @@
     "requirements": "Requirements",
     "staffCountShort": "Staff",
     "acrossOccurrencesShort": "{{count}} times",
-    "oneTime": "One-time"
+    "oneTime": "One-time",
+    "excludedTraits": "Excluded Traits (Anti-Traits)",
+    "searchCreateExcludedTrait": "Search or create excluded trait...",
+    "excluded": "Excluded",
+    "required": "Required"
   },
   "staff": {
     "title": "Staff Members",
@@ -151,7 +174,14 @@
     "print": "Print",
     "printTooltip": "Print the weekly shift schedule",
     "constraintViolation": "Constraint violation",
-    "constraintWarning": "Constraint warning"
+    "constraintWarning": "Constraint warning",
+    "clickToPreviewSchedulability": "Click to preview which shifts this staff member can be scheduled on",
+    "clickToDeselect": "Click to deselect and hide schedulability preview",
+    "canSchedule": "This staff member can be scheduled on this shift",
+    "cannotSchedule": "Cannot schedule this staff member",
+    "missingRequiredTrait": "Missing required trait(s): {{traits}}",
+    "hasExcludedTrait": "Has excluded trait(s): {{traits}}",
+    "insufficientSlotsForTrait": "Only {{slotsLeft}} slot(s) remaining for {{stillNeeded}} required {{trait}}"
   },
   "shiftOccurrence": {
     "editingOccurrence": "Editing Single Occurrence",
@@ -216,7 +246,8 @@
     "edit": "Edit",
     "actions": "Actions",
     "none": "None",
-    "notAvailable": "N/A"
+    "notAvailable": "N/A",
+    "day": "Day"
   },
   "validation": {
     "endAfterStart": "End date and time must be after start date and time.",

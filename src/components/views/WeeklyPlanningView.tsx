@@ -6,6 +6,7 @@ import { enUS, de } from 'date-fns/locale';
 import type { ShiftOccurrence, StaffMember, Trait } from "../../storage/database";
 import { calculateStaffingStatus, type StaffingStatus } from '../../utils/staffingStatus';
 import { yalpsAutoScheduleWeek, type YALPSSchedulingResult } from '../../utils/yalpsScheduler';
+import { ConstraintEngine, type ConstraintContext } from '../../utils/constraints';
 import { ConfirmDialog } from '../ConfirmDialog';
 import '../../styles/planning.css';
 
@@ -50,7 +51,10 @@ export function WeeklyPlanningView({
   
   // Dragging state
   const [draggedStaff, setDraggedStaff] = useState<StaffMember | null>(null);
-  
+
+  // Selected staff for constraint preview
+  const [selectedStaffId, setSelectedStaffId] = useState<string | null>(null);
+
   // Confirm dialog states
   const [clearAssignmentsDialog, setClearAssignmentsDialog] = useState(false);
   const [autoScheduleDialog, setAutoScheduleDialog] = useState(false);
@@ -159,6 +163,105 @@ export function WeeklyPlanningView({
     if (!occurrence) return 'shift-cell-empty';
     return staffingStatusCache[occurrence.id]?.statusClassName || 'status-under-staffed';
   };
+
+  // Constraint validation for selected staff preview
+  const constraintEngine = useMemo(() => new ConstraintEngine(), []);
+
+  const shiftSchedulabilityCache = useMemo(() => {
+    if (!selectedStaffId) return {};
+
+    const selectedStaff = staff.find(s => s.id === selectedStaffId);
+    if (!selectedStaff) return {};
+
+    const cache: { [occurrenceId: string]: { schedulable: boolean; reasons: string[] } } = {};
+
+    for (const occurrence of weekOccurrences) {
+      // Skip if staff is already assigned to this shift
+      if (occurrence.assignedStaff.includes(selectedStaffId)) {
+        cache[occurrence.id] = { schedulable: true, reasons: [] };
+        continue;
+      }
+
+      // Create constraint context for validation
+      const context: ConstraintContext = {
+        targetStaff: selectedStaff,
+        targetOccurrence: occurrence,
+        allStaff: staff,
+        allOccurrences: shiftOccurrences,
+        evaluationDate: new Date(occurrence.startDateTime),
+        t,
+        language: i18n.language,
+        mode: 'check_assignment'
+      };
+
+      // Check all constraints
+      const violations = constraintEngine.validateStaffAssignment(context);
+
+      if (violations.length === 0) {
+        // Check trait requirements
+        let canSchedule = true;
+        const reasons: string[] = [];
+
+        // Check required traits - properly account for minimum counts
+        if (occurrence.requirements.requiredTraits && occurrence.requirements.requiredTraits.length > 0) {
+          const assignedStaffMembers = staff.filter(s => occurrence.assignedStaff.includes(s.id));
+          const totalSlotsNeeded = occurrence.requirements.staffCount;
+          const currentlyAssigned = assignedStaffMembers.length;
+          const remainingSlotsAfterThisPerson = totalSlotsNeeded - currentlyAssigned - 1;
+
+          for (const traitReq of occurrence.requirements.requiredTraits) {
+            // Count how many assigned staff have this trait
+            const assignedWithTrait = assignedStaffMembers.filter(s =>
+              s.traitIds.includes(traitReq.traitId)
+            ).length;
+
+            // Does the person we're trying to schedule have this trait?
+            const thisPersonHasTrait = selectedStaff.traitIds.includes(traitReq.traitId);
+
+            // Calculate how many more people with this trait we need
+            const currentTraitCount = assignedWithTrait + (thisPersonHasTrait ? 1 : 0);
+            const stillNeeded = Math.max(0, traitReq.minCount - currentTraitCount);
+
+            // Can we fulfill this requirement with remaining slots?
+            if (stillNeeded > remainingSlotsAfterThisPerson) {
+              canSchedule = false;
+              const traitName = allTraits.find(trait => trait.id === traitReq.traitId)?.name || traitReq.traitId;
+              reasons.push(t('planning.insufficientSlotsForTrait', {
+                trait: traitName,
+                slotsLeft: remainingSlotsAfterThisPerson,
+                stillNeeded: stillNeeded
+              }));
+            }
+          }
+        }
+
+        // Check excluded traits (anti-traits)
+        if (occurrence.requirements.excludedTraits && occurrence.requirements.excludedTraits.length > 0) {
+          const hasExcludedTrait = occurrence.requirements.excludedTraits.some(excludedId =>
+            selectedStaff.traitIds.includes(excludedId)
+          );
+          if (hasExcludedTrait) {
+            canSchedule = false;
+            const excludedTraitNames = occurrence.requirements.excludedTraits
+              .map(excludedId => allTraits.find(trait => trait.id === excludedId)?.name)
+              .filter(Boolean)
+              .join(', ');
+            reasons.push(t('planning.hasExcludedTrait', { traits: excludedTraitNames }));
+          }
+        }
+
+        cache[occurrence.id] = { schedulable: canSchedule, reasons };
+      } else {
+        // Has constraint violations
+        cache[occurrence.id] = {
+          schedulable: false,
+          reasons: violations.map(v => v.message)
+        };
+      }
+    }
+
+    return cache;
+  }, [selectedStaffId, staff, weekOccurrences, shiftOccurrences, allTraits, constraintEngine, t, i18n.language]);
 
   // Calculate staff scheduling status and counts
   const getStaffSchedulingInfo = (staffMember: StaffMember) => {
@@ -416,15 +519,19 @@ export function WeeklyPlanningView({
             const staffInfo = getStaffSchedulingInfo(staffMember);
             const statusColor = getStaffStatusColor(staffInfo.status);
             
+            const isSelected = selectedStaffId === staffMember.id;
+
             return (
               <div
-                className="staff-member staff-panel-member"
+                className={`staff-member staff-panel-member ${isSelected ? 'staff-selected' : ''}`}
                 key={staffMember.id}
                 draggable
                 onDragStart={(e) => handleStaffDragStart(e, staffMember)}
-                style={{ borderColor: statusColor }}
+                onClick={() => setSelectedStaffId(isSelected ? null : staffMember.id)}
+                style={{ borderColor: statusColor, cursor: 'pointer' }}
                 onMouseDown={(e) => (e.currentTarget.style.cursor = 'grabbing')}
                 onMouseUp={(e) => (e.currentTarget.style.cursor = 'grab')}
+                title={isSelected ? t('planning.clickToDeselect') : t('planning.clickToPreviewSchedulability')}
               >
                 <div className="staff-panel-member-name">
                   {staffMember.name}
@@ -573,44 +680,74 @@ export function WeeklyPlanningView({
                     {weekDays.map(day => {
                       const occurrence = getOccurrenceForShiftAndDay(shiftKey, day);
                       const staffingClass = getStaffingClass(occurrence);
-                      const assignedStaffMembers = occurrence 
+                      const assignedStaffMembers = occurrence
                         ? staff.filter(s => occurrence.assignedStaff.includes(s.id))
                         : [];
-                      
+
+                      // Get schedulability info for selected staff
+                      const schedulabilityInfo = selectedStaffId && occurrence
+                        ? shiftSchedulabilityCache[occurrence.id]
+                        : null;
+
+                      const cellClassName = `shift-cell ${staffingClass}${
+                        schedulabilityInfo
+                          ? schedulabilityInfo.schedulable
+                            ? ' shift-schedulable'
+                            : ' shift-blocked'
+                          : ''
+                      }`;
+
                       return (
                         <td
                           key={`${shiftKey}-${day.toISOString()}`}
-                          className={`shift-cell ${staffingClass}`}
-                          style={{ cursor: occurrence ? 'pointer' : 'default' }}
+                          className={cellClassName}
+                          style={{
+                            cursor: occurrence ? 'pointer' : 'default',
+                            position: 'relative'
+                          }}
                           onDrop={(e) => handleShiftDrop(e, occurrence)}
                           onDragOver={handleShiftDragOver}
                           onClick={() => occurrence && onEditOccurrence?.(occurrence)}
                         >
                           {occurrence ? (
-                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
-                              {assignedStaffMembers.map(staffMember => (
-                                <div key={staffMember.id} className="staff-badge">
-                                  <span className="staff-badge-name">
-                                    {staffMember.name}
-                                  </span>
-                                  <button
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleRemoveStaff(occurrence.id, staffMember.id);
-                                    }}
-                                    className="staff-badge-remove-btn"
-                                    title={`Remove ${staffMember.name}`}
-                                  >
-                                    ✕
-                                  </button>
-                                </div>
-                              ))}
-                              {assignedStaffMembers.length === 0 && (
-                                <div className="unassigned-text">
-                                  {t('planning.noStaffAssigned')}
+                            <>
+                              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                                {assignedStaffMembers.map(staffMember => (
+                                  <div key={staffMember.id} className="staff-badge">
+                                    <span className="staff-badge-name">
+                                      {staffMember.name}
+                                    </span>
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleRemoveStaff(occurrence.id, staffMember.id);
+                                      }}
+                                      className="staff-badge-remove-btn"
+                                      title={`Remove ${staffMember.name}`}
+                                    >
+                                      ✕
+                                    </button>
+                                  </div>
+                                ))}
+                                {assignedStaffMembers.length === 0 && (
+                                  <div className="unassigned-text">
+                                    {t('planning.noStaffAssigned')}
+                                  </div>
+                                )}
+                              </div>
+                              {/* Schedulability indicator */}
+                              {schedulabilityInfo && (
+                                <div
+                                  className={`schedulability-indicator ${schedulabilityInfo.schedulable ? 'schedulable' : 'blocked'}`}
+                                  title={schedulabilityInfo.schedulable
+                                    ? t('planning.canSchedule')
+                                    : `${t('planning.cannotSchedule')}:\n\n${schedulabilityInfo.reasons.map((r, i) => `${i + 1}. ${r}`).join('\n')}`}
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  {schedulabilityInfo.schedulable ? '✓' : '✗'}
                                 </div>
                               )}
-                            </div>
+                            </>
                           ) : (
                             <div className="no-occurrence-text">
                               ✕

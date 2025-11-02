@@ -54,6 +54,7 @@ export interface ShiftDoc extends BaseDoc {
       traitId: string;
       minCount: number;
     }>;
+    excludedTraits?: string[]; // Array of trait IDs that cannot be scheduled
   };
 }
 
@@ -70,6 +71,7 @@ export interface ShiftOccurrenceDoc extends BaseDoc {
       traitId: string;
       minCount: number;
     }>;
+    excludedTraits?: string[]; // Array of trait IDs that cannot be scheduled
   };
   assignedStaff: string[];
   isModified: boolean;
@@ -149,6 +151,7 @@ export interface Shift {
       traitId: string;
       minCount: number;
     }>;
+    excludedTraits?: string[]; // Array of trait IDs that cannot be scheduled
   };
 }
 
@@ -164,6 +167,7 @@ export interface ShiftOccurrence {
       traitId: string;
       minCount: number;
     }>;
+    excludedTraits?: string[]; // Array of trait IDs that cannot be scheduled
   };
   assignedStaff: string[];
   isModified: boolean;
@@ -1049,6 +1053,76 @@ export class Database {
     };
   }
 
+  // Export all database data as JSON
+  static async exportAllData(): Promise<string> {
+    const result = await this.db.allDocs({
+      include_docs: true,
+      attachments: true
+    });
+
+    const exportData = {
+      version: this.SCHEMA_VERSION,
+      exportDate: new Date().toISOString(),
+      instanceId: this.currentInstanceId,
+      docs: result.rows
+        .map(row => row.doc)
+        .filter(doc => doc && !doc._id.startsWith('_design/')) // Exclude design docs
+    };
+
+    return JSON.stringify(exportData, null, 2);
+  }
+
+  // Import database data from JSON
+  static async importAllData(jsonData: string): Promise<{ success: number; errors: number }> {
+    let importData: {
+      version?: number;
+      exportDate?: string;
+      instanceId?: string;
+      docs: Array<PouchDB.Core.ExistingDocument<any>>;
+    };
+
+    try {
+      importData = JSON.parse(jsonData);
+    } catch (error) {
+      throw new Error('Invalid JSON data');
+    }
+
+    if (!importData.docs || !Array.isArray(importData.docs)) {
+      throw new Error('Invalid export format: missing docs array');
+    }
+
+    // For import, we'll check for existing documents and update them
+    let successCount = 0;
+    let errorCount = 0;
+
+    // Import documents one by one to handle conflicts properly
+    for (const doc of importData.docs) {
+      try {
+        // Try to get the existing document
+        try {
+          const existing = await this.db.get(doc._id);
+          // Document exists, update it with new data but keep the current revision
+          await this.db.put({ ...doc, _rev: existing._rev });
+          successCount++;
+        } catch (err: any) {
+          if (err.status === 404) {
+            // Document doesn't exist, create it without _rev
+            const { _rev, ...docWithoutRev } = doc;
+            await this.db.put(docWithoutRev);
+            successCount++;
+          } else {
+            throw err;
+          }
+        }
+      } catch (error) {
+        errorCount++;
+        console.error(`Error importing document ${doc._id}:`, error);
+      }
+    }
+
+    return { success: successCount, errors: errorCount };
+  }
+
   // Standardized ID generation function
   private static generateDocumentId(type: string, name: string): string {
     const timestamp = Date.now();
@@ -1057,12 +1131,12 @@ export class Database {
       .replace(/\s+/g, '-')
       .replace(/[^a-z0-9-]/g, '')  // Remove non-alphanumeric chars except dashes
       .replace(/^_+/, '');         // Remove leading underscores
-    
+
     // Ensure the name is not empty after sanitization
     if (!safeName) {
       safeName = 'item';
     }
-    
+
     return `${type}:${safeName}-${timestamp}`;
   }
 }

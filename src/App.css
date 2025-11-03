@@ -869,8 +869,9 @@
 }
 
 .btn-xs {
-  padding: 2px 8px;
-  font-size: 0.75rem;
+  padding: 2px 6px;
+  font-size: 0.7rem;
+  line-height: 1;
 }
 
 /* Week Navigation Buttons */

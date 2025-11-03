@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import type { Trait } from "../storage/database";
+import '../styles/autocomplete.css';
 
 interface TraitAutocompleteProps {
   traits: Trait[];
@@ -103,8 +104,8 @@ export function TraitAutocomplete({
   };
 
   return (
-    <div style={{ position: 'relative', width: '100%' }}>
-      <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+    <div className="autocomplete-container">
+      <div className="autocomplete-input-row">
         <input
           ref={inputRef}
           type="text"
@@ -114,15 +115,9 @@ export function TraitAutocomplete({
           onFocus={handleInputFocus}
           onBlur={handleInputBlur}
           onKeyDown={handleKeyDown}
-          style={{ 
-            flex: 1, 
-            padding: '8px', 
-            border: '1px solid var(--accent-gray)', 
-            borderRadius: '4px',
-            fontSize: '14px'
-          }}
+          className="autocomplete-input"
         />
-        
+
         {allowMinCount && (
           <input
             type="number"
@@ -130,29 +125,15 @@ export function TraitAutocomplete({
             placeholder="Min"
             value={minCount}
             onChange={(e) => setMinCount(parseInt(e.target.value) || 1)}
-            style={{ 
-              width: '60px', 
-              padding: '8px', 
-              border: '1px solid var(--accent-gray)', 
-              borderRadius: '4px',
-              fontSize: '14px'
-            }}
+            className="autocomplete-min-count"
           />
         )}
 
         {inputValue.trim().length > 0 && (
-          <button 
-            type="button" 
+          <button
+            type="button"
             onClick={handleCreateNew}
-            style={{ 
-              padding: '8px 12px', 
-              backgroundColor: '#28a745', 
-              color: 'white', 
-              border: 'none', 
-              borderRadius: '4px', 
-              cursor: 'pointer',
-              fontSize: '14px'
-            }}
+            className="autocomplete-add-button"
           >
             Add
           </button>
@@ -160,75 +141,30 @@ export function TraitAutocomplete({
       </div>
 
       {showDropdown && (
-        <div
-          ref={dropdownRef}
-          style={{
-            position: 'absolute',
-            top: '100%',
-            left: 0,
-            right: 0,
-            backgroundColor: 'white',
-            border: '1px solid var(--accent-gray)',
-            borderRadius: '4px',
-            maxHeight: '200px',
-            overflowY: 'auto',
-            zIndex: 1000,
-            marginTop: '2px',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-          }}
-        >
+        <div ref={dropdownRef} className="autocomplete-dropdown">
           {filteredTraits.map(trait => (
             <div
               key={trait.id}
               onClick={() => handleTraitClick(trait)}
-              style={{
-                padding: '10px',
-                cursor: 'pointer',
-                borderBottom: '1px solid #f0f0f0',
-                fontSize: '14px',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center'
-              }}
-              onMouseEnter={(e) => {
-                (e.target as HTMLElement).style.backgroundColor = '#f8f9fa';
-              }}
-              onMouseLeave={(e) => {
-                (e.target as HTMLElement).style.backgroundColor = 'white';
-              }}
+              className="autocomplete-item"
             >
-              <span>{trait.name}</span>
-              <small style={{ color: '#666' }}>Select</small>
+              <span className="autocomplete-item-label">{trait.name}</span>
+              <small className="autocomplete-item-hint">Select</small>
             </div>
           ))}
-          
+
           {filteredTraits.length === 0 && inputValue.trim().length > 0 && (
             <div
               onClick={handleCreateNew}
-              style={{
-                padding: '10px',
-                cursor: 'pointer',
-                fontSize: '14px',
-                color: '#28a745',
-                fontWeight: 'bold',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center'
-              }}
-              onMouseEnter={(e) => {
-                (e.target as HTMLElement).style.backgroundColor = '#f8f9fa';
-              }}
-              onMouseLeave={(e) => {
-                (e.target as HTMLElement).style.backgroundColor = 'white';
-              }}
+              className="autocomplete-create-item"
             >
               <span>Create "{inputValue.trim()}"</span>
-              <small style={{ color: '#666' }}>New trait</small>
+              <small className="autocomplete-item-hint">New trait</small>
             </div>
           )}
 
           {filteredTraits.length === 0 && inputValue.trim().length === 0 && (
-            <div style={{ padding: '10px', color: '#666', fontSize: '14px', textAlign: 'center' }}>
+            <div className="autocomplete-empty">
               Start typing to search or create traits...
             </div>
           )}

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Import Data</title>
+</head>
+<body>
+  <h1>Import Data</h1>
+  <button id="importBtn">Import Data from kvetch-export-2025-11-02.json</button>
+  <div id="status"></div>
+
+  <script type="module">
+    import { Database } from './src/storage/database.ts';
+
+    document.getElementById('importBtn').addEventListener('click', async () => {
+      const status = document.getElementById('status');
+      status.textContent = 'Importing...';
+
+      try {
+        const response = await fetch('/kvetch-export-2025-11-02.json');
+        const jsonText = await response.text();
+        const result = await Database.importAllData(jsonText);
+
+        status.textContent = `Import successful! ${result.success} documents imported, ${result.errors} errors.`;
+        console.log('Import result:', result);
+      } catch (error) {
+        status.textContent = `Import failed: ${error.message}`;
+        console.error('Import error:', error);
+      }
+    });
+  </script>
+</body>
+</html>

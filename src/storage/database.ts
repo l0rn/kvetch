@@ -36,7 +36,7 @@ export interface TraitDoc extends BaseDoc {
   description?: string;
 }
 
-// Shift document  
+// Shift document
 export interface ShiftDoc extends BaseDoc {
   type: 'shift';
   name: string;
@@ -54,6 +54,7 @@ export interface ShiftDoc extends BaseDoc {
       traitId: string;
       minCount: number;
     }>;
+    preferredTraits?: string[]; // Array of trait IDs that are preferred but not required
     excludedTraits?: string[]; // Array of trait IDs that cannot be scheduled
   };
 }
@@ -71,6 +72,7 @@ export interface ShiftOccurrenceDoc extends BaseDoc {
       traitId: string;
       minCount: number;
     }>;
+    preferredTraits?: string[]; // Array of trait IDs that are preferred but not required
     excludedTraits?: string[]; // Array of trait IDs that cannot be scheduled
   };
   assignedStaff: string[];
@@ -151,6 +153,7 @@ export interface Shift {
       traitId: string;
       minCount: number;
     }>;
+    preferredTraits?: string[]; // Array of trait IDs that are preferred but not required
     excludedTraits?: string[]; // Array of trait IDs that cannot be scheduled
   };
 }
@@ -167,6 +170,7 @@ export interface ShiftOccurrence {
       traitId: string;
       minCount: number;
     }>;
+    preferredTraits?: string[]; // Array of trait IDs that are preferred but not required
     excludedTraits?: string[]; // Array of trait IDs that cannot be scheduled
   };
   assignedStaff: string[];

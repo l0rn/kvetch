@@ -1,0 +1,1981 @@
+{
+  "version": 1,
+  "exportDate": "2025-11-02T17:03:22.514Z",
+  "instanceId": null,
+  "docs": [
+    {
+      "type": "schema-version",
+      "version": 1,
+      "createdAt": "2025-10-21T07:52:50.951Z",
+      "updatedAt": "2025-10-21T07:52:50.951Z",
+      "_id": "schema-version",
+      "_rev": "1-ee9e3db42a76ed902265946aeb4dce6a"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Frühschicht-1763974800000",
+      "name": "Frühschicht",
+      "startDateTime": "2025-11-24T09:00:00.000Z",
+      "endDateTime": "2025-11-24T14:00:00.000Z",
+      "requirements": {
+        "staffCount": 2,
+        "requiredTraits": [
+          {
+            "traitId": "heimfarer-1762009391046",
+            "minCount": 1
+          }
+        ]
+      },
+      "assignedStaff": [
+        "1762009984122"
+      ],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T12:57:28.277Z",
+      "updatedAt": "2025-11-02T12:57:28.277Z",
+      "_id": "shift-occurrence:Frühschicht-1763974800000-1763974800000-0",
+      "_rev": "13-ebee9b8d8e1c2e5f63693815a3c89576"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Frühschicht-1763974800000",
+      "name": "Frühschicht",
+      "startDateTime": "2025-11-25T09:00:00.000Z",
+      "endDateTime": "2025-11-25T14:00:00.000Z",
+      "requirements": {
+        "staffCount": 2,
+        "requiredTraits": [
+          {
+            "traitId": "heimfarer-1762009391046",
+            "minCount": 1
+          }
+        ]
+      },
+      "assignedStaff": [
+        "1762009984122"
+      ],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T12:56:10.604Z",
+      "updatedAt": "2025-11-02T12:56:10.604Z",
+      "_id": "shift-occurrence:Frühschicht-1763974800000-1764061200000-1",
+      "_rev": "7-049b40d4df019ff8c3bb6f1de19dfb8f"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Frühschicht-1763974800000",
+      "name": "Frühschicht",
+      "startDateTime": "2025-11-26T09:00:00.000Z",
+      "endDateTime": "2025-11-26T14:00:00.000Z",
+      "requirements": {
+        "staffCount": 2,
+        "requiredTraits": [
+          {
+            "traitId": "heimfarer-1762009391046",
+            "minCount": 1
+          }
+        ]
+      },
+      "assignedStaff": [
+        "1762009984122"
+      ],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T12:56:11.842Z",
+      "updatedAt": "2025-11-02T12:56:11.842Z",
+      "_id": "shift-occurrence:Frühschicht-1763974800000-1764147600000-2",
+      "_rev": "11-13ea66a6ee8eb20aef3c6f79a3c90a33"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Frühschicht-1763974800000",
+      "name": "Frühschicht",
+      "startDateTime": "2025-11-27T09:00:00.000Z",
+      "endDateTime": "2025-11-27T14:00:00.000Z",
+      "requirements": {
+        "staffCount": 2,
+        "requiredTraits": [
+          {
+            "traitId": "heimfarer-1762009391046",
+            "minCount": 1
+          }
+        ]
+      },
+      "assignedStaff": [
+        "1762009984122"
+      ],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T12:56:13.110Z",
+      "updatedAt": "2025-11-02T12:56:13.110Z",
+      "_id": "shift-occurrence:Frühschicht-1763974800000-1764234000000-3",
+      "_rev": "9-ec34462131ce82f47f22d437a1d10ee8"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Frühschicht-1763974800000",
+      "name": "Frühschicht",
+      "startDateTime": "2025-11-28T09:00:00.000Z",
+      "endDateTime": "2025-11-28T14:00:00.000Z",
+      "requirements": {
+        "staffCount": 2,
+        "requiredTraits": [
+          {
+            "traitId": "heimfarer-1762009391046",
+            "minCount": 1
+          }
+        ]
+      },
+      "assignedStaff": [
+        "1762009984122"
+      ],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T12:57:39.963Z",
+      "updatedAt": "2025-11-02T12:57:39.963Z",
+      "_id": "shift-occurrence:Frühschicht-1763974800000-1764320400000-4",
+      "_rev": "11-5f371b154bbd83d7083d2b0e3a22d891"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Frühschicht-1763974800000",
+      "name": "Frühschicht",
+      "startDateTime": "2025-11-29T09:00:00.000Z",
+      "endDateTime": "2025-11-29T14:00:00.000Z",
+      "requirements": {
+        "staffCount": 2,
+        "requiredTraits": [
+          {
+            "traitId": "heimfarer-1762009391046",
+            "minCount": 1
+          }
+        ]
+      },
+      "assignedStaff": [],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T12:56:02.053Z",
+      "updatedAt": "2025-11-02T12:56:02.053Z",
+      "_id": "shift-occurrence:Frühschicht-1763974800000-1764406800000-5",
+      "_rev": "8-ec37f8c3726a32cceea8361318512d0d"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Frühschicht-1763974800000",
+      "name": "Frühschicht",
+      "startDateTime": "2025-11-30T09:00:00.000Z",
+      "endDateTime": "2025-11-30T14:00:00.000Z",
+      "requirements": {
+        "staffCount": 2,
+        "requiredTraits": [
+          {
+            "traitId": "heimfarer-1762009391046",
+            "minCount": 1
+          }
+        ]
+      },
+      "assignedStaff": [],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T12:56:02.053Z",
+      "updatedAt": "2025-11-02T12:56:02.053Z",
+      "_id": "shift-occurrence:Frühschicht-1763974800000-1764493200000-6",
+      "_rev": "8-9d1ceee5c3f4e22f81467746a9c9738a"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Frühschicht-1763974800000",
+      "name": "Frühschicht",
+      "startDateTime": "2025-12-01T09:00:00.000Z",
+      "endDateTime": "2025-12-01T14:00:00.000Z",
+      "requirements": {
+        "staffCount": 2,
+        "requiredTraits": [
+          {
+            "traitId": "heimfarer-1762009391046",
+            "minCount": 1
+          }
+        ]
+      },
+      "assignedStaff": [],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T11:36:59.042Z",
+      "updatedAt": "2025-11-02T11:36:59.042Z",
+      "_id": "shift-occurrence:Frühschicht-1763974800000-1764579600000-7",
+      "_rev": "3-78dc1cf8b02e45e0a41f1b0a0ec94f18"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Frühschicht-1763974800000",
+      "name": "Frühschicht",
+      "startDateTime": "2025-12-02T09:00:00.000Z",
+      "endDateTime": "2025-12-02T14:00:00.000Z",
+      "requirements": {
+        "staffCount": 2,
+        "requiredTraits": [
+          {
+            "traitId": "heimfarer-1762009391046",
+            "minCount": 1
+          }
+        ]
+      },
+      "assignedStaff": [],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T11:37:08.191Z",
+      "updatedAt": "2025-11-02T11:37:08.191Z",
+      "_id": "shift-occurrence:Frühschicht-1763974800000-1764666000000-8",
+      "_rev": "3-281b2a9d6228913aa917400ab870f3f4"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Frühschicht-1763974800000",
+      "name": "Frühschicht",
+      "startDateTime": "2025-12-03T09:00:00.000Z",
+      "endDateTime": "2025-12-03T14:00:00.000Z",
+      "requirements": {
+        "staffCount": 2,
+        "requiredTraits": [
+          {
+            "traitId": "heimfarer-1762009391046",
+            "minCount": 1
+          }
+        ]
+      },
+      "assignedStaff": [],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T11:37:08.191Z",
+      "updatedAt": "2025-11-02T11:37:08.191Z",
+      "_id": "shift-occurrence:Frühschicht-1763974800000-1764752400000-9",
+      "_rev": "3-2c0dfa306709a3a162acb394c2206540"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Frühschicht-1763974800000",
+      "name": "Frühschicht",
+      "startDateTime": "2025-12-04T09:00:00.000Z",
+      "endDateTime": "2025-12-04T14:00:00.000Z",
+      "requirements": {
+        "staffCount": 2,
+        "requiredTraits": [
+          {
+            "traitId": "heimfarer-1762009391046",
+            "minCount": 1
+          }
+        ]
+      },
+      "assignedStaff": [],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T11:37:08.191Z",
+      "updatedAt": "2025-11-02T11:37:08.191Z",
+      "_id": "shift-occurrence:Frühschicht-1763974800000-1764838800000-10",
+      "_rev": "3-6a4ffed690879ff567234d4daf9e438b"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Frühschicht-1763974800000",
+      "name": "Frühschicht",
+      "startDateTime": "2025-12-05T09:00:00.000Z",
+      "endDateTime": "2025-12-05T14:00:00.000Z",
+      "requirements": {
+        "staffCount": 2,
+        "requiredTraits": [
+          {
+            "traitId": "heimfarer-1762009391046",
+            "minCount": 1
+          }
+        ]
+      },
+      "assignedStaff": [],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T11:37:08.191Z",
+      "updatedAt": "2025-11-02T11:37:08.191Z",
+      "_id": "shift-occurrence:Frühschicht-1763974800000-1764925200000-11",
+      "_rev": "3-fc8cd63521878e390a537fbec064155d"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Frühschicht-1763974800000",
+      "name": "Frühschicht",
+      "startDateTime": "2025-12-06T09:00:00.000Z",
+      "endDateTime": "2025-12-06T14:00:00.000Z",
+      "requirements": {
+        "staffCount": 2,
+        "requiredTraits": [
+          {
+            "traitId": "heimfarer-1762009391046",
+            "minCount": 1
+          }
+        ]
+      },
+      "assignedStaff": [],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T11:37:08.191Z",
+      "updatedAt": "2025-11-02T11:37:08.191Z",
+      "_id": "shift-occurrence:Frühschicht-1763974800000-1765011600000-12",
+      "_rev": "3-f944d42d676664d71e95ff8bc0740b0d"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Frühschicht-1763974800000",
+      "name": "Frühschicht",
+      "startDateTime": "2025-12-07T09:00:00.000Z",
+      "endDateTime": "2025-12-07T14:00:00.000Z",
+      "requirements": {
+        "staffCount": 2,
+        "requiredTraits": [
+          {
+            "traitId": "heimfarer-1762009391046",
+            "minCount": 1
+          }
+        ]
+      },
+      "assignedStaff": [],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T11:37:08.191Z",
+      "updatedAt": "2025-11-02T11:37:08.191Z",
+      "_id": "shift-occurrence:Frühschicht-1763974800000-1765098000000-13",
+      "_rev": "3-55a6c080f857ca624c4050215431f131"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Frühschicht-1763974800000",
+      "name": "Frühschicht",
+      "startDateTime": "2025-12-08T09:00:00.000Z",
+      "endDateTime": "2025-12-08T14:00:00.000Z",
+      "requirements": {
+        "staffCount": 2,
+        "requiredTraits": [
+          {
+            "traitId": "heimfarer-1762009391046",
+            "minCount": 1
+          }
+        ]
+      },
+      "assignedStaff": [
+        "1762010084900",
+        "1762010054502"
+      ],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T16:40:47.713Z",
+      "updatedAt": "2025-11-02T16:40:47.713Z",
+      "_id": "shift-occurrence:Frühschicht-1763974800000-1765184400000-14",
+      "_rev": "2-d5fe6b251e74b23dcaba0865aec5064a"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Frühschicht-1763974800000",
+      "name": "Frühschicht",
+      "startDateTime": "2025-12-09T09:00:00.000Z",
+      "endDateTime": "2025-12-09T14:00:00.000Z",
+      "requirements": {
+        "staffCount": 2,
+        "requiredTraits": [
+          {
+            "traitId": "heimfarer-1762009391046",
+            "minCount": 1
+          }
+        ]
+      },
+      "assignedStaff": [
+        "1762010000162",
+        "1762010084900"
+      ],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T16:40:23.046Z",
+      "updatedAt": "2025-11-02T16:40:23.046Z",
+      "_id": "shift-occurrence:Frühschicht-1763974800000-1765270800000-15",
+      "_rev": "1-ae739a08caedbcb6378d92cdf463c877"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Frühschicht-1763974800000",
+      "name": "Frühschicht",
+      "startDateTime": "2025-12-10T09:00:00.000Z",
+      "endDateTime": "2025-12-10T14:00:00.000Z",
+      "requirements": {
+        "staffCount": 2,
+        "requiredTraits": [
+          {
+            "traitId": "heimfarer-1762009391046",
+            "minCount": 1
+          }
+        ]
+      },
+      "assignedStaff": [
+        "1762010000162",
+        "1762010084900"
+      ],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T16:40:23.046Z",
+      "updatedAt": "2025-11-02T16:40:23.046Z",
+      "_id": "shift-occurrence:Frühschicht-1763974800000-1765357200000-16",
+      "_rev": "1-da2ee45fc0f47795503ea8632b3c7f4a"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Frühschicht-1763974800000",
+      "name": "Frühschicht",
+      "startDateTime": "2025-12-11T09:00:00.000Z",
+      "endDateTime": "2025-12-11T14:00:00.000Z",
+      "requirements": {
+        "staffCount": 2,
+        "requiredTraits": [
+          {
+            "traitId": "heimfarer-1762009391046",
+            "minCount": 1
+          }
+        ]
+      },
+      "assignedStaff": [
+        "1762010000162",
+        "1762010084900"
+      ],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T16:40:23.046Z",
+      "updatedAt": "2025-11-02T16:40:23.046Z",
+      "_id": "shift-occurrence:Frühschicht-1763974800000-1765443600000-17",
+      "_rev": "1-d51996827a96b36337c1ca90eecebb3a"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Frühschicht-1763974800000",
+      "name": "Frühschicht",
+      "startDateTime": "2025-12-12T09:00:00.000Z",
+      "endDateTime": "2025-12-12T14:00:00.000Z",
+      "requirements": {
+        "staffCount": 2,
+        "requiredTraits": [
+          {
+            "traitId": "heimfarer-1762009391046",
+            "minCount": 1
+          }
+        ]
+      },
+      "assignedStaff": [
+        "1762010000162",
+        "1762010084900"
+      ],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T16:40:23.046Z",
+      "updatedAt": "2025-11-02T16:40:23.046Z",
+      "_id": "shift-occurrence:Frühschicht-1763974800000-1765530000000-18",
+      "_rev": "1-d41604f4c4006c4069c2ef949a57e6c1"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Frühschicht-1763974800000",
+      "name": "Frühschicht",
+      "startDateTime": "2025-12-13T09:00:00.000Z",
+      "endDateTime": "2025-12-13T14:00:00.000Z",
+      "requirements": {
+        "staffCount": 2,
+        "requiredTraits": [
+          {
+            "traitId": "heimfarer-1762009391046",
+            "minCount": 1
+          }
+        ]
+      },
+      "assignedStaff": [
+        "1762010000162",
+        "1762010084900"
+      ],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T16:40:23.046Z",
+      "updatedAt": "2025-11-02T16:40:23.046Z",
+      "_id": "shift-occurrence:Frühschicht-1763974800000-1765616400000-19",
+      "_rev": "1-a1a270757592437a3a4828d668f4ffc0"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Frühschicht-1763974800000",
+      "name": "Frühschicht",
+      "startDateTime": "2025-12-14T09:00:00.000Z",
+      "endDateTime": "2025-12-14T14:00:00.000Z",
+      "requirements": {
+        "staffCount": 2,
+        "requiredTraits": [
+          {
+            "traitId": "heimfarer-1762009391046",
+            "minCount": 1
+          }
+        ]
+      },
+      "assignedStaff": [
+        "1762009984122"
+      ],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T16:40:23.046Z",
+      "updatedAt": "2025-11-02T16:40:23.046Z",
+      "_id": "shift-occurrence:Frühschicht-1763974800000-1765702800000-20",
+      "_rev": "1-e2d5a0cf5829573efa84067717ad2ed7"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Spät 1 (Fr)-1763992800000",
+      "name": "Spät 1 (Fr)",
+      "startDateTime": "2025-11-28T14:00:00.000Z",
+      "endDateTime": "2025-11-28T21:30:00.000Z",
+      "requirements": {
+        "staffCount": 3,
+        "requiredTraits": [
+          {
+            "traitId": "heimfarer-1762009391046",
+            "minCount": 1
+          }
+        ]
+      },
+      "assignedStaff": [],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T12:57:07.253Z",
+      "updatedAt": "2025-11-02T12:57:07.253Z",
+      "_id": "shift-occurrence:Spät 1 (Fr)-1763992800000-1764338400000-0",
+      "_rev": "7-df59db63f741e09fc1fb743b8150c961"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Spät 1 (Fr)-1763992800000",
+      "name": "Spät 1 (Fr)",
+      "startDateTime": "2025-12-12T14:00:00.000Z",
+      "endDateTime": "2025-12-12T21:30:00.000Z",
+      "requirements": {
+        "staffCount": 3,
+        "requiredTraits": [
+          {
+            "traitId": "heimfarer-1762009391046",
+            "minCount": 1
+          }
+        ]
+      },
+      "assignedStaff": [
+        "1762010054502"
+      ],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T16:40:54.043Z",
+      "updatedAt": "2025-11-02T16:40:54.043Z",
+      "_id": "shift-occurrence:Spät 1 (Fr)-1763992800000-1765548000000-2",
+      "_rev": "1-9c14f49eb3aa3b4f846c957d4e334d9a"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Spät 1 (Mo-Do)-1763992800000",
+      "name": "Spät 1 (Mo-Do)",
+      "startDateTime": "2025-11-24T14:00:00.000Z",
+      "endDateTime": "2025-11-24T20:30:00.000Z",
+      "requirements": {
+        "staffCount": 2,
+        "requiredTraits": [
+          {
+            "traitId": "heimfarer-1762009391046",
+            "minCount": 1
+          }
+        ]
+      },
+      "assignedStaff": [
+        "1762010000162"
+      ],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T12:57:01.679Z",
+      "updatedAt": "2025-11-02T12:57:01.679Z",
+      "_id": "shift-occurrence:Spät 1 (Mo-Do)-1763992800000-1763992800000-0",
+      "_rev": "9-2fc5a14d41d5d00de3ae06c284c6f8f8"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Spät 1 (Mo-Do)-1763992800000",
+      "name": "Spät 1 (Mo-Do)",
+      "startDateTime": "2025-11-25T14:00:00.000Z",
+      "endDateTime": "2025-11-25T20:30:00.000Z",
+      "requirements": {
+        "staffCount": 2,
+        "requiredTraits": [
+          {
+            "traitId": "heimfarer-1762009391046",
+            "minCount": 1
+          }
+        ]
+      },
+      "assignedStaff": [
+        "1762010000162"
+      ],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T12:56:59.237Z",
+      "updatedAt": "2025-11-02T12:56:59.237Z",
+      "_id": "shift-occurrence:Spät 1 (Mo-Do)-1763992800000-1764079200000-1",
+      "_rev": "9-f408004c869f2a32813d01466d0e55b9"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Spät 1 (Mo-Do)-1763992800000",
+      "name": "Spät 1 (Mo-Do)",
+      "startDateTime": "2025-11-26T14:00:00.000Z",
+      "endDateTime": "2025-11-26T20:30:00.000Z",
+      "requirements": {
+        "staffCount": 2,
+        "requiredTraits": [
+          {
+            "traitId": "heimfarer-1762009391046",
+            "minCount": 1
+          }
+        ]
+      },
+      "assignedStaff": [
+        "1762010000162"
+      ],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T12:56:58.029Z",
+      "updatedAt": "2025-11-02T12:56:58.029Z",
+      "_id": "shift-occurrence:Spät 1 (Mo-Do)-1763992800000-1764165600000-2",
+      "_rev": "11-cd71f954b925c6cfa624eb972c717f0e"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Spät 1 (Mo-Do)-1763992800000",
+      "name": "Spät 1 (Mo-Do)",
+      "startDateTime": "2025-11-27T14:00:00.000Z",
+      "endDateTime": "2025-11-27T20:30:00.000Z",
+      "requirements": {
+        "staffCount": 2,
+        "requiredTraits": [
+          {
+            "traitId": "heimfarer-1762009391046",
+            "minCount": 1
+          }
+        ]
+      },
+      "assignedStaff": [],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T12:57:09.076Z",
+      "updatedAt": "2025-11-02T12:57:09.076Z",
+      "_id": "shift-occurrence:Spät 1 (Mo-Do)-1763992800000-1764252000000-3",
+      "_rev": "10-fb7553deb0318dd3aa5e8ee608217ccc"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Spät 1 (Mo-Do)-1763992800000",
+      "name": "Spät 1 (Mo-Do)",
+      "startDateTime": "2025-12-01T14:00:00.000Z",
+      "endDateTime": "2025-12-01T20:30:00.000Z",
+      "requirements": {
+        "staffCount": 2,
+        "requiredTraits": [
+          {
+            "traitId": "heimfarer-1762009391046",
+            "minCount": 1
+          }
+        ]
+      },
+      "assignedStaff": [],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T11:36:42.339Z",
+      "updatedAt": "2025-11-02T11:36:42.339Z",
+      "_id": "shift-occurrence:Spät 1 (Mo-Do)-1763992800000-1764597600000-4",
+      "_rev": "8-829333ec9f3ca9331a179e28a3a35048"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Spät 1 (Mo-Do)-1763992800000",
+      "name": "Spät 1 (Mo-Do)",
+      "startDateTime": "2025-12-02T14:00:00.000Z",
+      "endDateTime": "2025-12-02T20:30:00.000Z",
+      "requirements": {
+        "staffCount": 2,
+        "requiredTraits": [
+          {
+            "traitId": "heimfarer-1762009391046",
+            "minCount": 1
+          }
+        ]
+      },
+      "assignedStaff": [],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T11:37:08.191Z",
+      "updatedAt": "2025-11-02T11:37:08.191Z",
+      "_id": "shift-occurrence:Spät 1 (Mo-Do)-1763992800000-1764684000000-5",
+      "_rev": "7-8960ae62bfe2426759bea760edafb6f9"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Spät 1 (Mo-Do)-1763992800000",
+      "name": "Spät 1 (Mo-Do)",
+      "startDateTime": "2025-12-03T14:00:00.000Z",
+      "endDateTime": "2025-12-03T20:30:00.000Z",
+      "requirements": {
+        "staffCount": 2,
+        "requiredTraits": [
+          {
+            "traitId": "heimfarer-1762009391046",
+            "minCount": 1
+          }
+        ]
+      },
+      "assignedStaff": [],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T11:37:08.191Z",
+      "updatedAt": "2025-11-02T11:37:08.191Z",
+      "_id": "shift-occurrence:Spät 1 (Mo-Do)-1763992800000-1764770400000-6",
+      "_rev": "6-044ba27eb2d88d1df71229eca5474f5f"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Spät 1 (Mo-Do)-1763992800000",
+      "name": "Spät 1 (Mo-Do)",
+      "startDateTime": "2025-12-04T14:00:00.000Z",
+      "endDateTime": "2025-12-04T20:30:00.000Z",
+      "requirements": {
+        "staffCount": 2,
+        "requiredTraits": [
+          {
+            "traitId": "heimfarer-1762009391046",
+            "minCount": 1
+          }
+        ]
+      },
+      "assignedStaff": [],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T11:37:08.191Z",
+      "updatedAt": "2025-11-02T11:37:08.191Z",
+      "_id": "shift-occurrence:Spät 1 (Mo-Do)-1763992800000-1764856800000-7",
+      "_rev": "4-28807e1ccaaa126c9f5c68443f0979a7"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Spät 1 (Mo-Do)-1763992800000",
+      "name": "Spät 1 (Mo-Do)",
+      "startDateTime": "2025-12-09T14:00:00.000Z",
+      "endDateTime": "2025-12-09T20:30:00.000Z",
+      "requirements": {
+        "staffCount": 2,
+        "requiredTraits": [
+          {
+            "traitId": "heimfarer-1762009391046",
+            "minCount": 1
+          }
+        ]
+      },
+      "assignedStaff": [
+        "1762009984122",
+        "1762010054502"
+      ],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T16:40:44.046Z",
+      "updatedAt": "2025-11-02T16:40:44.046Z",
+      "_id": "shift-occurrence:Spät 1 (Mo-Do)-1763992800000-1765288800000-9",
+      "_rev": "2-07cdb8d4ba7711857364fa4974b264d8"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Spät 1 (Mo-Do)-1763992800000",
+      "name": "Spät 1 (Mo-Do)",
+      "startDateTime": "2025-12-10T14:00:00.000Z",
+      "endDateTime": "2025-12-10T20:30:00.000Z",
+      "requirements": {
+        "staffCount": 2,
+        "requiredTraits": [
+          {
+            "traitId": "heimfarer-1762009391046",
+            "minCount": 1
+          }
+        ]
+      },
+      "assignedStaff": [
+        "1762009984122",
+        "1762010054502"
+      ],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T16:40:50.937Z",
+      "updatedAt": "2025-11-02T16:40:50.937Z",
+      "_id": "shift-occurrence:Spät 1 (Mo-Do)-1763992800000-1765375200000-10",
+      "_rev": "2-d6132cfcc9aac2de3efc8fee2159b0a6"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Spät 1 (Mo-Do)-1763992800000",
+      "name": "Spät 1 (Mo-Do)",
+      "startDateTime": "2025-12-11T14:00:00.000Z",
+      "endDateTime": "2025-12-11T20:30:00.000Z",
+      "requirements": {
+        "staffCount": 2,
+        "requiredTraits": [
+          {
+            "traitId": "heimfarer-1762009391046",
+            "minCount": 1
+          }
+        ]
+      },
+      "assignedStaff": [
+        "1762009984122",
+        "1762010054502"
+      ],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T16:40:52.190Z",
+      "updatedAt": "2025-11-02T16:40:52.190Z",
+      "_id": "shift-occurrence:Spät 1 (Mo-Do)-1763992800000-1765461600000-11",
+      "_rev": "2-e5a9785ef88ee556fccc72c0e2029f3c"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Spät 1 (Sa)-1764424800000",
+      "name": "Spät 1 (Sa)",
+      "startDateTime": "2025-11-29T14:00:00.000Z",
+      "endDateTime": "2025-11-29T21:30:00.000Z",
+      "requirements": {
+        "staffCount": 4,
+        "requiredTraits": [
+          {
+            "traitId": "heimfarer-1762009391046",
+            "minCount": 1
+          }
+        ]
+      },
+      "assignedStaff": [],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T12:56:02.053Z",
+      "updatedAt": "2025-11-02T12:56:02.053Z",
+      "_id": "shift-occurrence:Spät 1 (Sa)-1764424800000-1764424800000-0",
+      "_rev": "5-c25cf722f25a55e56ea56e06c8f0a84b"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Spät 1 (Sa)-1764424800000",
+      "name": "Spät 1 (Sa)",
+      "startDateTime": "2025-12-06T14:00:00.000Z",
+      "endDateTime": "2025-12-06T21:30:00.000Z",
+      "requirements": {
+        "staffCount": 4,
+        "requiredTraits": [
+          {
+            "traitId": "heimfarer-1762009391046",
+            "minCount": 1
+          }
+        ]
+      },
+      "assignedStaff": [],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T11:37:08.191Z",
+      "updatedAt": "2025-11-02T11:37:08.191Z",
+      "_id": "shift-occurrence:Spät 1 (Sa)-1764424800000-1765029600000-1",
+      "_rev": "3-8bb108d7b63fc2adbb01c90805ed7fba"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Spät 1 (Sa)-1764424800000",
+      "name": "Spät 1 (Sa)",
+      "startDateTime": "2025-12-13T14:00:00.000Z",
+      "endDateTime": "2025-12-13T21:30:00.000Z",
+      "requirements": {
+        "staffCount": 4,
+        "requiredTraits": [
+          {
+            "traitId": "heimfarer-1762009391046",
+            "minCount": 1
+          }
+        ]
+      },
+      "assignedStaff": [
+        "1762009984122",
+        "1762010054502"
+      ],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T16:41:02.353Z",
+      "updatedAt": "2025-11-02T16:41:02.353Z",
+      "_id": "shift-occurrence:Spät 1 (Sa)-1764424800000-1765634400000-2",
+      "_rev": "2-88dffd9ea0496e7c415edcc5ce347fde"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Spät 1 (So)-1764511200000",
+      "name": "Spät 1 (So)",
+      "startDateTime": "2025-11-30T14:00:00.000Z",
+      "endDateTime": "2025-11-30T20:30:00.000Z",
+      "requirements": {
+        "staffCount": 3,
+        "requiredTraits": [
+          {
+            "traitId": "heimfarer-1762009391046",
+            "minCount": 1
+          }
+        ]
+      },
+      "assignedStaff": [
+        "1762010000162"
+      ],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T12:57:10.686Z",
+      "updatedAt": "2025-11-02T12:57:10.686Z",
+      "_id": "shift-occurrence:Spät 1 (So)-1764511200000-1764511200000-0",
+      "_rev": "3-1259dba6c95be7305c46e2c600d248b7"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Spät 1 (So)-1764511200000",
+      "name": "Spät 1 (So)",
+      "startDateTime": "2025-12-14T14:00:00.000Z",
+      "endDateTime": "2025-12-14T20:30:00.000Z",
+      "requirements": {
+        "staffCount": 3,
+        "requiredTraits": [
+          {
+            "traitId": "heimfarer-1762009391046",
+            "minCount": 1
+          }
+        ]
+      },
+      "assignedStaff": [],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T16:41:00.424Z",
+      "updatedAt": "2025-11-02T16:41:00.424Z",
+      "_id": "shift-occurrence:Spät 1 (So)-1764511200000-1765720800000-2",
+      "_rev": "2-96e20838a7898dd53bb0efbe2f6e1bc1"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Spät 2 (Mo-Do)-1763996400000",
+      "name": "Spät 2 (Mo-Fr)",
+      "startDateTime": "2025-11-24T15:00:00.000Z",
+      "endDateTime": "2025-11-24T19:30:00.000Z",
+      "requirements": {
+        "staffCount": 1,
+        "requiredTraits": [
+          {
+            "traitId": "vor-ort--selbstfahrer-1762009628699",
+            "minCount": 1
+          }
+        ],
+        "excludedTraits": [
+          "hanne-1762082974516"
+        ]
+      },
+      "assignedStaff": [],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T12:56:02.053Z",
+      "updatedAt": "2025-11-02T12:56:02.053Z",
+      "_id": "shift-occurrence:Spät 2 (Mo-Do)-1763996400000-1763996400000-0",
+      "_rev": "9-5065d68827b86223b7702256dd59418b"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Spät 2 (Mo-Do)-1763996400000",
+      "name": "Spät 2 (Mo-Fr)",
+      "startDateTime": "2025-11-25T15:00:00.000Z",
+      "endDateTime": "2025-11-25T19:30:00.000Z",
+      "requirements": {
+        "staffCount": 1,
+        "requiredTraits": [
+          {
+            "traitId": "vor-ort--selbstfahrer-1762009628699",
+            "minCount": 1
+          }
+        ],
+        "excludedTraits": [
+          "hanne-1762082974516"
+        ]
+      },
+      "assignedStaff": [],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T12:56:02.053Z",
+      "updatedAt": "2025-11-02T12:56:02.053Z",
+      "_id": "shift-occurrence:Spät 2 (Mo-Do)-1763996400000-1764082800000-1",
+      "_rev": "9-d005dd9647f3b6a54cd2faae82f5bae7"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Spät 2 (Mo-Do)-1763996400000",
+      "name": "Spät 2 (Mo-Fr)",
+      "startDateTime": "2025-11-28T15:00:00.000Z",
+      "endDateTime": "2025-11-28T19:30:00.000Z",
+      "requirements": {
+        "staffCount": 1,
+        "requiredTraits": [
+          {
+            "traitId": "vor-ort--selbstfahrer-1762009628699",
+            "minCount": 1
+          }
+        ],
+        "excludedTraits": [
+          "hanne-1762082974516"
+        ]
+      },
+      "assignedStaff": [],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T12:56:02.053Z",
+      "updatedAt": "2025-11-02T12:56:02.053Z",
+      "_id": "shift-occurrence:Spät 2 (Mo-Do)-1763996400000-1764342000000-4",
+      "_rev": "9-52d4f582374f0c2fbaf6ae9ba5451e51"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Spät 2 (Mo-Do)-1763996400000",
+      "name": "Spät 2 (Mo-Fr)",
+      "startDateTime": "2025-12-01T15:00:00.000Z",
+      "endDateTime": "2025-12-01T19:30:00.000Z",
+      "requirements": {
+        "staffCount": 1,
+        "requiredTraits": [
+          {
+            "traitId": "vor-ort--selbstfahrer-1762009628699",
+            "minCount": 1
+          }
+        ],
+        "excludedTraits": [
+          "hanne-1762082974516"
+        ]
+      },
+      "assignedStaff": [],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T11:37:08.191Z",
+      "updatedAt": "2025-11-02T11:37:08.191Z",
+      "_id": "shift-occurrence:Spät 2 (Mo-Do)-1763996400000-1764601200000-5",
+      "_rev": "3-085f1243e7cb535ae54f04cb6522ed16"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Spät 2 (Mo-Do)-1763996400000",
+      "name": "Spät 2 (Mo-Fr)",
+      "startDateTime": "2025-12-02T15:00:00.000Z",
+      "endDateTime": "2025-12-02T19:30:00.000Z",
+      "requirements": {
+        "staffCount": 1,
+        "requiredTraits": [
+          {
+            "traitId": "vor-ort--selbstfahrer-1762009628699",
+            "minCount": 1
+          }
+        ],
+        "excludedTraits": [
+          "hanne-1762082974516"
+        ]
+      },
+      "assignedStaff": [],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T11:37:08.191Z",
+      "updatedAt": "2025-11-02T11:37:08.191Z",
+      "_id": "shift-occurrence:Spät 2 (Mo-Do)-1763996400000-1764687600000-6",
+      "_rev": "3-1a214d86f2717b84bf0198ce9965856d"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Spät 2 (Mo-Do)-1763996400000",
+      "name": "Spät 2 (Mo-Fr)",
+      "startDateTime": "2025-12-05T15:00:00.000Z",
+      "endDateTime": "2025-12-05T19:30:00.000Z",
+      "requirements": {
+        "staffCount": 1,
+        "requiredTraits": [
+          {
+            "traitId": "vor-ort--selbstfahrer-1762009628699",
+            "minCount": 1
+          }
+        ],
+        "excludedTraits": [
+          "hanne-1762082974516"
+        ]
+      },
+      "assignedStaff": [],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T11:37:08.191Z",
+      "updatedAt": "2025-11-02T11:37:08.191Z",
+      "_id": "shift-occurrence:Spät 2 (Mo-Do)-1763996400000-1764946800000-9",
+      "_rev": "3-ce26e5be2fd60409dfe95bccd3ca488f"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Spät 2 (Mo-Do)-1763996400000",
+      "name": "Spät 2 (Mo-Fr)",
+      "startDateTime": "2025-12-08T15:00:00.000Z",
+      "endDateTime": "2025-12-08T19:30:00.000Z",
+      "requirements": {
+        "staffCount": 1,
+        "requiredTraits": [
+          {
+            "traitId": "vor-ort--selbstfahrer-1762009628699",
+            "minCount": 1
+          }
+        ],
+        "excludedTraits": [
+          "hanne-1762082974516"
+        ]
+      },
+      "assignedStaff": [
+        "1762010127743"
+      ],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T16:40:23.046Z",
+      "updatedAt": "2025-11-02T16:40:23.046Z",
+      "_id": "shift-occurrence:Spät 2 (Mo-Do)-1763996400000-1765206000000-10",
+      "_rev": "1-96d33047f7c686aa2da04cc2afd6e8bd"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Spät 2 (Mo-Do)-1763996400000",
+      "name": "Spät 2 (Mo-Fr)",
+      "startDateTime": "2025-12-09T15:00:00.000Z",
+      "endDateTime": "2025-12-09T19:30:00.000Z",
+      "requirements": {
+        "staffCount": 1,
+        "requiredTraits": [
+          {
+            "traitId": "vor-ort--selbstfahrer-1762009628699",
+            "minCount": 1
+          }
+        ],
+        "excludedTraits": [
+          "hanne-1762082974516"
+        ]
+      },
+      "assignedStaff": [
+        "1762010118681"
+      ],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T16:40:23.046Z",
+      "updatedAt": "2025-11-02T16:40:23.046Z",
+      "_id": "shift-occurrence:Spät 2 (Mo-Do)-1763996400000-1765292400000-11",
+      "_rev": "1-501a4cb94edd812652c4f5d0751096f1"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Spät 2 (Mo-Do)-1763996400000",
+      "name": "Spät 2 (Mo-Fr)",
+      "startDateTime": "2025-12-11T15:00:00.000Z",
+      "endDateTime": "2025-12-11T19:30:00.000Z",
+      "requirements": {
+        "staffCount": 1,
+        "requiredTraits": [
+          {
+            "traitId": "vor-ort--selbstfahrer-1762009628699",
+            "minCount": 1
+          }
+        ],
+        "excludedTraits": [
+          "hanne-1762082974516"
+        ]
+      },
+      "assignedStaff": [
+        "1762010139360"
+      ],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T16:40:23.046Z",
+      "updatedAt": "2025-11-02T16:40:23.046Z",
+      "_id": "shift-occurrence:Spät 2 (Mo-Do)-1763996400000-1765465200000-13",
+      "_rev": "1-778dfc6f9104064c064d280214a83e4d"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Spät 2 (Mo-Do)-1763996400000",
+      "name": "Spät 2 (Mo-Fr)",
+      "startDateTime": "2025-12-12T15:00:00.000Z",
+      "endDateTime": "2025-12-12T19:30:00.000Z",
+      "requirements": {
+        "staffCount": 1,
+        "requiredTraits": [
+          {
+            "traitId": "vor-ort--selbstfahrer-1762009628699",
+            "minCount": 1
+          }
+        ],
+        "excludedTraits": [
+          "hanne-1762082974516"
+        ]
+      },
+      "assignedStaff": [
+        "1762010118681"
+      ],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T16:40:23.046Z",
+      "updatedAt": "2025-11-02T16:40:23.046Z",
+      "_id": "shift-occurrence:Spät 2 (Mo-Do)-1763996400000-1765551600000-14",
+      "_rev": "1-3e56369dca51223c21758e747026ad4d"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Spät 2 (Sa-So)-1764415800000",
+      "name": "Spät 2 (Sa-So)",
+      "startDateTime": "2025-11-29T11:30:00.000Z",
+      "endDateTime": "2025-11-29T19:30:00.000Z",
+      "requirements": {
+        "staffCount": 1,
+        "requiredTraits": [
+          {
+            "traitId": "vor-ort--selbstfahrer-1762009628699",
+            "minCount": 1
+          }
+        ],
+        "excludedTraits": [
+          "hanne-1762082974516"
+        ]
+      },
+      "assignedStaff": [],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T12:56:02.053Z",
+      "updatedAt": "2025-11-02T12:56:02.053Z",
+      "_id": "shift-occurrence:Spät 2 (Sa-So)-1764415800000-1764415800000-0",
+      "_rev": "9-3819a6d054b7e3bca306f5f205ec4a81"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Spät 2 (Sa-So)-1764415800000",
+      "name": "Spät 2 (Sa-So)",
+      "startDateTime": "2025-11-30T11:30:00.000Z",
+      "endDateTime": "2025-11-30T19:30:00.000Z",
+      "requirements": {
+        "staffCount": 1,
+        "requiredTraits": [
+          {
+            "traitId": "vor-ort--selbstfahrer-1762009628699",
+            "minCount": 1
+          }
+        ],
+        "excludedTraits": [
+          "hanne-1762082974516"
+        ]
+      },
+      "assignedStaff": [],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T12:56:02.053Z",
+      "updatedAt": "2025-11-02T12:56:02.053Z",
+      "_id": "shift-occurrence:Spät 2 (Sa-So)-1764415800000-1764502200000-1",
+      "_rev": "9-2a596ad16f1986583b02beb1de492d19"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Spät 2 (Sa-So)-1764415800000",
+      "name": "Spät 2 (Sa-So)",
+      "startDateTime": "2025-12-06T11:30:00.000Z",
+      "endDateTime": "2025-12-06T19:30:00.000Z",
+      "requirements": {
+        "staffCount": 1,
+        "requiredTraits": [
+          {
+            "traitId": "vor-ort--selbstfahrer-1762009628699",
+            "minCount": 1
+          }
+        ],
+        "excludedTraits": [
+          "hanne-1762082974516"
+        ]
+      },
+      "assignedStaff": [],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T11:37:08.191Z",
+      "updatedAt": "2025-11-02T11:37:08.191Z",
+      "_id": "shift-occurrence:Spät 2 (Sa-So)-1764415800000-1765020600000-2",
+      "_rev": "3-5ae6e15fb07eceacf29896e6a40b5521"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Spät 2 (Sa-So)-1764415800000",
+      "name": "Spät 2 (Sa-So)",
+      "startDateTime": "2025-12-07T11:30:00.000Z",
+      "endDateTime": "2025-12-07T19:30:00.000Z",
+      "requirements": {
+        "staffCount": 1,
+        "requiredTraits": [
+          {
+            "traitId": "vor-ort--selbstfahrer-1762009628699",
+            "minCount": 1
+          }
+        ],
+        "excludedTraits": [
+          "hanne-1762082974516"
+        ]
+      },
+      "assignedStaff": [],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T11:37:08.191Z",
+      "updatedAt": "2025-11-02T11:37:08.191Z",
+      "_id": "shift-occurrence:Spät 2 (Sa-So)-1764415800000-1765107000000-3",
+      "_rev": "3-28b863c6e632a410847d48fed7276f0c"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Spät 2 (Sa-So)-1764415800000",
+      "name": "Spät 2 (Sa-So)",
+      "startDateTime": "2025-12-13T11:30:00.000Z",
+      "endDateTime": "2025-12-13T19:30:00.000Z",
+      "requirements": {
+        "staffCount": 1,
+        "requiredTraits": [
+          {
+            "traitId": "vor-ort--selbstfahrer-1762009628699",
+            "minCount": 1
+          }
+        ],
+        "excludedTraits": [
+          "hanne-1762082974516"
+        ]
+      },
+      "assignedStaff": [
+        "1762010118681"
+      ],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T16:40:23.046Z",
+      "updatedAt": "2025-11-02T16:40:23.046Z",
+      "_id": "shift-occurrence:Spät 2 (Sa-So)-1764415800000-1765625400000-4",
+      "_rev": "1-00e837ae64921669bb0905cc625e3b46"
+    },
+    {
+      "type": "shift-occurrence",
+      "parentShiftId": "Spät 2 (Sa-So)-1764415800000",
+      "name": "Spät 2 (Sa-So)",
+      "startDateTime": "2025-12-14T11:30:00.000Z",
+      "endDateTime": "2025-12-14T19:30:00.000Z",
+      "requirements": {
+        "staffCount": 1,
+        "requiredTraits": [
+          {
+            "traitId": "vor-ort--selbstfahrer-1762009628699",
+            "minCount": 1
+          }
+        ],
+        "excludedTraits": [
+          "hanne-1762082974516"
+        ]
+      },
+      "assignedStaff": [
+        "1762010118681"
+      ],
+      "isModified": true,
+      "isDeleted": false,
+      "createdAt": "2025-11-02T16:40:23.046Z",
+      "updatedAt": "2025-11-02T16:40:23.046Z",
+      "_id": "shift-occurrence:Spät 2 (Sa-So)-1764415800000-1765711800000-5",
+      "_rev": "1-934ccc6668c04aa8b515d3553f9e9c92"
+    },
+    {
+      "type": "shift",
+      "name": "Frühschicht",
+      "startDateTime": "2025-11-24T09:00:00.000Z",
+      "endDateTime": "2025-11-24T14:00:00.000Z",
+      "recurrence": {
+        "type": "weekly",
+        "interval": 1,
+        "endDate": "2025-12-24",
+        "weekdays": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      "requirements": {
+        "staffCount": 2,
+        "requiredTraits": [
+          {
+            "traitId": "heimfarer-1762009391046",
+            "minCount": 1
+          }
+        ]
+      },
+      "createdAt": "2025-11-01T15:03:31.851Z",
+      "updatedAt": "2025-11-01T15:03:31.851Z",
+      "_id": "shift:Frühschicht-1763974800000",
+      "_rev": "3-03ff40571fc8357eece5eaed0f1b80dc"
+    },
+    {
+      "type": "shift",
+      "name": "Spät 1 (Fr)",
+      "startDateTime": "2025-11-28T14:00:00.000Z",
+      "endDateTime": "2025-11-28T21:30:00.000Z",
+      "recurrence": {
+        "type": "weekly",
+        "interval": 1,
+        "endDate": "2025-12-24",
+        "weekdays": [
+          5
+        ]
+      },
+      "requirements": {
+        "staffCount": 3,
+        "requiredTraits": [
+          {
+            "traitId": "heimfarer-1762009391046",
+            "minCount": 1
+          }
+        ]
+      },
+      "createdAt": "2025-11-01T15:05:02.574Z",
+      "updatedAt": "2025-11-01T15:05:02.574Z",
+      "_id": "shift:Spät 1 (Fr)-1763992800000",
+      "_rev": "2-15713659f0a9ad31bd61fe703b68a2d5"
+    },
+    {
+      "type": "shift",
+      "name": "Spät 1 (Mo-Do)",
+      "startDateTime": "2025-11-24T14:00:00.000Z",
+      "endDateTime": "2025-11-24T20:30:00.000Z",
+      "recurrence": {
+        "type": "weekly",
+        "interval": 1,
+        "endDate": "2025-12-24",
+        "weekdays": [
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "requirements": {
+        "staffCount": 2,
+        "requiredTraits": [
+          {
+            "traitId": "heimfarer-1762009391046",
+            "minCount": 1
+          }
+        ]
+      },
+      "createdAt": "2025-11-01T15:03:24.363Z",
+      "updatedAt": "2025-11-01T15:03:24.363Z",
+      "_id": "shift:Spät 1 (Mo-Do)-1763992800000",
+      "_rev": "2-3b675cd5433f2110e6d7309707ba3697"
+    },
+    {
+      "type": "shift",
+      "name": "Spät 1 (Sa)",
+      "startDateTime": "2025-11-29T14:00:00.000Z",
+      "endDateTime": "2025-11-29T21:30:00.000Z",
+      "recurrence": {
+        "type": "weekly",
+        "interval": 1,
+        "endDate": "2025-12-24",
+        "weekdays": [
+          6
+        ]
+      },
+      "requirements": {
+        "staffCount": 4,
+        "requiredTraits": [
+          {
+            "traitId": "heimfarer-1762009391046",
+            "minCount": 1
+          }
+        ]
+      },
+      "createdAt": "2025-11-01T15:08:52.705Z",
+      "updatedAt": "2025-11-01T15:08:52.705Z",
+      "_id": "shift:Spät 1 (Sa)-1764424800000",
+      "_rev": "3-098db41401a5c4aa081a0c263eadbc21"
+    },
+    {
+      "type": "shift",
+      "name": "Spät 1 (So)",
+      "startDateTime": "2025-11-30T14:00:00.000Z",
+      "endDateTime": "2025-11-30T20:30:00.000Z",
+      "recurrence": {
+        "type": "weekly",
+        "interval": 1,
+        "endDate": "2025-12-24",
+        "weekdays": [
+          0
+        ]
+      },
+      "requirements": {
+        "staffCount": 3,
+        "requiredTraits": [
+          {
+            "traitId": "heimfarer-1762009391046",
+            "minCount": 1
+          }
+        ]
+      },
+      "createdAt": "2025-11-01T15:09:56.864Z",
+      "updatedAt": "2025-11-01T15:09:56.864Z",
+      "_id": "shift:Spät 1 (So)-1764511200000",
+      "_rev": "2-12bcdc0750a19b1af0bc681d105a9f69"
+    },
+    {
+      "type": "shift",
+      "name": "Spät 2 (Mo-Fr)",
+      "startDateTime": "2025-11-24T15:00:00.000Z",
+      "endDateTime": "2025-11-24T19:30:00.000Z",
+      "recurrence": {
+        "type": "weekly",
+        "interval": 1,
+        "endDate": "2025-12-24",
+        "weekdays": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      "requirements": {
+        "staffCount": 1,
+        "requiredTraits": [
+          {
+            "traitId": "vor-ort--selbstfahrer-1762009628699",
+            "minCount": 1
+          }
+        ],
+        "excludedTraits": [
+          "hanne-1762082974516"
+        ]
+      },
+      "createdAt": "2025-11-02T11:30:10.095Z",
+      "updatedAt": "2025-11-02T11:30:10.095Z",
+      "_id": "shift:Spät 2 (Mo-Do)-1763996400000",
+      "_rev": "3-bfd78446c53ae4952675b97bb0d0c7c5"
+    },
+    {
+      "type": "shift",
+      "name": "Spät 2 (Sa-So)",
+      "startDateTime": "2025-11-29T11:30:00.000Z",
+      "endDateTime": "2025-11-29T19:30:00.000Z",
+      "recurrence": {
+        "type": "weekly",
+        "interval": 1,
+        "endDate": "2025-12-24",
+        "weekdays": [
+          0,
+          6
+        ]
+      },
+      "requirements": {
+        "staffCount": 1,
+        "requiredTraits": [
+          {
+            "traitId": "vor-ort--selbstfahrer-1762009628699",
+            "minCount": 1
+          }
+        ],
+        "excludedTraits": [
+          "hanne-1762082974516"
+        ]
+      },
+      "createdAt": "2025-11-02T11:30:14.556Z",
+      "updatedAt": "2025-11-02T11:30:14.556Z",
+      "_id": "shift:Spät 2 (Sa-So)-1764415800000",
+      "_rev": "2-3171f2e1d3fd1fc4bb36bfcafded4b34"
+    },
+    {
+      "type": "staff",
+      "name": "Anna",
+      "traitIds": [
+        "heimfarer-1762009391046"
+      ],
+      "constraints": {
+        "maxShiftsPerWeek": 5,
+        "incompatibleWith": [
+          "1762010000162"
+        ],
+        "restDaysWithStaff": [],
+        "consecutiveRestDays": []
+      },
+      "blockedTimes": [
+        {
+          "id": "1762010280513",
+          "startDateTime": "2025-11-24T14:01:00.000Z",
+          "endDateTime": "2025-11-24T22:59:00.000Z",
+          "isFullDay": false,
+          "recurrence": {
+            "type": "weekly",
+            "interval": 1,
+            "weekdays": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6
+            ],
+            "endDate": "2025-12-24T00:00:00.000Z"
+          }
+        }
+      ],
+      "createdAt": "2025-11-01T15:19:47.176Z",
+      "updatedAt": "2025-11-01T15:19:47.176Z",
+      "_id": "staff:1762009984122",
+      "_rev": "3-ed34775037dcff8a8c1789235749fd91"
+    },
+    {
+      "type": "staff",
+      "name": "Eike",
+      "traitIds": [
+        "heimfarer-1762009391046"
+      ],
+      "constraints": {
+        "incompatibleWith": [
+          "1762009984122"
+        ],
+        "restDaysWithStaff": [
+          {
+            "staffId": "1762009984122",
+            "minRestDays": 1,
+            "period": "week"
+          }
+        ],
+        "consecutiveRestDays": []
+      },
+      "blockedTimes": [
+        {
+          "id": "1762010465725",
+          "startDateTime": "2025-12-22T14:01:00.000Z",
+          "endDateTime": "2025-12-23T23:00:00.000Z",
+          "isFullDay": false
+        }
+      ],
+      "createdAt": "2025-11-01T15:21:30.988Z",
+      "updatedAt": "2025-11-01T15:21:30.988Z",
+      "_id": "staff:1762010000162",
+      "_rev": "4-8fd9cd7d348cab5b5c6c766b7aa69231"
+    },
+    {
+      "type": "staff",
+      "name": "Hanne",
+      "traitIds": [
+        "vor-ort--selbstfahrer-1762009628699",
+        "hanne-1762082974516"
+      ],
+      "constraints": {
+        "maxShiftsPerWeek": 6,
+        "incompatibleWith": [],
+        "restDaysWithStaff": [],
+        "consecutiveRestDays": []
+      },
+      "blockedTimes": [
+        {
+          "id": "1762010396032",
+          "startDateTime": "2025-11-23T23:00:00.000Z",
+          "endDateTime": "2025-11-28T22:59:00.000Z",
+          "isFullDay": true
+        },
+        {
+          "id": "1762014323683",
+          "startDateTime": "2025-11-30T23:00:00.000Z",
+          "endDateTime": "2025-12-02T13:59:00.000Z",
+          "isFullDay": false
+        },
+        {
+          "id": "1762014332391",
+          "startDateTime": "2025-12-20T23:00:00.000Z",
+          "endDateTime": "2025-12-23T22:59:00.000Z",
+          "isFullDay": true
+        }
+      ],
+      "createdAt": "2025-11-02T11:30:26.195Z",
+      "updatedAt": "2025-11-02T11:30:26.195Z",
+      "_id": "staff:1762010054502",
+      "_rev": "5-a38838197fe31f2bc1fb4952375c5ffb"
+    },
+    {
+      "type": "staff",
+      "name": "Anne",
+      "traitIds": [
+        "heimfarer-1762009391046"
+      ],
+      "constraints": {
+        "maxShiftsPerWeek": 6,
+        "incompatibleWith": [],
+        "restDaysWithStaff": [],
+        "consecutiveRestDays": []
+      },
+      "blockedTimes": [],
+      "createdAt": "2025-11-01T15:14:44.900Z",
+      "updatedAt": "2025-11-01T15:14:44.900Z",
+      "_id": "staff:1762010084900",
+      "_rev": "1-453c481555a50254a85440938158ba42"
+    },
+    {
+      "type": "staff",
+      "name": "Wolf",
+      "traitIds": [
+        "heimfarer-1762009391046"
+      ],
+      "constraints": {
+        "incompatibleWith": [],
+        "restDaysWithStaff": [],
+        "consecutiveRestDays": []
+      },
+      "blockedTimes": [
+        {
+          "id": "1762010505296",
+          "startDateTime": "2025-11-28T23:00:00.000Z",
+          "endDateTime": "2025-12-18T22:59:59.000Z",
+          "isFullDay": true
+        }
+      ],
+      "createdAt": "2025-11-01T15:22:22.221Z",
+      "updatedAt": "2025-11-01T15:22:22.221Z",
+      "_id": "staff:1762010103870",
+      "_rev": "3-36c45ce3b6e24e0a34f6eb6d1b78e2e5"
+    },
+    {
+      "type": "staff",
+      "name": "Leonie",
+      "traitIds": [
+        "vor-ort--selbstfahrer-1762009628699"
+      ],
+      "constraints": {
+        "incompatibleWith": [],
+        "restDaysWithStaff": [],
+        "consecutiveRestDays": []
+      },
+      "blockedTimes": [
+        {
+          "id": "1762014384864",
+          "startDateTime": "2025-11-23T23:00:00.000Z",
+          "endDateTime": "2025-11-25T13:59:00.000Z",
+          "isFullDay": false
+        },
+        {
+          "id": "1762014437522",
+          "startDateTime": "2025-11-25T23:00:00.000Z",
+          "endDateTime": "2025-11-27T22:59:00.000Z",
+          "isFullDay": true
+        },
+        {
+          "id": "1762014455861",
+          "startDateTime": "2025-11-30T23:00:00.000Z",
+          "endDateTime": "2025-11-02T13:59:00.000Z",
+          "isFullDay": false
+        },
+        {
+          "id": "1762014488119",
+          "startDateTime": "2025-12-02T23:00:00.000Z",
+          "endDateTime": "2025-12-04T22:59:59.000Z",
+          "isFullDay": true
+        },
+        {
+          "id": "1762014508113",
+          "startDateTime": "2025-12-07T23:00:00.000Z",
+          "endDateTime": "2025-12-09T13:59:00.000Z",
+          "isFullDay": false
+        },
+        {
+          "id": "1762014536458",
+          "startDateTime": "2025-12-09T23:00:00.000Z",
+          "endDateTime": "2025-12-11T22:59:59.000Z",
+          "isFullDay": true
+        },
+        {
+          "id": "1762014686368",
+          "startDateTime": "2025-12-14T23:00:00.000Z",
+          "endDateTime": "2025-12-16T13:59:00.000Z",
+          "isFullDay": false
+        },
+        {
+          "id": "1762014708687",
+          "startDateTime": "2025-12-16T23:00:00.000Z",
+          "endDateTime": "2025-12-18T22:59:59.000Z",
+          "isFullDay": true
+        },
+        {
+          "id": "1762014814501",
+          "startDateTime": "2025-12-19T23:00:00.000Z",
+          "endDateTime": "2025-12-20T13:59:00.000Z",
+          "isFullDay": false
+        }
+      ],
+      "createdAt": "2025-11-01T16:34:06.415Z",
+      "updatedAt": "2025-11-01T16:34:06.415Z",
+      "_id": "staff:1762010118681",
+      "_rev": "8-6ebe30e0ed826ea8e76bfc89eca3e098"
+    },
+    {
+      "type": "staff",
+      "name": "Silja",
+      "traitIds": [
+        "vor-ort--selbstfahrer-1762009628699"
+      ],
+      "constraints": {
+        "incompatibleWith": [],
+        "restDaysWithStaff": [],
+        "consecutiveRestDays": []
+      },
+      "blockedTimes": [
+        {
+          "id": "1762015108324",
+          "startDateTime": "2025-11-25T23:00:00.000Z",
+          "endDateTime": "2025-11-28T13:59:00.000Z",
+          "isFullDay": false
+        },
+        {
+          "id": "1762015135183",
+          "startDateTime": "2025-11-28T23:00:00.000Z",
+          "endDateTime": "2025-11-30T22:59:59.000Z",
+          "isFullDay": true
+        },
+        {
+          "id": "1762015146629",
+          "startDateTime": "2025-12-02T23:00:00.000Z",
+          "endDateTime": "2025-12-04T22:59:59.000Z",
+          "isFullDay": true
+        },
+        {
+          "id": "1762015170013",
+          "startDateTime": "2025-12-09T23:00:00.000Z",
+          "endDateTime": "2025-12-12T13:59:00.000Z",
+          "isFullDay": false
+        },
+        {
+          "id": "1762015195934",
+          "startDateTime": "2025-12-16T23:00:00.000Z",
+          "endDateTime": "2025-12-18T22:59:59.000Z",
+          "isFullDay": true
+        },
+        {
+          "id": "1762015218451",
+          "startDateTime": "2025-12-19T23:00:00.000Z",
+          "endDateTime": "2025-12-20T22:59:59.000Z",
+          "isFullDay": true
+        },
+        {
+          "id": "1762015230917",
+          "startDateTime": "2025-12-22T23:00:00.000Z",
+          "endDateTime": "2025-12-23T13:59:00.000Z",
+          "isFullDay": false
+        }
+      ],
+      "createdAt": "2025-11-01T16:40:47.740Z",
+      "updatedAt": "2025-11-01T16:40:47.740Z",
+      "_id": "staff:1762010127743",
+      "_rev": "3-2ebd719fd363d39b6808128313628fb2"
+    },
+    {
+      "type": "staff",
+      "name": "Henning",
+      "traitIds": [
+        "vor-ort--selbstfahrer-1762009628699"
+      ],
+      "constraints": {
+        "incompatibleWith": [],
+        "restDaysWithStaff": [],
+        "consecutiveRestDays": []
+      },
+      "blockedTimes": [
+        {
+          "id": "1762014866410",
+          "startDateTime": "2025-11-23T23:00:00.000Z",
+          "endDateTime": "2025-11-28T22:59:59.000Z",
+          "isFullDay": true
+        },
+        {
+          "id": "1762014885551",
+          "startDateTime": "2025-11-29T14:01:00.000Z",
+          "endDateTime": "2025-11-29T22:59:00.000Z",
+          "isFullDay": false,
+          "recurrence": {
+            "type": "daily",
+            "interval": 1,
+            "endDate": "2025-12-02T00:00:00.000Z"
+          }
+        },
+        {
+          "id": "1762014950796",
+          "startDateTime": "2025-12-02T23:00:00.000Z",
+          "endDateTime": "2025-12-07T22:59:59.000Z",
+          "isFullDay": true
+        },
+        {
+          "id": "1762014974452",
+          "startDateTime": "2025-12-08T14:01:00.000Z",
+          "endDateTime": "2025-12-08T22:59:59.000Z",
+          "isFullDay": false
+        },
+        {
+          "id": "1762015004086",
+          "startDateTime": "2025-12-10T14:01:00.000Z",
+          "endDateTime": "2025-12-10T22:59:00.000Z",
+          "isFullDay": false
+        },
+        {
+          "id": "1762015041204",
+          "startDateTime": "2025-12-15T14:01:00.000Z",
+          "endDateTime": "2025-12-15T22:59:00.000Z",
+          "isFullDay": false
+        },
+        {
+          "id": "1762015066840",
+          "startDateTime": "2025-12-17T14:01:00.000Z",
+          "endDateTime": "2025-12-17T22:59:00.000Z",
+          "isFullDay": false
+        },
+        {
+          "id": "1762015082201",
+          "startDateTime": "2025-12-22T14:01:00.000Z",
+          "endDateTime": "2025-12-22T22:59:00.000Z",
+          "isFullDay": false
+        }
+      ],
+      "createdAt": "2025-11-01T16:38:17.668Z",
+      "updatedAt": "2025-11-01T16:38:17.668Z",
+      "_id": "staff:1762010139360",
+      "_rev": "2-2c6613dcaa7d7470af007a8f969cc7ab"
+    },
+    {
+      "type": "trait",
+      "name": "Hanne",
+      "createdAt": "2025-11-02T11:29:34.516Z",
+      "updatedAt": "2025-11-02T11:29:34.516Z",
+      "_id": "trait:hanne-1762082974516",
+      "_rev": "1-71c7323cc6d56d36e9a1a22d1cb1403a"
+    },
+    {
+      "type": "trait",
+      "name": "Heimfarer",
+      "createdAt": "2025-11-01T15:03:11.046Z",
+      "updatedAt": "2025-11-01T15:03:11.046Z",
+      "_id": "trait:heimfarer-1762009391046",
+      "_rev": "1-9f14b1cf0e5d0c633f1809fc82b6da5b"
+    },
+    {
+      "type": "trait",
+      "name": "Vor-Ort / Selbstfahrer",
+      "createdAt": "2025-11-01T15:07:08.699Z",
+      "updatedAt": "2025-11-01T15:07:08.699Z",
+      "_id": "trait:vor-ort--selbstfahrer-1762009628699",
+      "_rev": "1-54c8b6d8cf7c14ebb1a256f23ffb97a5"
+    }
+  ]
+}

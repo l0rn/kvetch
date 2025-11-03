@@ -12,8 +12,8 @@
 .form-row {
   display: flex;
   flex-direction: row;
-  gap: 15px;
-  margin-bottom: 15px;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 
 .form-col {
@@ -32,12 +32,14 @@
 .form-input,
 .form-select {
   width: 100%;
-  padding: 8px;
+  padding: 6px 8px;
   border: 1px solid var(--accent-gray);
   border-radius: 4px;
   background-color: var(--input-background);
   color: var(--text-color);
   box-sizing: border-box;
+  font-size: 13px;
+  line-height: 1.4;
 }
 
 .form-input:focus,
@@ -58,7 +60,7 @@
 }
 
 .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 12px;
 }
 
 .form-actions {
@@ -160,33 +162,116 @@
 }
 
 .tag-item {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  padding: 6px 10px;
+  gap: 8px;
+  padding: 5px 8px 5px 12px;
   background-color: var(--background-color);
-  border-radius: 4px;
-  font-size: 14px;
+  border-radius: 16px;
+  font-size: 13px;
   border: 1px solid var(--accent-gray);
   color: var(--text-color);
 }
 
 .tag-item .btn-danger {
-  margin-left: 6px;
+  padding: 0;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 14px;
+  line-height: 1;
+  margin: 0;
+  min-width: unset;
+}
+
+.tag-item .btn-danger:hover {
+  transform: scale(1.1);
 }
 
 .constraint-row {
   display: flex;
   flex-direction: row;
-  gap: 15px;
+  gap: 10px;
   flex-wrap: wrap;
   align-items: center;
 }
 
+/* Subsection styling for grouped form elements */
+.form-subsection {
+  background-color: var(--background-color);
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.subsection-label {
+  display: block;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--secondary-color);
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Grid layout for max shifts inputs */
+.max-shifts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+}
+
+/* Grid layout for constraint editing forms */
+.constraint-edit-grid {
+  display: grid;
+  grid-template-columns: 2fr 1.2fr 1fr;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.constraint-edit-grid .form-input,
+.constraint-edit-grid .form-select {
+  padding: 5px 8px;
+  font-size: 13px;
+}
+
+.constraint-edit-grid .sub-label {
+  margin-bottom: 4px;
+  font-size: 11px;
+}
+
+/* Constraint action buttons */
+.constraint-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.constraint-actions .btn {
+  padding: 4px 12px;
+  font-size: 12px;
+  min-width: 60px;
+}
+
+@media (max-width: 768px) {
+  .constraint-edit-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .max-shifts-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .constraint-block {
   border: 1px solid var(--accent-gray);
-  border-radius: 8px;
-  padding: 12px;
-  margin-bottom: 10px;
+  border-radius: 6px;
+  padding: 8px;
+  margin-bottom: 8px;
   background-color: var(--white);
   transition: background-color 0.2s;
 }
@@ -221,7 +306,20 @@
 .sub-label {
   display: block;
   margin-bottom: 5px;
-  font-weight: bold;
-  font-size: 14px;
-  color: var(--secondary-color);
+  font-weight: 500;
+  font-size: 12px;
+  color: var(--text-color-light);
+}
+
+/* Utility classes for consistent form element widths */
+.form-col-small {
+  width: 100px;
+}
+
+.form-col-medium {
+  width: 140px;
+}
+
+.form-col-large {
+  width: 180px;
 }

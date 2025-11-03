@@ -42,6 +42,8 @@
     "endDateTime": "End Date & Time",
     "staffCount": "Number of Staff Required",
     "requiredTraits": "Required Traits",
+    "preferredTraits": "Preferred Traits (Soft Constraints)",
+    "searchCreatePreferredTrait": "Search or create preferred trait...",
     "addTrait": "Add Trait",
     "recurrence": "Recurrence",
     "recurring": "Recurring",
@@ -178,6 +180,7 @@
     "clickToPreviewSchedulability": "Click to preview which shifts this staff member can be scheduled on",
     "clickToDeselect": "Click to deselect and hide schedulability preview",
     "canSchedule": "This staff member can be scheduled on this shift",
+    "alreadyScheduled": "This staff member is already scheduled on this shift",
     "cannotSchedule": "Cannot schedule this staff member",
     "missingRequiredTrait": "Missing required trait(s): {{traits}}",
     "hasExcludedTrait": "Has excluded trait(s): {{traits}}",
@@ -281,7 +284,8 @@
     "understaffedShifts": "{{count}} shift is understaffed",
     "understaffedShifts_plural": "{{count}} shifts are understaffed",
     "moreReasons": "and {{count}} more reason...",
-    "moreReasons_plural": "and {{count}} more reasons..."
+    "moreReasons_plural": "and {{count}} more reasons...",
+    "constraintsRespected": "All constraints were respected. Some shifts could not be filled."
   },
   "auth": {
     "signIn": "Sign In",

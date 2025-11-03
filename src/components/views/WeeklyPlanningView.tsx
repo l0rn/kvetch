@@ -173,12 +173,12 @@ export function WeeklyPlanningView({
     const selectedStaff = staff.find(s => s.id === selectedStaffId);
     if (!selectedStaff) return {};
 
-    const cache: { [occurrenceId: string]: { schedulable: boolean; reasons: string[] } } = {};
+    const cache: { [occurrenceId: string]: { schedulable: boolean; reasons: string[]; alreadyScheduled?: boolean } } = {};
 
     for (const occurrence of weekOccurrences) {
       // Skip if staff is already assigned to this shift
       if (occurrence.assignedStaff.includes(selectedStaffId)) {
-        cache[occurrence.id] = { schedulable: true, reasons: [] };
+        cache[occurrence.id] = { schedulable: true, reasons: [], alreadyScheduled: true };
         continue;
       }
 
@@ -420,11 +420,11 @@ export function WeeklyPlanningView({
 
   const performAutoSchedule = async () => {
     const weekStart = startOfWeek(selectedWeek);
-    
-    for (const occurrence of weekOccurrences) {
-      occurrence.assignedStaff = []; // Clear existing assignments
-    }
-    
+
+    // Don't clear assignments here - the scheduler needs to see existing assignments
+    // to properly enforce daily/weekly limits. The scheduler will return new assignments
+    // that replace any existing ones.
+
     // Try CSP scheduler first (most advanced)
     const result: YALPSSchedulingResult = yalpsAutoScheduleWeek(shiftOccurrences, staff, weekStart, t);
     console.log(`[WeeklyPlanningView] YALPS scheduler result: success=${result.success}, algorithm=${result.algorithm || 'unknown'}`);
@@ -691,9 +691,11 @@ export function WeeklyPlanningView({
 
                       const cellClassName = `shift-cell ${staffingClass}${
                         schedulabilityInfo
-                          ? schedulabilityInfo.schedulable
-                            ? ' shift-schedulable'
-                            : ' shift-blocked'
+                          ? schedulabilityInfo.alreadyScheduled
+                            ? ''
+                            : schedulabilityInfo.schedulable
+                              ? ' shift-schedulable'
+                              : ' shift-blocked'
                           : ''
                       }`;
 
@@ -738,13 +740,23 @@ export function WeeklyPlanningView({
                               {/* Schedulability indicator */}
                               {schedulabilityInfo && (
                                 <div
-                                  className={`schedulability-indicator ${schedulabilityInfo.schedulable ? 'schedulable' : 'blocked'}`}
-                                  title={schedulabilityInfo.schedulable
-                                    ? t('planning.canSchedule')
-                                    : `${t('planning.cannotSchedule')}:\n\n${schedulabilityInfo.reasons.map((r, i) => `${i + 1}. ${r}`).join('\n')}`}
+                                  className={`schedulability-indicator ${
+                                    schedulabilityInfo.alreadyScheduled
+                                      ? 'already-scheduled'
+                                      : schedulabilityInfo.schedulable
+                                        ? 'schedulable'
+                                        : 'blocked'
+                                  }`}
+                                  title={
+                                    schedulabilityInfo.alreadyScheduled
+                                      ? t('planning.alreadyScheduled')
+                                      : schedulabilityInfo.schedulable
+                                        ? t('planning.canSchedule')
+                                        : `${t('planning.cannotSchedule')}:\n\n${schedulabilityInfo.reasons.map((r, i) => `${i + 1}. ${r}`).join('\n')}`
+                                  }
                                   onClick={(e) => e.stopPropagation()}
                                 >
-                                  {schedulabilityInfo.schedulable ? '✓' : '✗'}
+                                  {schedulabilityInfo.alreadyScheduled ? '●' : schedulabilityInfo.schedulable ? '✓' : '✗'}
                                 </div>
                               )}
                             </>

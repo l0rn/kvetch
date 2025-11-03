@@ -42,6 +42,8 @@
     "endDateTime": "Enddatum & -zeit",
     "staffCount": "Anzahl benötigter Mitarbeiter",
     "requiredTraits": "Erforderliche Fähigkeiten",
+    "preferredTraits": "Bevorzugte Fähigkeiten (Soft Constraints)",
+    "searchCreatePreferredTrait": "Bevorzugte Fähigkeit suchen oder erstellen...",
     "addTrait": "Fähigkeit hinzufügen",
     "recurrence": "Wiederholung",
     "recurring": "Wiederkehrend",
@@ -178,6 +180,7 @@
     "clickToPreviewSchedulability": "Klicken Sie, um eine Vorschau anzuzeigen, für welche Schichten dieses Personalmitglied eingeplant werden kann",
     "clickToDeselect": "Klicken Sie zum Abwählen und Ausblenden der Planbarkeitsvorschau",
     "canSchedule": "Dieses Personalmitglied kann für diese Schicht eingeplant werden",
+    "alreadyScheduled": "Dieses Personalmitglied ist bereits für diese Schicht eingeplant",
     "cannotSchedule": "Kann dieses Personalmitglied nicht einplanen",
     "missingRequiredTrait": "Fehlende erforderliche Eigenschaft(en): {{traits}}",
     "hasExcludedTrait": "Hat ausgeschlossene Eigenschaft(en): {{traits}}",
@@ -281,7 +284,8 @@
     "understaffedShifts": "{{count}} Schicht ist unterbesetzt",
     "understaffedShifts_plural": "{{count}} Schichten sind unterbesetzt",
     "moreReasons": "und {{count}} weiteren Grund...",
-    "moreReasons_plural": "und {{count}} weitere Gründe..."
+    "moreReasons_plural": "und {{count}} weitere Gründe...",
+    "constraintsRespected": "Alle Einschränkungen wurden eingehalten. Einige Schichten konnten nicht besetzt werden."
   },
   "auth": {
     "signIn": "Anmelden",

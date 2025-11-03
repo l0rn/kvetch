@@ -146,6 +146,11 @@
   color: white;
 }
 
+.schedulability-indicator.already-scheduled {
+  background-color: #6c757d;
+  color: white;
+}
+
 .shift-schedulable {
   border: 2px solid #28a745 !important;
 }

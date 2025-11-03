@@ -421,40 +421,39 @@ export function StaffForm({ initialStaff, onSave, onCancel }: StaffFormProps) {
 
       <div className="form-group">
         <h4 className="form-section-title">{t('staff.constraints')}</h4>
-        <div className="constraint-row">
-          <label className="form-label">{t('staff.maxShifts')}</label>
-          <div className="form-col">
-            <label className="sub-label">{t('staff.maxShiftsPerWeek')}</label>
-            <input
-              type="number"
-              min="0"
-              value={formData.maxShiftsPerWeek}
-              onChange={(e) => setFormData(prev => ({ ...prev, maxShiftsPerWeek: e.target.value }))}
-              className="form-input"
-              style={{ width: '100px' }}
-            />
-          </div>
-          <div className="form-col">
-            <label className="sub-label">{t('staff.maxShiftsPerMonth')}</label>
-            <input
-              type="number"
-              min="0"
-              value={formData.maxShiftsPerMonth}
-              onChange={(e) => setFormData(prev => ({ ...prev, maxShiftsPerMonth: e.target.value }))}
-              className="form-input"
-              style={{ width: '100px' }}
-            />
-          </div>
-          <div className="form-col">
-            <label className="sub-label">{t('staff.maxShiftsPerYear')}</label>
-            <input
-              type="number"
-              min="0"
-              value={formData.maxShiftsPerYear}
-              onChange={(e) => setFormData(prev => ({ ...prev, maxShiftsPerYear: e.target.value }))}
-              className="form-input"
-              style={{ width: '100px' }}
-            />
+        <div className="form-subsection">
+          <label className="subsection-label">{t('staff.maxShifts')}</label>
+          <div className="max-shifts-grid">
+            <div className="form-col">
+              <label className="sub-label">{t('staff.maxShiftsPerWeek')}</label>
+              <input
+                type="number"
+                min="0"
+                value={formData.maxShiftsPerWeek}
+                onChange={(e) => setFormData(prev => ({ ...prev, maxShiftsPerWeek: e.target.value }))}
+                className="form-input"
+              />
+            </div>
+            <div className="form-col">
+              <label className="sub-label">{t('staff.maxShiftsPerMonth')}</label>
+              <input
+                type="number"
+                min="0"
+                value={formData.maxShiftsPerMonth}
+                onChange={(e) => setFormData(prev => ({ ...prev, maxShiftsPerMonth: e.target.value }))}
+                className="form-input"
+              />
+            </div>
+            <div className="form-col">
+              <label className="sub-label">{t('staff.maxShiftsPerYear')}</label>
+              <input
+                type="number"
+                min="0"
+                value={formData.maxShiftsPerYear}
+                onChange={(e) => setFormData(prev => ({ ...prev, maxShiftsPerYear: e.target.value }))}
+                className="form-input"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -496,8 +495,8 @@ export function StaffForm({ initialStaff, onSave, onCancel }: StaffFormProps) {
             {editingRestDaysWithStaff[constraint.id] ? (
               // Edit mode
               <div>
-                <div className="form-row">
-                  <div className="form-col" style={{ minWidth: '200px' }}>
+                <div className="constraint-edit-grid">
+                  <div className="form-col">
                     <label className="sub-label">{t('staff.staffMember', 'Staff Member')}</label>
                     <select
                       value={constraint.staffId}
@@ -510,7 +509,7 @@ export function StaffForm({ initialStaff, onSave, onCancel }: StaffFormProps) {
                       ))}
                     </select>
                   </div>
-                  <div className="form-col" style={{ minWidth: '120px' }}>
+                  <div className="form-col">
                     <label className="sub-label">{t('staff.minRestDays', 'Min Rest Days')}</label>
                     <input
                       type="number"
@@ -520,7 +519,7 @@ export function StaffForm({ initialStaff, onSave, onCancel }: StaffFormProps) {
                       className="form-input"
                     />
                   </div>
-                  <div className="form-col" style={{ minWidth: '100px' }}>
+                  <div className="form-col">
                     <label className="sub-label">{t('staff.period', 'Period')}</label>
                     <select
                       value={constraint.period}
@@ -539,11 +538,11 @@ export function StaffForm({ initialStaff, onSave, onCancel }: StaffFormProps) {
                   </div>
                 )}
                 
-                <div className="form-actions" style={{ marginTop: '10px' }}>
-                  <button type="button" onClick={() => cancelRestDaysWithStaffEdit(constraint.id)} className="btn btn-secondary btn-small">
+                <div className="constraint-actions">
+                  <button type="button" onClick={() => cancelRestDaysWithStaffEdit(constraint.id)} className="btn btn-secondary btn-xs">
                     {t('staff.cancel', 'Cancel')}
                   </button>
-                  <button type="button" onClick={() => saveRestDaysWithStaff(constraint.id)} className="btn btn-primary btn-small">
+                  <button type="button" onClick={() => saveRestDaysWithStaff(constraint.id)} className="btn btn-primary btn-xs">
                     {t('staff.save', 'Save')}
                   </button>
                 </div>
@@ -582,8 +581,8 @@ export function StaffForm({ initialStaff, onSave, onCancel }: StaffFormProps) {
             {editingConsecutiveRestDays[constraint.id] ? (
               // Edit mode
               <div>
-                <div className="form-row">
-                  <div className="form-col" style={{ minWidth: '150px' }}>
+                <div className="constraint-edit-grid">
+                  <div className="form-col">
                     <label className="sub-label">{t('staff.minConsecutiveDays', 'Min Consecutive Days')}</label>
                     <input
                       type="number"
@@ -593,7 +592,7 @@ export function StaffForm({ initialStaff, onSave, onCancel }: StaffFormProps) {
                       className="form-input"
                     />
                   </div>
-                  <div className="form-col" style={{ minWidth: '100px' }}>
+                  <div className="form-col">
                     <label className="sub-label">{t('staff.period', 'Period')}</label>
                     <select
                       value={constraint.period}
@@ -605,11 +604,11 @@ export function StaffForm({ initialStaff, onSave, onCancel }: StaffFormProps) {
                     </select>
                   </div>
                 </div>
-                <div className="form-actions" style={{ marginTop: '10px' }}>
-                  <button type="button" onClick={() => cancelConsecutiveRestDaysEdit(constraint.id)} className="btn btn-secondary btn-small">
+                <div className="constraint-actions">
+                  <button type="button" onClick={() => cancelConsecutiveRestDaysEdit(constraint.id)} className="btn btn-secondary btn-xs">
                     {t('staff.cancel', 'Cancel')}
                   </button>
-                  <button type="button" onClick={() => saveConsecutiveRestDays(constraint.id)} className="btn btn-primary btn-small">
+                  <button type="button" onClick={() => saveConsecutiveRestDays(constraint.id)} className="btn btn-primary btn-xs">
                     {t('staff.save', 'Save')}
                   </button>
                 </div>

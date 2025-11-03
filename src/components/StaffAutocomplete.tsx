@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import type { StaffMember, Trait } from "../storage/database";
+import '../styles/autocomplete.css';
 
 interface StaffAutocompleteProps {
   staff: StaffMember[];
@@ -90,7 +91,7 @@ export function StaffAutocomplete({
   };
 
   return (
-    <div style={{ position: 'relative', width: '100%' }}>
+    <div className="autocomplete-container">
       <input
         ref={inputRef}
         type="text"
@@ -100,61 +101,28 @@ export function StaffAutocomplete({
         onFocus={handleInputFocus}
         onBlur={handleInputBlur}
         onKeyDown={handleKeyDown}
-        style={{ 
-          width: '100%', 
-          padding: '8px', 
-          border: '1px solid #ddd', 
-          borderRadius: '4px',
-          fontSize: '14px'
-        }}
+        className="autocomplete-input"
       />
 
       {showDropdown && (
-        <div
-          ref={dropdownRef}
-          style={{
-            position: 'absolute',
-            top: '100%',
-            left: 0,
-            right: 0,
-            backgroundColor: 'white',
-            border: '1px solid #ddd',
-            borderRadius: '4px',
-            maxHeight: '200px',
-            overflowY: 'auto',
-            zIndex: 1000,
-            marginTop: '2px',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-          }}
-        >
+        <div ref={dropdownRef} className="autocomplete-dropdown">
           {filteredStaff.map(staffMember => (
             <div
               key={staffMember.id}
               onClick={() => handleStaffClick(staffMember)}
-              style={{
-                padding: '10px',
-                cursor: 'pointer',
-                borderBottom: '1px solid #f0f0f0',
-                fontSize: '14px'
-              }}
-              onMouseEnter={(e) => {
-                (e.target as HTMLElement).style.backgroundColor = '#f8f9fa';
-              }}
-              onMouseLeave={(e) => {
-                (e.target as HTMLElement).style.backgroundColor = 'white';
-              }}
+              className="autocomplete-item"
             >
-              <div style={{ fontWeight: 'bold' }}>{staffMember.name}</div>
+              <div className="autocomplete-item-name">{staffMember.name}</div>
               {staffMember.traitIds.length > 0 && (
-                <div style={{ fontSize: '12px', color: '#666', marginTop: '2px' }}>
+                <div className="autocomplete-item-traits">
                   Traits: {getStaffTraitNames(staffMember)}
                 </div>
               )}
             </div>
           ))}
-          
+
           {filteredStaff.length === 0 && inputValue.trim().length > 0 && (
-            <div style={{ padding: '10px', color: '#666', fontSize: '14px', textAlign: 'center' }}>
+            <div className="autocomplete-empty">
               No matching staff members found
             </div>
           )}

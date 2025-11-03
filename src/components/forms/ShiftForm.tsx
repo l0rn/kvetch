@@ -43,6 +43,7 @@ export function ShiftForm({ initialShift, onSave, onCancel }: ShiftFormProps) {
     recurrenceEndDate: initialShift?.recurrence?.endDate || '',
     recurrenceWeekdays: initialShift?.recurrence?.weekdays || [],
     requiredTraits: initialShift?.requirements.requiredTraits || [],
+    preferredTraits: initialShift?.requirements.preferredTraits || [],
     excludedTraits: initialShift?.requirements.excludedTraits || [],
   });
 
@@ -128,6 +129,7 @@ export function ShiftForm({ initialShift, onSave, onCancel }: ShiftFormProps) {
       requirements: {
         staffCount: formData.staffCount,
         requiredTraits: formData.requiredTraits.length > 0 ? formData.requiredTraits : undefined,
+        preferredTraits: formData.preferredTraits.length > 0 ? formData.preferredTraits : undefined,
         excludedTraits: formData.excludedTraits.length > 0 ? formData.excludedTraits : undefined,
       },
       recurrence: formData.hasRecurrence ? {
@@ -207,6 +209,31 @@ export function ShiftForm({ initialShift, onSave, onCancel }: ShiftFormProps) {
     setFormData(prev => ({
       ...prev,
       excludedTraits: prev.excludedTraits.filter((_, i) => i !== index)
+    }));
+  };
+
+  const handlePreferredTraitSelect = async (trait: Trait) => {
+    let traitToUse = trait;
+
+    // If trait doesn't have an ID, create it
+    if (!trait.id) {
+      traitToUse = await Database.createOrFindTrait(trait.name);
+    }
+
+    setFormData(prev => ({
+      ...prev,
+      preferredTraits: [...prev.preferredTraits, traitToUse.id]
+    }));
+
+    // Always refresh traits list after selection (in case a new trait was created)
+    const allTraits = await Database.getTraits();
+    setTraits(allTraits);
+  };
+
+  const removePreferredTrait = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      preferredTraits: prev.preferredTraits.filter((_, i) => i !== index)
     }));
   };
 
@@ -311,6 +338,31 @@ export function ShiftForm({ initialShift, onSave, onCancel }: ShiftFormProps) {
               <div key={index} className="required-trait-item">
                 <span>{getTraitName(requiredTrait.traitId)} ({t('shifts.minimum')} {requiredTrait.minCount})</span>
                 <button type="button" onClick={() => removeRequiredTrait(index)} className="btn btn-danger btn-xs">
+                  {t('shifts.remove')}
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="form-group">
+        <label className="form-label">
+          {t('shifts.preferredTraits')}
+        </label>
+        <TraitAutocomplete
+          traits={traits}
+          selectedTraits={formData.preferredTraits.map(traitId => ({ traitId, minCount: 1 }))}
+          onTraitSelect={handlePreferredTraitSelect}
+          placeholder={t('shifts.searchCreatePreferredTrait')}
+          allowMinCount={false}
+        />
+        {formData.preferredTraits.length > 0 && (
+          <div className="required-trait-list">
+            {formData.preferredTraits.map((traitId, index) => (
+              <div key={index} className="required-trait-item">
+                <span>{getTraitName(traitId)}</span>
+                <button type="button" onClick={() => removePreferredTrait(index)} className="btn btn-danger btn-xs">
                   {t('shifts.remove')}
                 </button>
               </div>
